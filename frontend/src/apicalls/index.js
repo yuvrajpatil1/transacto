@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://transacto-wheat.vercel.app/",
+  baseURL: "https://transacto-backend.onrender.com",
   withCredentials: true,
 });
 
