@@ -15,7 +15,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: "https://transacto01.onrender.com/",
+    origin: "https://transacto.onrender.com/",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
