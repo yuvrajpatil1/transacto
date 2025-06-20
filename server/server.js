@@ -8,7 +8,7 @@ const QRCode = require("qrcode");
 const app = express();
 app.use(
   cors({
-    origin: "https://transacto.onrender.com",
+    origin: "*",
     credentials: true,
   })
 );
