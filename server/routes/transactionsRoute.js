@@ -140,7 +140,7 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
           currency: "inr",
           payment_method: paymentMethodId,
           confirm: true,
-          return_url: "http://localhost:5173/transactions",
+          return_url: `${process.env.FRONTEND_URL}/transactions`,
           description: `Deposit to wallet - ${reference}`,
           metadata: {
             userId: userId,
