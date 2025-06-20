@@ -2,6 +2,23 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const QRCode = require("qrcode");
+import cors from "cors";
+
+// Allow only your frontend origin
+const allowedOrigins = ["https://transacto.onrender.com"];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // If you're using cookies or sessions
+  })
+);
 
 const app = express();
 
