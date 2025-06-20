@@ -10,7 +10,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://transacto01.onrender.com",
   "https://transacto.onrender.com",
-  "https://transacto01.vercel.app/login",
+  "https://transacto01.vercel.app/",
 ];
 
 app.use(
@@ -23,6 +23,8 @@ app.use(
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
