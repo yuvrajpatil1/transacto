@@ -6,7 +6,7 @@ const QRCode = require("qrcode");
 // Allow only your frontend origin
 
 const app = express();
-const allowedOrigins = ["*"];
+const allowedOrigins = ["https://transacto01.vercel.app/"];
 app.use(
   cors({
     origin: function (origin, callback) {
