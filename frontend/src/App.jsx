@@ -9,7 +9,7 @@ import Users from "./pages/Users";
 import Dashboard from "./pages/Dashboard";
 import Requests from "./pages/Requests";
 import ManageExpenses from "./pages/ManageExpenses";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Logout from "./components/Logout";
@@ -21,7 +21,7 @@ const stripePromise = loadStripe(
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* <Elements stripe={stripePromise}> */}
         <Route
@@ -91,7 +91,7 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         {/* </Elements> */}
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
