@@ -22,7 +22,7 @@ const stripePromise = loadStripe(
 function App() {
   return (
     <Elements stripe={stripePromise}>
-      <BrowserRouter>
+      <BrowserRouter basename="/index.html">
         <Routes>
           <Route
             path="/"
