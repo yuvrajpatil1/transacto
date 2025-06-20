@@ -6,17 +6,10 @@ const QRCode = require("qrcode");
 // Allow only your frontend origin
 
 const app = express();
-const allowedOrigins = ["https://transacto.onrender.com"];
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true, // If you're using cookies or sessions
+    origin: "https://transacto.onrender.com",
+    credentials: true,
   })
 );
 
