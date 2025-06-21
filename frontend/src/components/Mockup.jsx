@@ -58,7 +58,7 @@ const Mockup = () => {
                 {/* Notch - Responsive sizing */}
                 <div
                   className="absolute top-0 left-1/2 transform -translate-x-1/2 
-                  w-16 h-2 sm:w-16 sm:h-4 md:w-18 md:h-4 lg:w-22 lg:h-4 xl:w-24 xl:h-4 
+                  w-10 h-2 sm:w-16 sm:h-4 md:w-18 md:h-4 lg:w-22 lg:h-4 xl:w-24 xl:h-4 
                   bg-black rounded-b-xl sm:rounded-b-2xl z-10"
                 ></div>
 
@@ -66,7 +66,7 @@ const Mockup = () => {
                 <img
                   src={DashboardMobile}
                   alt="Mobile Dashboard"
-                  className="w-full h-full object-cover pt-3 sm:pt-4 md:pt-4 lg:pt-4"
+                  className="w-full h-full object-cover pt-0 sm:pt-4 md:pt-4 lg:pt-4"
                 />
               </div>
             </div>
