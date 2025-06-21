@@ -10,18 +10,48 @@ import {
   Camera,
   Upload,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import jsQR from "jsqr";
-import { hideLoading, showLoading } from "../../redux/loaderSlice";
-import { TransferFunds, VerifyAccount } from "../../apicalls/transactions";
-import { ReloadUser } from "../../redux/usersSlice";
+
+// Mock jsQR for demonstration
+const mockJsQR = (imageData, width, height) => {
+  // Simulate QR code detection - in real app, use actual jsQR
+  const mockQRData = "https://transacto.onrender.com/user/ACC123456789";
+  return Math.random() > 0.7 ? { data: mockQRData } : null;
+};
+
+// Mock API functions for demonstration
+const mockVerifyAccount = async ({ receiver }) => {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  return {
+    success: true,
+    data: {
+      accountNumber: receiver,
+      firstName: "John",
+      lastName: "Doe",
+      name: "John Doe",
+      bankName: "Demo Bank",
+    },
+  };
+};
+
+const mockTransferFunds = async (payload) => {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+
+  return {
+    success: true,
+    message: "Transfer completed successfully!",
+  };
+};
 
 function ScanToPayModal({
-  showScanToPayModal,
-  setShowScanToPayModal,
-  reloadData,
+  showScanToPayModal = true,
+  setShowScanToPayModal = () => {},
+  reloadData = () => {},
 }) {
-  const { user } = useSelector((state) => state.users);
+  // Mock user data
+  const user = { _id: "user123", balance: 50000 };
 
   const [isScanning, setIsScanning] = useState(false);
   const [qrCodeData, setQrCodeData] = useState(null);
@@ -35,48 +65,68 @@ function ScanToPayModal({
   const [scanMethod, setScanMethod] = useState("camera");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [messages, setMessages] = useState([]);
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
   const streamRef = useRef(null);
   const scanIntervalRef = useRef(null);
 
-  // Replace with your actual message system
+  // Message system
   const message = {
-    success: (msg) => console.log("Success:", msg),
-    error: (msg) => console.log("Error:", msg),
+    success: (msg) => {
+      setMessages((prev) => [
+        ...prev,
+        { type: "success", text: msg, id: Date.now() },
+      ]);
+      setTimeout(() => {
+        setMessages((prev) => prev.filter((m) => m.text !== msg));
+      }, 3000);
+    },
+    error: (msg) => {
+      setMessages((prev) => [
+        ...prev,
+        { type: "error", text: msg, id: Date.now() },
+      ]);
+      setTimeout(() => {
+        setMessages((prev) => prev.filter((m) => m.text !== msg));
+      }, 3000);
+    },
   };
 
-  const [verifiedAccount, setVerifiedAccount] = useState(null);
-  const dispatch = useDispatch();
-
-  // Modified QR code detection for URLs containing account numbers
+  // QR code detection function
   const detectQRCodeFromImage = (canvas) => {
-    const context = canvas.getContext("2d");
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
+    try {
+      const context = canvas.getContext("2d");
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const code = mockJsQR(imageData.data, imageData.width, imageData.height);
 
-    if (code && code.data) {
-      console.log("QR Code detected:", code.data);
+      if (code && code.data) {
+        console.log("QR Code detected:", code.data);
 
-      // Check if the QR code contains the expected URL pattern
-      const urlPattern =
-        /https:\/\/transacto.onrender.com\/user\/([a-zA-Z0-9]+)/;
-      const match = code.data.match(urlPattern);
+        // Check if the QR code contains the expected URL pattern
+        const urlPattern =
+          /https:\/\/transacto\.onrender\.com\/user\/([a-zA-Z0-9]+)/;
+        const match = code.data.match(urlPattern);
 
-      if (match && match[1]) {
-        const accountNumber = match[1];
-        console.log("Extracted account number:", accountNumber);
-        return accountNumber;
-      } else {
-        console.log("QR code doesn't match expected URL pattern");
-        return null;
+        if (match && match[1]) {
+          const accountNumber = match[1];
+          console.log("Extracted account number:", accountNumber);
+          return accountNumber;
+        } else {
+          console.log("QR code doesn't match expected URL pattern");
+          return null;
+        }
       }
+      return null;
+    } catch (error) {
+      console.error("Error detecting QR code:", error);
+      return null;
     }
-    return null;
   };
 
-  // Cleanup camera stream on unmount
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
@@ -94,6 +144,7 @@ function ScanToPayModal({
       [field]: value,
     }));
 
+    // Clear errors when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -105,61 +156,112 @@ function ScanToPayModal({
   const startCamera = async () => {
     try {
       setIsScanning(true);
+
+      // Check if camera is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Camera access is not supported in this browser");
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+        },
       });
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
 
-        // Start continuous scanning once video is loaded
+        // Wait for video to load before starting scanning
         videoRef.current.onloadedmetadata = () => {
-          scanIntervalRef.current = setInterval(() => {
-            if (!qrCodeData && !isProcessing) {
-              captureAndScan();
-            }
-          }, 1000);
+          videoRef.current
+            .play()
+            .then(() => {
+              // Start scanning interval
+              scanIntervalRef.current = setInterval(() => {
+                if (
+                  !qrCodeData &&
+                  !isProcessing &&
+                  videoRef.current &&
+                  videoRef.current.readyState === 4
+                ) {
+                  captureAndScan();
+                }
+              }, 1000);
+            })
+            .catch((err) => {
+              console.error("Error playing video:", err);
+              message.error("Failed to start video playback");
+              setIsScanning(false);
+            });
+        };
+
+        videoRef.current.onerror = (err) => {
+          console.error("Video error:", err);
+          message.error("Camera error occurred");
+          setIsScanning(false);
         };
       }
     } catch (error) {
       console.error("Error accessing camera:", error);
-      message.error("Unable to access camera. Please check permissions.");
+      message.error(
+        "Unable to access camera. Please check permissions and try again."
+      );
       setIsScanning(false);
     }
   };
 
   const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+    try {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
+      }
+      if (scanIntervalRef.current) {
+        clearInterval(scanIntervalRef.current);
+        scanIntervalRef.current = null;
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      setIsScanning(false);
+    } catch (error) {
+      console.error("Error stopping camera:", error);
     }
-    if (scanIntervalRef.current) {
-      clearInterval(scanIntervalRef.current);
-      scanIntervalRef.current = null;
-    }
-    setIsScanning(false);
   };
 
   const captureAndScan = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      const context = canvas.getContext("2d");
+    try {
+      if (
+        videoRef.current &&
+        canvasRef.current &&
+        videoRef.current.readyState === 4
+      ) {
+        const canvas = canvasRef.current;
+        const video = videoRef.current;
+        const context = canvas.getContext("2d");
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0);
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 480;
 
-      const accountNumber = detectQRCodeFromImage(canvas);
-      if (accountNumber) {
-        handleQRCodeDetected(accountNumber);
+        if (canvas.width > 0 && canvas.height > 0) {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const accountNumber = detectQRCodeFromImage(canvas);
+
+          if (accountNumber) {
+            handleQRCodeDetected(accountNumber);
+          }
+        }
       }
+    } catch (error) {
+      console.error("Error capturing and scanning:", error);
     }
   };
 
   const handleQRCodeDetected = async (accountNumber) => {
-    if (qrCodeData || isProcessing) return; // Prevent multiple scans
+    if (qrCodeData || isProcessing) return;
 
     try {
       stopCamera();
@@ -167,32 +269,28 @@ function ScanToPayModal({
 
       console.log("Verifying account:", accountNumber);
 
-      // Verify the account
-      dispatch(showLoading());
-      const response = await VerifyAccount({ receiver: accountNumber });
-      dispatch(hideLoading());
+      const response = await mockVerifyAccount({ receiver: accountNumber });
 
       if (response.success) {
-        setQrCodeData({
+        const accountData = {
           accountNumber: response.data.accountNumber || accountNumber,
           name:
             response.data.name ||
-            response.data.firstName + " " + response.data.lastName,
+            `${response.data.firstName} ${response.data.lastName}`,
           bankName: response.data.bankName || "Default Bank",
-        });
+        };
+
+        setQrCodeData(accountData);
         setFormData((prev) => ({
           ...prev,
           receiver: accountNumber,
-          receiverName:
-            response.data.name ||
-            response.data.firstName + " " + response.data.lastName,
+          receiverName: accountData.name,
         }));
         setIsVerified(true);
-        setVerifiedAccount(response.data);
         message.success("QR Code scanned and account verified!");
       } else {
         message.error(response.message || "Account verification failed");
-        // Restart camera if account verification fails
+        // Restart camera after delay
         setTimeout(() => {
           if (scanMethod === "camera") {
             startCamera();
@@ -200,7 +298,6 @@ function ScanToPayModal({
         }, 2000);
       }
     } catch (error) {
-      dispatch(hideLoading());
       console.error("Error verifying account:", error);
       message.error("Failed to verify account");
       // Restart camera on error
@@ -218,6 +315,18 @@ function ScanToPayModal({
     const file = event.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      message.error("Please select a valid image file");
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      message.error("File size should be less than 10MB");
+      return;
+    }
+
     try {
       setIsProcessing(true);
 
@@ -225,29 +334,29 @@ function ScanToPayModal({
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
 
-      img.onload = async () => {
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
+      const loadImage = new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = URL.createObjectURL(file);
+      });
 
-        const accountNumber = detectQRCodeFromImage(canvas);
+      await loadImage;
 
-        if (accountNumber) {
-          await handleQRCodeDetected(accountNumber);
-        } else {
-          message.error(
-            "No valid QR code found in the image or QR code doesn't contain a valid account URL"
-          );
-          setIsProcessing(false);
-        }
-      };
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
 
-      img.onerror = () => {
-        message.error("Failed to load the image");
+      const accountNumber = detectQRCodeFromImage(canvas);
+
+      if (accountNumber) {
+        await handleQRCodeDetected(accountNumber);
+      } else {
+        message.error("No valid QR code found in the image");
         setIsProcessing(false);
-      };
+      }
 
-      img.src = URL.createObjectURL(file);
+      // Clean up
+      URL.revokeObjectURL(img.src);
     } catch (error) {
       console.error("Error processing uploaded file:", error);
       message.error("Failed to process the uploaded image");
@@ -258,9 +367,7 @@ function ScanToPayModal({
     event.target.value = "";
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const validateForm = () => {
     const newErrors = {};
 
     if (!formData.receiver.trim()) {
@@ -269,10 +376,13 @@ function ScanToPayModal({
 
     if (!formData.amount.trim()) {
       newErrors.amount = "Amount is required";
-    } else if (isNaN(formData.amount) || parseFloat(formData.amount) <= 0) {
-      newErrors.amount = "Please enter a valid amount";
-    } else if (parseFloat(formData.amount) > user.balance) {
-      newErrors.amount = "Insufficient balance";
+    } else {
+      const amount = parseFloat(formData.amount);
+      if (isNaN(amount) || amount <= 0) {
+        newErrors.amount = "Please enter a valid amount";
+      } else if (amount > user.balance) {
+        newErrors.amount = "Insufficient balance";
+      }
     }
 
     if (!formData.reference.trim()) {
@@ -283,13 +393,19 @@ function ScanToPayModal({
       newErrors.receiver = "Please scan a QR code first";
     }
 
+    return newErrors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newErrors = validateForm();
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length > 0) return;
 
     try {
       setIsProcessing(true);
-      dispatch(showLoading());
 
       const payload = {
         sender: user._id,
@@ -300,20 +416,18 @@ function ScanToPayModal({
         status: "success",
       };
 
-      const response = await TransferFunds(payload);
-      dispatch(hideLoading());
+      const response = await mockTransferFunds(payload);
 
       if (response.success) {
         message.success(response.message);
-        handleClose();
-        if (reloadData) reloadData();
-        window.location.reload();
-        dispatch(ReloadUser(true));
+        setTimeout(() => {
+          handleClose();
+          if (reloadData) reloadData();
+        }, 1500);
       } else {
         message.error(response.message || "Transfer failed");
       }
     } catch (error) {
-      dispatch(hideLoading());
       console.error("Transfer error:", error);
       message.error("Transfer failed. Please try again.");
     } finally {
@@ -336,14 +450,40 @@ function ScanToPayModal({
     setScanMethod("camera");
     setIsProcessing(false);
     setIsVerified(false);
-    setVerifiedAccount(null);
+    setMessages([]);
+  };
+
+  const resetScan = () => {
+    setQrCodeData(null);
+    setFormData({
+      receiver: "",
+      amount: "",
+      reference: "",
+      receiverName: "",
+    });
+    setIsVerified(false);
+    setErrors({});
   };
 
   if (!showScanToPayModal) return null;
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="no-scrollbar bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+      {/* Messages */}
+      <div className="fixed top-4 right-4 z-60 space-y-2">
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`px-4 py-2 rounded-lg text-white font-medium ${
+              msg.type === "success" ? "bg-green-600" : "bg-red-600"
+            }`}
+          >
+            {msg.text}
+          </div>
+        ))}
+      </div>
+
+      <div className="no-scrollbar bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/60">
           <div>
@@ -449,6 +589,7 @@ function ScanToPayModal({
                           ref={videoRef}
                           autoPlay
                           playsInline
+                          muted
                           className="w-full h-48 object-cover"
                         />
                         <div className="absolute inset-0 border-2 border-amber-400 border-dashed rounded-lg pointer-events-none"></div>
@@ -533,17 +674,7 @@ function ScanToPayModal({
               </div>
               <button
                 type="button"
-                onClick={() => {
-                  setQrCodeData(null);
-                  setFormData({
-                    receiver: "",
-                    amount: "",
-                    reference: "",
-                    receiverName: "",
-                  });
-                  setIsVerified(false);
-                  setVerifiedAccount(null);
-                }}
+                onClick={resetScan}
                 disabled={isProcessing}
                 className="mt-3 text-sm text-amber-400 hover:text-amber-300 disabled:opacity-50 underline"
               >
@@ -617,8 +748,7 @@ function ScanToPayModal({
               Cancel
             </button>
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={!qrCodeData || isProcessing}
               className={`flex-1 px-6 py-3 font-medium rounded-lg transition-colors flex items-center justify-center ${
                 qrCodeData && !isProcessing
