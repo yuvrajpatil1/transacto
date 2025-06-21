@@ -47,7 +47,7 @@ router.post("/verify-account", authMiddleware, async (req, res) => {
         data: {
           name: `${user.firstName} ${user.lastName}`,
           accountNumber: user._id,
-          bankName: "SecurePay Wallet",
+          bankName: "Transacto Wallet",
         },
         success: true,
       });
