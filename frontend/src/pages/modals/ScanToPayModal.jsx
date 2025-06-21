@@ -61,16 +61,8 @@ function ScanToPayModal({
 
       // Check if the QR code contains the expected URL pattern
       //Dynamic pattern based on environment
-      const baseUrl =
-        process.env.NODE_ENV === "production"
-          ? "https://transacto.onrender.com"
-          : "http://localhost:5173";
-      const urlPattern = new RegExp(
-        `${baseUrl.replace(
-          /[.*+?^${}()|[\]\\]/g,
-          "\\$&"
-        )}\\/user\\/([a-zA-Z0-9]+)`
-      );
+      const urlPattern = /http:\/\/localhost:5173\/user\/([a-zA-Z0-9]+)/;
+      const match = code.data.match(urlPattern);
 
       if (match && match[1]) {
         const accountNumber = match[1];
