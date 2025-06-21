@@ -60,8 +60,8 @@ function ScanToPayModal({
       console.log("QR Code detected:", code.data);
 
       // Check if the QR code contains the expected URL pattern
-      //Dynamic pattern based on environment
-      const urlPattern = /http:\/\/localhost:5173\/user\/([a-zA-Z0-9]+)/;
+      const urlPattern =
+        /https:\/\/transacto.onrender.com\/user\/([a-zA-Z0-9]+)/;
       const match = code.data.match(urlPattern);
 
       if (match && match[1]) {
