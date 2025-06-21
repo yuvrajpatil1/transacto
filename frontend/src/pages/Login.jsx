@@ -72,7 +72,6 @@ export default function Login() {
       const response = await LoginUser(formData);
       if (response.success) {
         message.success(response.message);
-        alert(response.message);
         localStorage.setItem("token", response.data);
         window.location.href = "/dashboard";
       } else {

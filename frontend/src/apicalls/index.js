@@ -1,8 +1,8 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "https://transacto-backend.onrender.com",
-  // baseURL: "http://localhost:5000",
+  // baseURL: "https://transacto-backend.onrender.com",
+  baseURL: "http://localhost:5000",
   withCredentials: true,
 });
 

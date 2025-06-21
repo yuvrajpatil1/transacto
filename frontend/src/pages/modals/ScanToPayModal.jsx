@@ -51,6 +51,7 @@ function ScanToPayModal({
   const dispatch = useDispatch();
 
   // Modified QR code detection for URLs containing account numbers
+  // Even more flexible version that handles query parameters or trailing slashes
   const detectQRCodeFromImage = (canvas) => {
     const context = canvas.getContext("2d");
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -59,16 +60,16 @@ function ScanToPayModal({
     if (code && code.data) {
       console.log("QR Code detected:", code.data);
 
-      // Check if the QR code contains the expected URL pattern
-      const urlPattern = /http:\/\/localhost:5173\/user\/([a-zA-Z0-9]+)/;
-      const match = code.data.match(urlPattern);
+      // Matches /user/ followed by account number, ignoring trailing slashes or query params
+      const userPattern = /\/user\/([a-zA-Z0-9_-]+)(?:\/|\?|$)/;
+      const match = code.data.match(userPattern);
 
       if (match && match[1]) {
         const accountNumber = match[1];
         console.log("Extracted account number:", accountNumber);
         return accountNumber;
       } else {
-        console.log("QR code doesn't match expected URL pattern");
+        console.log("QR code doesn't contain /user/[account_number] pattern");
         return null;
       }
     }
