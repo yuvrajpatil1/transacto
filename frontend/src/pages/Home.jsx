@@ -48,7 +48,7 @@ export default function Home() {
         </div>
 
         <button
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
           onClick={() => navigate("/register")}
         >
           Get Started
@@ -80,13 +80,13 @@ export default function Home() {
 
             <div className="flex flex-row gap-4 items-center justify-center mt-6 md:mt-0 mb-10 md:mb-8">
               <button
-                className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-2 rounded-lg font-medium text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center space-x-2"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-2 rounded-lg font-medium text-md lg:text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center space-x-2"
                 onClick={() => navigate("/register")}
               >
                 <span>Sign Up</span>
               </button>
               <button
-                className="border border-gray-600 px-8 py-2 rounded-lg font-medium text-lg hover:border-gray-500 hover:bg-gray-800/50 transition-all duration-300 flex items-center space-x-2"
+                className="border border-gray-600 px-8 py-2 rounded-lg font-medium text-md lg:text-lg hover:border-gray-500 hover:bg-gray-800/50 transition-all duration-300 flex items-center space-x-2"
                 onClick={() => navigate("/login")}
               >
                 <span>Log in</span>
