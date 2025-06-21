@@ -51,28 +51,60 @@ function ScanToPayModal({
   const dispatch = useDispatch();
 
   // Modified QR code detection for URLs containing account numbers
+  // Enhanced QR code detection with better error handling and debugging
   const detectQRCodeFromImage = (canvas) => {
     const context = canvas.getContext("2d");
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-    if (code && code.data) {
-      console.log("QR Code detected:", code.data);
+    // Add multiple detection attempts with different configurations
+    const detectionOptions = [
+      { inversionAttempts: "dontInvert" },
+      { inversionAttempts: "onlyInvert" },
+      { inversionAttempts: "attemptBoth" },
+    ];
 
-      // Check if the QR code contains the expected URL pattern
-      const urlPattern =
-        /https:\/\/transacto.onrender.com\/user\/([a-zA-Z0-9]+)/;
-      const match = code.data.match(urlPattern);
+    for (const options of detectionOptions) {
+      const code = jsQR(
+        imageData.data,
+        imageData.width,
+        imageData.height,
+        options
+      );
 
-      if (match && match[1]) {
-        const accountNumber = match[1];
-        console.log("Extracted account number:", accountNumber);
-        return accountNumber;
-      } else {
-        console.log("QR code doesn't match expected URL pattern");
+      if (code && code.data) {
+        console.log("QR Code detected:", code.data);
+
+        // More flexible URL pattern matching
+        const patterns = [
+          /http:\/\/localhost:5173\/user\/([a-zA-Z0-9]+)/,
+          /https:\/\/localhost:5173\/user\/([a-zA-Z0-9]+)/,
+          /http:\/\/[^\/]+\/user\/([a-zA-Z0-9]+)/,
+          /https:\/\/[^\/]+\/user\/([a-zA-Z0-9]+)/,
+          // Add pattern for production URLs
+          /https:\/\/yourapp\.com\/user\/([a-zA-Z0-9]+)/,
+          // Direct account number pattern (if QR contains just the account number)
+          /^([a-zA-Z0-9]{8,})$/,
+        ];
+
+        for (const pattern of patterns) {
+          const match = code.data.match(pattern);
+          if (match && match[1]) {
+            const accountNumber = match[1];
+            console.log("Extracted account number:", accountNumber);
+            return accountNumber;
+          }
+        }
+
+        // If no pattern matches but we have data, log it for debugging
+        console.log(
+          "QR code data doesn't match any expected patterns:",
+          code.data
+        );
         return null;
       }
     }
+
+    console.log("No QR code detected in image");
     return null;
   };
 
@@ -141,20 +173,60 @@ function ScanToPayModal({
     setIsScanning(false);
   };
 
+  // Enhanced camera capture with better image quality
   const captureAndScan = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
       const video = videoRef.current;
       const context = canvas.getContext("2d");
 
+      // Ensure video is ready
+      if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+        return;
+      }
+
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
+
+      // Clear canvas before drawing
+      context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(video, 0, 0);
+
+      // Apply image enhancement for better QR detection
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+      // Optional: Apply basic image enhancement
+      enhanceImageForQRDetection(imageData);
+      context.putImageData(imageData, 0, 0);
 
       const accountNumber = detectQRCodeFromImage(canvas);
       if (accountNumber) {
         handleQRCodeDetected(accountNumber);
       }
+    }
+  };
+
+  // Basic image enhancement to improve QR code detection
+  const enhanceImageForQRDetection = (imageData) => {
+    const data = imageData.data;
+
+    // Convert to grayscale and increase contrast
+    for (let i = 0; i < data.length; i += 4) {
+      // Convert to grayscale
+      const gray = Math.round(
+        0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]
+      );
+
+      // Increase contrast
+      const contrast = 1.5;
+      const factor =
+        (259 * (contrast * 255 + 255)) / (255 * (259 - contrast * 255));
+      const enhanced = Math.min(255, Math.max(0, factor * (gray - 128) + 128));
+
+      data[i] = enhanced; // Red
+      data[i + 1] = enhanced; // Green
+      data[i + 2] = enhanced; // Blue
+      // Alpha channel remains unchanged
     }
   };
 
@@ -214,9 +286,24 @@ function ScanToPayModal({
     }
   };
 
+  // Enhanced file upload handler with better image processing
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      message.error("Please upload a valid image file");
+      return;
+    }
+
+    // Check file size (optional, e.g., max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      message.error(
+        "Image file is too large. Please upload an image smaller than 5MB"
+      );
+      return;
+    }
 
     try {
       setIsProcessing(true);
@@ -226,31 +313,49 @@ function ScanToPayModal({
       const ctx = canvas.getContext("2d");
 
       img.onload = async () => {
+        // Set canvas size
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.drawImage(img, 0, 0);
 
+        console.log("Image loaded, dimensions:", img.width, "x", img.height);
+
+        // Try to detect QR code
         const accountNumber = detectQRCodeFromImage(canvas);
 
         if (accountNumber) {
           await handleQRCodeDetected(accountNumber);
         } else {
+          // More specific error messages
           message.error(
-            "No valid QR code found in the image or QR code doesn't contain a valid account URL"
+            "Could not find a valid QR code in this image. Please ensure:\n" +
+              "• The QR code is clearly visible and not blurry\n" +
+              "• The image has good lighting\n" +
+              "• The QR code contains a valid account URL"
           );
           setIsProcessing(false);
         }
       };
 
       img.onerror = () => {
-        message.error("Failed to load the image");
+        message.error(
+          "Failed to load the image. Please try a different image."
+        );
         setIsProcessing(false);
       };
 
-      img.src = URL.createObjectURL(file);
+      // Create object URL for the image
+      const imageUrl = URL.createObjectURL(file);
+      img.src = imageUrl;
+
+      // Clean up object URL after use
+      img.onload = async (originalOnLoad) => {
+        URL.revokeObjectURL(imageUrl);
+        if (originalOnLoad) await originalOnLoad();
+      };
     } catch (error) {
       console.error("Error processing uploaded file:", error);
-      message.error("Failed to process the uploaded image");
+      message.error("Failed to process the uploaded image. Please try again.");
       setIsProcessing(false);
     }
 
