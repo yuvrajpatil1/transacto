@@ -90,7 +90,7 @@ export default function Login() {
     <div className="min-h-screen w-full bg-gradient-to-bl from-black via-[#1e0b06] to-black text-white overflow-hidden">
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Left Panel */}
-        <div className="lg:w-2/5 bg-black p-16 flex flex-col relative overflow-hidden border-r border-gray-800">
+        <div className="lg:w-2/5 bg-black p-8 md:p-16 flex flex-col relative overflow-hidden border-r border-gray-800">
           {/* Animated background elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent"></div>
           <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse"></div>
@@ -98,19 +98,19 @@ export default function Login() {
 
           <div className="relative z-10">
             <div className="flex items-center mb-8">
-              <h1 className="text-5xl font-bold">Transacto</h1>
+              <h1 className="text-4xl md:text-5xl font-bold">Transacto</h1>
             </div>
 
-            <h2 className="text-4xl font-semibold mb-6 leading-tight bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+            <h2 className="text-2xl md:text-4xl font-semibold mb-6 leading-tight bg-gradient-to-r from-gray-300 via-blue-100 to-purple-200 bg-clip-text text-transparent">
               Welcome Back to Your Digital Wallet
             </h2>
 
-            <p className="text-gray-400 mb-12 text-lg">
+            <p className="text-gray-400 md:mb-12 mb-6 md:text-lg text-sm">
               Sign in to access your secure wallet and manage your digital
               transactions with confidence.
             </p>
 
-            <div className="space-y-6">
+            <div className="hidden md:block space-y-6">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-xl flex items-center justify-center mr-4 border border-blue-500/20">
                   <Shield className="w-6 h-6 text-blue-400" />

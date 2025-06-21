@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ReloadUser, SetUser } from "../redux/usersSlice";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
+import Loader from "./Loader";
 
 function ProtectedRoute(props) {
   const dispatch = useDispatch();
@@ -73,7 +74,11 @@ function ProtectedRoute(props) {
 
   // Show loading while checking authentication for protected routes
   if (isChecking) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Loader />
+      </div>
+    );
   }
 
   // Only render children if user is authenticated

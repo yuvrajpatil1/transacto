@@ -7,7 +7,7 @@ export default function SlideInOnScroll({ children }) {
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 90%", "end 80%"], // when top enters, when bottom exits
+    offset: ["start 90%", "end 85%"], // when top enters, when bottom exits
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [200, 1]); // slide from below

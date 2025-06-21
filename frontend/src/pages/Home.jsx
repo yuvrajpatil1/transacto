@@ -24,6 +24,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import SlideInOnScroll from "../components/SlideInOnScroll";
 import SlideInOnScrollMockUp from "../components/SlideInOnScrollMockUp";
+import AnimatedCounter from "../components/AnimatedCounter";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -39,11 +40,13 @@ export default function Home() {
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]); // Fade in
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white">
+    <div className="min-h-screen max-w-screen bg-gradient-to-br from-black via-slate-900 to-black text-white">
       {/* Navigation */}
-      <nav className="fixed md:static top-0 left-0 w-full z-50 backdrop-blur-xl md:border-none md:backdrop-blur-none md:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
+      <nav className="fixed  max-w-screen md:static top-0 left-0 w-full z-50 backdrop-blur-xl md:border-none md:backdrop-blur-none md:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <span className="text-3xl font-bold text-white">Transacto</span>
+          <span className="text-3xl md:font-bold font-medium text-white">
+            Transacto
+          </span>
         </div>
 
         <button
@@ -58,26 +61,26 @@ export default function Home() {
       <div className="px-6 lg:px-12 py-30 lg:py-20 lg:pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-18">
-            <div className="inline-flex items-center space-x-2 bg-gray-800/50 rounded-full px-4 py-2 mb-6 border border-gray-700">
+            <div className="inline-flex items-center space-x-2 bg-gray-800/50 rounded-full px-4 py-2  mb-6 border border-gray-700">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-300">
+              <span className="text-xs md:text-sm text-gray-300">
                 Now Live - Money Request & Role-Based Access
               </span>
             </div>
 
-            <h1 className="text-4xl lg:text-6xl font-bold pb-6 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
+            <h1 className="text-4xl lg:text-6xl md:font-bold font-medium pb-8 pt-4 md:pt-0 md:pb-6 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
               Your Digital Wallet
               <br />
               Reimagined
             </h1>
 
-            <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+            <p className="md:text-xl text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
               Send money instantly with QR codes, make secure card payments, and
               manage money requests with role-based access control. All
               transactions tracked in real-time.
             </p>
 
-            <div className="flex gap-4 sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
+            <div className="flex flex-row gap-4 items-center justify-center mt-6 md:mt-0 mb-10 md:mb-8">
               <button
                 className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-2 rounded-lg font-medium text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center space-x-2"
                 onClick={() => navigate("/register")}
@@ -108,12 +111,16 @@ export default function Home() {
             <p className="text-sm text-gray-400 mt-4">
               Trusted by financial institutions worldwide
             </p>
-            <div className="flex items-center justify-center space-x-8 opacity-60">
-              <div className="text-lg font-semibold">Stripe</div>
-              <div className="text-lg font-semibold">RBI Licensed</div>
-              <div className="text-lg font-semibold">UPI Certified</div>
-              <div className="text-lg font-semibold">PCI DSS</div>
-              <div className="text-lg font-semibold">ISO 27001</div>
+            <div className="flex overflow-hidden pt-4 md:pt-0 items-center justify-center space-x-10 opacity-60">
+              <div className="text-xl fontmd:-semibold font-semibold">
+                Stripe
+              </div>
+              <div className="text-xl fontmd:-semibold font-semibold">
+                PCI DSS
+              </div>
+              <div className="text-xl fontmd:-semibold font-semibold">
+                ISO 27001
+              </div>
             </div>
           </div>
         </div>
@@ -126,11 +133,11 @@ export default function Home() {
             <p className="text-sm text-blue-400 font-medium mb-4">
               POWERFUL FEATURES
             </p>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            <h2 className="text-3xl lg:text-4xl md:font-bold font-medium mb-4">
               Everything you need for{" "}
               <span className="text-blue-400">secure payments</span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
               From instant QR payments to money requests, experience complete
               control over your digital transactions
             </p>
@@ -143,7 +150,9 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
                   <QrCode className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">UPI QR Payments</h3>
+                <h3 className="text-xl md:font-bold font-medium  mb-4">
+                  UPI QR Payments
+                </h3>
                 <p className="text-gray-400 mb-6">
                   Send and receive money instantly using QR codes. Compatible
                   with all major UPI apps and supports merchant payments
@@ -161,7 +170,9 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6">
                   <CreditCard className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Stripe Card Payments</h3>
+                <h3 className="text-xl md:font-bold font-medium mb-4">
+                  Stripe Card Payments
+                </h3>
                 <p className="text-gray-400 mb-6">
                   Secure card payments powered by Stripe. Accept all major
                   credit and debit cards with enterprise-grade security and
@@ -179,7 +190,9 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
                   <HandCoins className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Money Requests</h3>
+                <h3 className="text-xl md:font-bold font-medium mb-4">
+                  Money Requests
+                </h3>
                 <p className="text-gray-400 mb-6">
                   Request money from contacts and fulfill payment requests
                   seamlessly. Track all pending requests and manage approvals
@@ -197,7 +210,7 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
                   <UserCheck className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">
+                <h3 className="text-xl md:font-bold font-medium mb-4">
                   Identity Verification
                 </h3>
                 <p className="text-gray-400 mb-6">
@@ -217,7 +230,9 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Role-Based Access</h3>
+                <h3 className="text-xl md:font-bold font-medium mb-4">
+                  Role-Based Access
+                </h3>
                 <p className="text-gray-400 mb-6">
                   Manage user permissions with role-based access control.
                   Different access levels for admins, users, and merchants with
@@ -235,7 +250,9 @@ export default function Home() {
                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6">
                   <Clock className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Real-Time Tracking</h3>
+                <h3 className="text-xl md:font-bold font-medium mb-4">
+                  Real-Time Tracking
+                </h3>
                 <p className="text-gray-400 mb-6">
                   Track all transactions, balance updates, and money requests in
                   real-time. Complete transaction history with detailed
@@ -252,43 +269,45 @@ export default function Home() {
       </div>
 
       {/* Stats Section */}
-      <div className="px-6 lg:px-12 py-16 bg-gray-900/30">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl lg:text-4xl font-bold text-blue-400 mb-2">
-                5L+
+      <AnimatedCounter>
+        <div className="px-6 lg:px-12 py-16 bg-gray-900/30">
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-3xl lg:text-4xl md:font-bold font-medium text-blue-400 mb-2">
+                  5L+
+                </div>
+                <div className="text-gray-400">Active Users</div>
               </div>
-              <div className="text-gray-400">Active Users</div>
-            </div>
-            <div>
-              <div className="text-3xl lg:text-4xl font-bold text-green-400 mb-2">
-                ₹50Cr+
+              <div>
+                <div className="text-3xl lg:text-4xl md:font-bold font-medium text-green-400 mb-2">
+                  ₹50Cr+
+                </div>
+                <div className="text-gray-400">Transactions Processed</div>
               </div>
-              <div className="text-gray-400">Transactions Processed</div>
-            </div>
-            <div>
-              <div className="text-3xl lg:text-4xl font-bold text-purple-400 mb-2">
-                1Cr+
+              <div>
+                <div className="text-3xl lg:text-4xl md:font-bold font-medium text-purple-400 mb-2">
+                  1Cr+
+                </div>
+                <div className="text-gray-400">Money Requests Fulfilled</div>
               </div>
-              <div className="text-gray-400">Money Requests Fulfilled</div>
-            </div>
-            <div>
-              <div className="text-3xl lg:text-4xl font-bold text-orange-400 mb-2">
-                99.9%
+              <div>
+                <div className="text-3xl lg:text-4xl md:font-bold font-medium text-orange-400 mb-2">
+                  99.9%
+                </div>
+                <div className="text-gray-400">Uptime</div>
               </div>
-              <div className="text-gray-400">Uptime</div>
             </div>
           </div>
         </div>
-      </div>
+      </AnimatedCounter>
 
       {/* CTA Section */}
       <SlideInOnScroll>
         <div className="px-6 lg:px-12 py-16">
           <div className="max-w-4xl mx-auto text-center">
             <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-2xl p-12 border border-blue-500/20">
-              <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+              <h2 className="text-3xl lg:text-4xl md:font-bold font-medium mb-6">
                 Ready to revolutionize your payments?
               </h2>
               <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
@@ -318,7 +337,9 @@ export default function Home() {
             {/* Company Info */}
             <div className="col-span-1 md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
-                <span className="text-2xl font-bold">Transacto</span>
+                <span className="text-2xl md:font-bold font-medium">
+                  Transacto
+                </span>
               </div>
               <p className="text-gray-400 text-sm mb-4 pr-8">
                 The future of digital payments. Secure, instant, and trackable
@@ -334,7 +355,9 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-3 w-full gap-12">
               {/* Product */}
               <div>
-                <h4 className="text-white font-semibold mb-4">Product</h4>
+                <h4 className="text-white fontmd:-semibold font-semibold mb-4">
+                  Product
+                </h4>
                 <div className="space-y-2 text-sm text-gray-400">
                   <a
                     href="#"
@@ -371,7 +394,9 @@ export default function Home() {
 
               {/* Company */}
               <div>
-                <h4 className="text-white font-semibold mb-4">Company</h4>
+                <h4 className="text-white fontmd:-semibold font-semibold mb-4">
+                  Company
+                </h4>
                 <div className="space-y-2 text-sm text-gray-400">
                   <a
                     href="#"
@@ -408,7 +433,9 @@ export default function Home() {
 
               {/* Support */}
               <div>
-                <h4 className="text-white font-semibold mb-4">Support</h4>
+                <h4 className="text-white fontmd:-semibold font-semibold mb-4">
+                  Support
+                </h4>
                 <div className="space-y-2 text-sm text-gray-400">
                   <a
                     href="#"
@@ -453,8 +480,12 @@ export default function Home() {
           <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400 mb-4 md:mb-0">
-                <span>
+                <span className="hidden md:block">
                   © 2025 Transacto Technologies Pvt. Ltd. All rights reserved.
+                </span>
+                <span className="md:hidden text-center">
+                  © 2025 Transacto Technologies Pvt. Ltd. <br /> All rights
+                  reserved.
                 </span>
                 <div className="flex items-center space-x-4">
                   <a href="#" className="hover:text-white transition-colors">

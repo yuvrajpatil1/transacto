@@ -130,7 +130,7 @@ export default function Register() {
     <div className="min-h-screen w-full bg-gradient-to-br from-black via-slate-900 to-black text-white overflow-hidden">
       <div className="flex flex-col lg:flex-row min-h-screen">
         {/* Left Panel */}
-        <div className="lg:w-2/5 bg-black p-16 flex flex-col relative overflow-hidden border-r border-gray-800">
+        <div className="lg:w-2/5 bg-black p-8 md:p-16 flex flex-col relative overflow-hidden border-r border-gray-800">
           {/* Animated background elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent"></div>
           <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse"></div>
@@ -138,14 +138,14 @@ export default function Register() {
 
           <div className="relative z-10">
             <div className="flex items-center mb-8">
-              <h1 className="text-5xl font-bold">Transacto</h1>
+              <h1 className="text-4xl md:text-5xl font-bold">Transacto</h1>
             </div>
 
-            <h2 className="text-4xl font-semibold mb-6 leading-tight bg-gradient-to-r from-gray-300 via-blue-100 to-purple-200 bg-clip-text text-transparent">
+            <h2 className="text-2xl md:text-4xl font-semibold mb-6 leading-tight bg-gradient-to-r from-gray-300 via-blue-100 to-purple-200 bg-clip-text text-transparent">
               Join the Future of Digital Payments
             </h2>
 
-            <p className="text-gray-400 mb-12 text-lg">
+            <p className="text-gray-400 md:mb-12 mb-6 md:text-lg text-sm">
               Create your secure wallet account and experience seamless, fast,
               and secure digital transactions.
             </p>
@@ -200,14 +200,27 @@ export default function Register() {
             <div className="mb-8">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-3xl font-bold text-white mb-2">
+                  <h3 className="md:text-3xl text-2xl font-bold text-white mb-2">
                     Create Account
                   </h3>
-                  <p className="text-gray-400">
-                    Fill in your details to get started with Transacto Wallet
+                  <p className="hidden md:block md:text-xl text-md text-gray-400">
+                    Fill in your details to get started with Transacto
                   </p>
+
+                  <div className="md:hidden text-left">
+                    <p className="text-sm text-gray-400">
+                      Already have an account?{" "}
+                      <button
+                        type="button"
+                        className="text-blue-400 hover:text-blue-300 hover:underline font-medium"
+                        onClick={() => navigate("/login")}
+                      >
+                        Sign In
+                      </button>
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
+                <div className="hidden md:block text-right">
                   <p className="text-sm text-gray-400">
                     Already have an account?{" "}
                     <button
@@ -492,13 +505,8 @@ export default function Register() {
               {/* Terms */}
               <p className="text-center text-sm text-gray-400">
                 By creating an account, you agree to our{" "}
-                <button className="text-blue-400 hover:text-blue-300 hover:underline">
-                  Terms of Service
-                </button>{" "}
-                and{" "}
-                <button className="text-blue-400 hover:text-blue-300 hover:underline">
-                  Privacy Policy
-                </button>
+                <button className="text-blue-400 ">Terms of Service</button> and{" "}
+                <button className="text-blue-400 ">Privacy Policy</button>
               </p>
             </div>
           </div>
