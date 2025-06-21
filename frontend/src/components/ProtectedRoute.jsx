@@ -1,16 +1,18 @@
 import React from "react";
 import { message } from "antd";
 import { GetUserInfo } from "../apicalls/users";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { ReloadUser, SetUser } from "../redux/usersSlice";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
 
 function ProtectedRoute(props) {
   const dispatch = useDispatch();
-  const { user } = useSelector((state, reloadUser) => state.users);
+  const { user, reloadUser } = useSelector((state) => state.users);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [isChecking, setIsChecking] = useState(true);
 
   const getData = async () => {
     try {
@@ -21,30 +23,61 @@ function ProtectedRoute(props) {
         dispatch(SetUser(response.data));
       } else {
         message.error(response.message);
+        localStorage.removeItem("token");
         navigate("/login");
       }
       dispatch(ReloadUser(false));
     } catch (error) {
+      dispatch(hideLoading());
       message.error(error.message);
+      localStorage.removeItem("token");
+      navigate("/login");
+    } finally {
+      setIsChecking(false);
     }
   };
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    // Skip protection logic if we're on the root path
+    if (location.pathname === "/") {
+      setIsChecking(false);
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (token) {
       if (!user) {
         getData();
+      } else {
+        setIsChecking(false);
       }
     } else {
+      setIsChecking(false);
       navigate("/login");
     }
-  }, []);
+  }, [user, location.pathname]);
 
   useEffect(() => {
-    if (ReloadUser) {
-      getData();
-    }
-  }, [ReloadUser]);
-  return user && <div>{props.children}</div>;
+    // Skip if on root path
+    if (location.pathname === "/" || !reloadUser) return;
+
+    setIsChecking(true);
+    getData();
+  }, [reloadUser, location.pathname]);
+
+  // If we're on root path, just render children without protection
+  if (location.pathname === "/") {
+    return <div>{props.children}</div>;
+  }
+
+  // Show loading while checking authentication for protected routes
+  if (isChecking) {
+    return <div>Loading...</div>;
+  }
+
+  // Only render children if user is authenticated
+  return user ? <div>{props.children}</div> : null;
 }
 
 export default ProtectedRoute;

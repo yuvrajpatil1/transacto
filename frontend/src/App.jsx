@@ -21,7 +21,7 @@ const stripePromise = loadStripe(
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
         {/* <Elements stripe={stripePromise}> */}
         <Route
@@ -80,18 +80,10 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/manage-expenses"
-          element={
-            <ProtectedRoute>
-              <ManageExpenses />
-            </ProtectedRoute>
-          }
-        />
         <Route path="/logout" element={<Logout />} />
         {/* </Elements> */}
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 

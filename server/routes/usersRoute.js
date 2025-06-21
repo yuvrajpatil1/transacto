@@ -161,7 +161,8 @@ router.get("/generate-qr", authMiddleware, async (req, res) => {
   }
 
   try {
-    const baseURL = process.env.FRONTEND_URL || "http://localhost:5173";
+    const baseURL =
+      process.env.FRONTEND_URL || "https://transacto.onrender.com";
     const qrCodeURL = `${baseURL}/user/${userId}`;
 
     const qrCodeData = await QRCode.toDataURL(qrCodeURL, {

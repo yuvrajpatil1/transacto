@@ -86,7 +86,7 @@ export default function Home() {
               </button>
               <button
                 className="border border-gray-600 px-8 py-2 rounded-lg font-medium text-lg hover:border-gray-500 hover:bg-gray-800/50 transition-all duration-300 flex items-center space-x-2"
-                onClick={() => navigate("/register")}
+                onClick={() => navigate("/login")}
               >
                 <span>Log in</span>
               </button>

@@ -7,7 +7,7 @@ const QRCode = require("qrcode");
 
 const app = express();
 const allowedOrigins = [
-  "http://localhost:3000",
+  "http://localhost:5173",
   "https://transacto01.onrender.com",
   "https://transacto.onrender.com",
   "https://transacto01.vercel.app/",
@@ -15,7 +15,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: "https://transacto.onrender.com/",
+    origin: "https://transacto.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
