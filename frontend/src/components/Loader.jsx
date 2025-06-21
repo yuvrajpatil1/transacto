@@ -2,21 +2,21 @@ export default function Loader({
   words = ["your dashboard...", "your transactions...", "your requests..."],
 }) {
   return (
-    <div className="bg-gray-900 p-4 rounded-xl inline-block">
-      <div className="text-gray-400 font-medium text-2xl h-10 p-2 flex items-center font-sans">
+    <div className="bg-black p-4 flex justify-center items-center h-screen w-screen">
+      <div className="text-gray-400 font-medium text-2xl h-10 p-2 flex items-center">
         <span className="mr-2">loading</span>
         <div className="relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none z-20"
             style={{
               background:
-                "linear-gradient(#111 10%, transparent 30%, transparent 70%, #111 90%)",
+                "linear-gradient(#000 10%, transparent 30%, transparent 70%, #000 90%)",
             }}
           />
           {words.map((word, index) => (
             <span
               key={index}
-              className="block h-full pl-1 text-blue-400"
+              className="block h-full pl-1 text-blue-400 "
               style={{
                 animation: "spin_4991 4s infinite",
               }}

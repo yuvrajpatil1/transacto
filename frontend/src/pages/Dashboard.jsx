@@ -604,12 +604,12 @@ export default function Dashboard({ children }) {
                   {/* Mobile Card View - keeping original TransactionCard component */}
                   <div className="lg:hidden">
                     {recentTransactions.map((transaction) => (
-                      <SlideInOnScrollTable key={transaction._id}>
+                      <div key={transaction._id}>
                         <TransactionCard
                           transaction={transaction}
                           user={user}
                         />
-                      </SlideInOnScrollTable>
+                      </div>
                     ))}
                   </div>
                 </div>

@@ -28,6 +28,7 @@ export const GetUserInfo = async () => {
 
     const response = await fetch(
       "https://transacto-backend.onrender.com/api/users/get-user-info",
+      // "http://localhost:5000/api/users/get-user-info",
       {
         method: "POST",
         headers: {

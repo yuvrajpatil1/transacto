@@ -317,7 +317,7 @@ export default function UsersPage() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
-        <header className="lg:hidden bg-gray-900/40 backdrop-blur-xl border-b border-gray-700/60">
+        <header className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/50 backdrop-blur-md border-b border-gray-700/60 z-30">
           <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-center">
               <button
@@ -335,7 +335,7 @@ export default function UsersPage() {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 lg:p-4">
+        <main className="mt-12 lg:mt-0 flex-1 p-4 lg:p-4 max-w-screen">
           <div className="max-w-5xl mx-auto mt-2 no-scrollbar">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 lg:mb-8 gap-4">
