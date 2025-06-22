@@ -100,8 +100,7 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect:
-      "https://transacto01.onrender.com/login?error=oauth_failed",
+    failureRedirect: "https://transacto.onrender.com/login?error=oauth_failed",
   }),
   async (req, res) => {
     try {
@@ -112,12 +111,12 @@ app.get(
 
       // Redirect to frontend with token
       res.redirect(
-        `https://transacto01.onrender.com/login?token=${token}&success=true`
+        `https://transacto.onrender.com/login?token=${token}&success=true`
       );
     } catch (error) {
       console.error("OAuth callback error:", error);
       res.redirect(
-        "https://transacto01.onrender.com/login?error=token_generation_failed"
+        "https://transacto.onrender.com/login?error=token_generation_failed"
       );
     }
   }
