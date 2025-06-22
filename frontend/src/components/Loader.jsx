@@ -30,7 +30,6 @@ const StyledWrapper = styled.div`
     color: rgb(124, 124, 124);
     font-family: inherit;
     font-weight: 500;
-    font-size: 25px;
     -webkit-box-sizing: content-box;
     box-sizing: content-box;
     height: 40px;
