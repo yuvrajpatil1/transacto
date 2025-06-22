@@ -5,7 +5,7 @@ const Loader = () => {
   return (
     <StyledWrapper className="flex justify-center items-center h-dvh w-dvw bg-black">
       <div className="card">
-        <div className="loader">
+        <div className="loader text-lg lg:text-2xl">
           <p>loading your</p>
           <div className="words">
             <span className="word">dashboard...</span>
