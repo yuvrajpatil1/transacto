@@ -25,10 +25,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS configuration
-const frontendUrl =
-  process.env.NODE_ENV === "production"
-    ? "https://transacto.onrender.com"
-    : "http://localhost:5173";
+const frontendUrl = process.env.FRONTEND_URL;
 
 app.use(
   cors({
@@ -92,7 +89,7 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL:
         process.env.NODE_ENV === "production"
-          ? "https://transacto-backend.onrender.com/auth/google/callback"
+          ? "https://transacto.onrender.com/auth/google/callback"
           : "http://localhost:5000/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
