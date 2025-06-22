@@ -25,7 +25,7 @@ import { useRef } from "react";
 import SlideInOnScroll from "../components/SlideInOnScroll";
 import SlideInOnScrollMockUp from "../components/SlideInOnScrollMockUp";
 import AnimatedCounter from "../components/AnimatedCounter";
-import { Transition } from "../Transition";
+import Transition from "../Transition";
 
 function Home() {
   const navigate = useNavigate();
