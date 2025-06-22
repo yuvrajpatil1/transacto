@@ -24,7 +24,6 @@ import {
 } from "../apicalls/requests";
 import { message } from "antd";
 import { toast } from "react-toastify";
-import Transition from "../Transition";
 
 // Mobile Request Card Component
 const MobileRequestCard = ({
@@ -113,7 +112,7 @@ const MobileRequestCard = ({
   );
 };
 
-function RequestsPage() {
+export default function RequestsPage() {
   const dispatch = useDispatch();
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -696,5 +695,3 @@ function RequestsPage() {
     </div>
   );
 }
-
-export default Transition(RequestsPage);

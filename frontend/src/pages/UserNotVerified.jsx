@@ -11,9 +11,8 @@ import {
   Send,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import Transition from "../Transition";
 
-function UserNotVerified() {
+export default function UserNotVerified() {
   const [emailStatus, setEmailStatus] = useState(null);
   const [isResending, setIsResending] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
@@ -307,5 +306,3 @@ function UserNotVerified() {
     </div>
   );
 }
-
-export default Transition(UserNotVerified);

@@ -25,9 +25,8 @@ import { useRef } from "react";
 import SlideInOnScroll from "../components/SlideInOnScroll";
 import SlideInOnScrollMockUp from "../components/SlideInOnScrollMockUp";
 import AnimatedCounter from "../components/AnimatedCounter";
-import Transition from "../Transition";
 
-function Home() {
+export default function Home() {
   const navigate = useNavigate();
   const ref = useRef(null);
 
@@ -504,5 +503,3 @@ function Home() {
     </div>
   );
 }
-
-export default Transition(Home);

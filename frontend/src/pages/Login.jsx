@@ -14,9 +14,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { LoginUser } from "../apicalls/users";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
-import Transition from "../Transition";
 
-function Login() {
+export default function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -415,5 +414,3 @@ function Login() {
     </div>
   );
 }
-
-export default Transition(Login);

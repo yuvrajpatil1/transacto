@@ -22,7 +22,6 @@ import Sidebar from "../components/Sidebar";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
 import { GetAllUsers, UpdateUserVerifiedStatus } from "../apicalls/users";
 import { message } from "antd";
-import Transition from "../Transition";
 
 // Mobile User Card Component
 const MobileUserCard = ({ user, formatDate, onUpdateStatus }) => {
@@ -129,7 +128,7 @@ const MobileUserCard = ({ user, formatDate, onUpdateStatus }) => {
   );
 };
 
-function UsersPage() {
+export default function UsersPage() {
   const dispatch = useDispatch();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("users");
@@ -637,5 +636,3 @@ function UsersPage() {
     </div>
   );
 }
-
-export default Transition(UsersPage);
