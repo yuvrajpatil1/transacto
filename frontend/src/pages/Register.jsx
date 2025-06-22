@@ -17,8 +17,9 @@ import { useNavigate } from "react-router-dom";
 import { RegisterUser } from "../apicalls/users";
 import { message } from "antd";
 import { toast } from "react-toastify";
+import Transition from "../Transition";
 
-export default function Register() {
+function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -556,3 +557,5 @@ export default function Register() {
     </div>
   );
 }
+
+export default Transition(Register);

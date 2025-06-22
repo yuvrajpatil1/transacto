@@ -16,6 +16,7 @@ import Logout from "./components/Logout";
 import UserNotVerified from "./pages/UserNotVerified";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AnimatePresence } from "framer-motion";
 
 // ✅ Define your Stripe public key
 const stripePromise = loadStripe(
@@ -25,70 +26,73 @@ const stripePromise = loadStripe(
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          {/* <Elements stripe={stripePromise}> */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/transactions"
-            element={
-              <ProtectedRoute>
-                <Transactions />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/users"
-            element={
-              <ProtectedRoute>
-                <Users />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/requests"
-            element={
-              <ProtectedRoute>
-                <Requests />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/user-not-verified" element={<UserNotVerified />} />
-          {/* </Elements> */}
-        </Routes>
-      </BrowserRouter>
+      <AnimatePresence mode="wait">
+        <BrowserRouter>
+          <Routes>
+            {/* <Elements stripe={stripePromise}> */}
+            <Route
+              index
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <Register />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute>
+                  <Transactions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/users"
+              element={
+                <ProtectedRoute>
+                  <Users />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/requests"
+              element={
+                <ProtectedRoute>
+                  <Requests />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/user-not-verified" element={<UserNotVerified />} />
+            {/* </Elements> */}
+          </Routes>
+        </BrowserRouter>
+      </AnimatePresence>
       <ToastContainer
         position="top-right"
         autoClose={4000}

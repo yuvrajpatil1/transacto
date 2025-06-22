@@ -24,6 +24,7 @@ import { showLoading, hideLoading } from "../redux/loaderSlice";
 import { useEffect } from "react";
 import DepositFundsModal from "./modals/DepositFundsModal";
 import ScanToPayModal from "./modals/ScanToPayModal";
+import Transition from "../Transition";
 
 // Mock user data
 const mockUser = {
@@ -38,7 +39,7 @@ const mockUser = {
   isAdmin: false,
 };
 
-export default function TransactionsPage() {
+function TransactionsPage() {
   const [showTransferFundsModal, setShowTransferFundsModal] = useState(false);
   const [showDepositFundsModal, setShowDepositFundsModal] = useState(false);
   const [showScanToPayModal, setShowScanToPayModal] = useState(false);
@@ -613,3 +614,5 @@ export default function TransactionsPage() {
     </div>
   );
 }
+
+export default Transition(TransactionsPage);
