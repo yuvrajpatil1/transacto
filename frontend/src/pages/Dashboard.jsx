@@ -627,7 +627,7 @@ export default function Dashboard({ children }) {
             </div>
           </div>
         </main>
-        <div className="border-t border-gray-800 pt-8">
+        <div className="border-t border-gray-800 py-6 mt-4">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400 mb-4 md:mb-0">
               <span className="hidden md:block">
