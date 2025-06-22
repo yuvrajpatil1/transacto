@@ -43,7 +43,7 @@ passport.use(
       clientID:
         "131654461813-78j8o8i2oc0ctc3g84kbckv1u1ocsefa.apps.googleusercontent.com",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback", // Fixed callback URL
+      callbackURL: "https://transacto.onrender.com/auth/google/callback", // Fixed callback URL
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

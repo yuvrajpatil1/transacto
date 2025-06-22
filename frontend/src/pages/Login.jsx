@@ -356,7 +356,7 @@ export default function Login() {
               </button>
 
               {/* Divider */}
-              {/* <div className="relative">
+              <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-700" />
                 </div>
@@ -365,7 +365,7 @@ export default function Login() {
                     Or continue with
                   </span>
                 </div>
-              </div> */}
+              </div>
 
               {/* Social Login Buttons */}
               <div className="flex items-center justify-center">
