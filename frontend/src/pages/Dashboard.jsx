@@ -371,7 +371,7 @@ export default function Dashboard({ children }) {
                   <div className="p-4 sm:p-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                       <div className="space-y-3 sm:space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-3">
+                        <div className="flex flex-row sm:items-center py-2 sm:py-3">
                           <span className="font-medium text-gray-400 text-sm sm:text-lg mb-1 sm:mb-0">
                             First Name:
                           </span>
