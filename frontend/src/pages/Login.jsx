@@ -10,12 +10,38 @@ import {
   CheckCircle,
   Wallet,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { LoginUser } from "../apicalls/users";
-import { message } from "antd";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 export default function Login() {
+  const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Handle OAuth callback
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get("token");
+    const success = urlParams.get("success");
+    const error = urlParams.get("error");
+
+    if (success && token) {
+      // Store token in localStorage
+      localStorage.setItem("token", token);
+      // Redirect to dashboard or home page
+      navigate("/dashboard");
+    } else if (error) {
+      console.error("OAuth error:", error);
+      // Handle error (show message to user)
+    }
+  }, [location, navigate]);
+
+  const handleGoogleLogin = () => {
+    // Redirect to backend OAuth endpoint
+    // window.location.href = "http://localhost:5000/auth/google";
+    window.location.href = "https://transacto01.onrender.com/auth/google";
+  };
 
   const [formData, setFormData] = useState({
     email: "",
@@ -71,20 +97,58 @@ export default function Login() {
     try {
       const response = await LoginUser(formData);
       if (response.success) {
-        message.success(response.message);
+        toast.success(response.message || "Login successful! Welcome back.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
         localStorage.setItem("token", response.data);
-        window.location.href = "/dashboard";
+        // Add a small delay to show the success message before redirecting
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1000);
+      } else if (response.code === "USER_NOT_VERIFIED") {
+        toast.warning("Please verify your email address to continue.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        navigate("/user-not-verified");
       } else {
-        message.error(response.message);
+        toast.error(
+          response.message || "Login failed. Please check your credentials.",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          }
+        );
         console.log(response.message);
       }
     } catch (error) {
       console.error(error);
-      message.error(error.message || "Login failed. Please try again.2");
+      toast.error(error.message || "Login failed. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
 
     setIsSubmitting(false);
   };
+
   return (
     <div className="min-h-dvh w-full bg-gradient-to-bl from-black via-[#1e0b06] to-black text-white overflow-hidden">
       <div className="flex flex-col lg:flex-row min-h-dvh">
@@ -98,7 +162,7 @@ export default function Login() {
           <div className="relative z-10">
             <div className="flex items-center mb-8">
               <h1
-                className="text-4xl md:text-5xl font-bold"
+                className="text-4xl md:text-5xl font-bold cursor-pointer hover:text-blue-400 transition-colors"
                 onClick={() => navigate("/")}
               >
                 Transacto
@@ -210,7 +274,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
                   >
                     {showPassword ? (
                       <EyeOff className="w-5 h-5" />
@@ -242,12 +306,18 @@ export default function Login() {
                     Remember me
                   </label>
                 </div>
-                <button
+                {/* <button
                   type="button"
-                  className="text-sm text-blue-400 hover:text-blue-300 hover:underline"
+                  className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition-colors"
+                  onClick={() => {
+                    toast.info("Forgot password functionality coming soon!", {
+                      position: "top-right",
+                      autoClose: 3000,
+                    });
+                  }}
                 >
                   Forgot password?
-                </button>
+                </button> */}
               </div>
 
               {/* Submit Button */}
@@ -270,7 +340,7 @@ export default function Login() {
               </button>
 
               {/* Divider */}
-              <div className="relative">
+              {/* <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-700" />
                 </div>
@@ -279,12 +349,13 @@ export default function Login() {
                     Or continue with
                   </span>
                 </div>
-              </div>
+              </div> */}
 
               {/* Social Login Buttons */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center justify-center">
                 <button
                   type="button"
+                  onClick={handleGoogleLogin}
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-lg shadow-sm bg-gray-800/40 text-sm font-medium text-gray-300 hover:bg-gray-800/60 transition-all duration-300 backdrop-blur-sm"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -305,20 +376,7 @@ export default function Login() {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  <span className="ml-2">Google</span>
-                </button>
-                <button
-                  type="button"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-lg shadow-sm bg-gray-800/40 text-sm font-medium text-gray-300 hover:bg-gray-800/60 transition-all duration-300 backdrop-blur-sm"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                  <span className="ml-2">Facebook</span>
+                  <span className="ml-2">Continue with Google</span>
                 </button>
               </div>
 
@@ -327,7 +385,7 @@ export default function Login() {
                 Don't have an account?{" "}
                 <button
                   type="button"
-                  className="text-blue-400 hover:text-blue-300 hover:underline font-medium"
+                  className="text-blue-400 hover:text-blue-300 hover:underline font-medium transition-colors"
                   onClick={() => navigate("/register")}
                 >
                   Create one now

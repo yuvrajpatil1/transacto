@@ -15,6 +15,7 @@ import jsQR from "jsqr";
 import { hideLoading, showLoading } from "../../redux/loaderSlice";
 import { TransferFunds, VerifyAccount } from "../../apicalls/transactions";
 import { ReloadUser } from "../../redux/usersSlice";
+import { toast } from "react-toastify";
 
 function ScanToPayModal({
   showScanToPayModal,
@@ -189,9 +190,30 @@ function ScanToPayModal({
         }));
         setIsVerified(true);
         setVerifiedAccount(response.data);
-        message.success("QR Code scanned and account verified!");
+
+        toast.success("QR Code scanned and account verified successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "✅",
+        });
       } else {
-        message.error(response.message || "Account verification failed");
+        toast.error(
+          response.message || "Account verification failed. Please try again.",
+          {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "❌",
+          }
+        );
+
         // Restart camera if account verification fails
         setTimeout(() => {
           if (scanMethod === "camera") {
@@ -202,7 +224,20 @@ function ScanToPayModal({
     } catch (error) {
       dispatch(hideLoading());
       console.error("Error verifying account:", error);
-      message.error("Failed to verify account");
+
+      toast.error(
+        "Failed to verify account. Please check your connection and try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "🚨",
+        }
+      );
+
       // Restart camera on error
       setTimeout(() => {
         if (scanMethod === "camera") {
@@ -235,22 +270,51 @@ function ScanToPayModal({
         if (accountNumber) {
           await handleQRCodeDetected(accountNumber);
         } else {
-          message.error(
-            "No valid QR code found in the image or QR code doesn't contain a valid account URL"
+          toast.error(
+            "No valid QR code found in the image or QR code doesn't contain a valid account URL",
+            {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              icon: "🔍",
+            }
           );
           setIsProcessing(false);
         }
       };
 
       img.onerror = () => {
-        message.error("Failed to load the image");
+        toast.error(
+          "Failed to load the image. Please select a valid image file.",
+          {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "🖼️",
+          }
+        );
         setIsProcessing(false);
       };
 
       img.src = URL.createObjectURL(file);
     } catch (error) {
       console.error("Error processing uploaded file:", error);
-      message.error("Failed to process the uploaded image");
+
+      toast.error("Failed to process the uploaded image. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "⚠️",
+      });
       setIsProcessing(false);
     }
 
@@ -260,7 +324,6 @@ function ScanToPayModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const newErrors = {};
 
     if (!formData.receiver.trim()) {
@@ -279,23 +342,31 @@ function ScanToPayModal({
       newErrors.reference = "Reference is required";
     }
 
-    if (!qrCodeData) {
-      newErrors.receiver = "Please scan a QR code first";
+    if (!isVerified) {
+      newErrors.receiver = "Please verify the account first";
     }
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length > 0) return;
+    // If errors exist, abort early
+    if (Object.keys(newErrors).length > 0) {
+      toast.warning("Please fix the errors before proceeding", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "⚠️",
+      });
+      return;
+    }
 
     try {
-      setIsProcessing(true);
       dispatch(showLoading());
-
       const payload = {
+        ...formData,
         sender: user._id,
-        receiver: formData.receiver,
-        amount: parseFloat(formData.amount),
-        reference: formData.reference,
         type: "debit",
         status: "success",
       };
@@ -304,20 +375,54 @@ function ScanToPayModal({
       dispatch(hideLoading());
 
       if (response.success) {
-        message.success(response.message);
+        toast.success(response.message || "Transfer completed successfully!", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "💸",
+        });
+
+        console.log("Transfer successful");
         handleClose();
-        if (reloadData) reloadData();
-        window.location.reload();
+        reloadData();
+        setShowTransferFundsModal(false);
         dispatch(ReloadUser(true));
+
+        // Add a small delay before reload to show the success message
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } else {
-        message.error(response.message || "Transfer failed");
+        toast.error(response.message || "Transfer failed. Please try again.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "❌",
+        });
+        console.log("Transfer failed:", response.message);
       }
     } catch (error) {
       dispatch(hideLoading());
+      toast.error(
+        error.message ||
+          "Transfer failed. Please check your connection and try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "🚨",
+        }
+      );
       console.error("Transfer error:", error);
-      message.error("Transfer failed. Please try again.");
-    } finally {
-      setIsProcessing(false);
     }
   };
 

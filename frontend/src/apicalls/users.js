@@ -67,14 +67,14 @@ export const UpdateUserVerifiedStatus = async (payload) => {
       "/api/users/update-user-verified-status",
       payload
     );
-    return data; // Make sure to return the response data
+    return data;
   } catch (error) {
     console.error("UpdateUserVerifiedStatus error:", error);
-    throw error; // Re-throw the error so it can be handled in the component
+    throw error;
   }
 };
 
-//genarate qr code
+//generate qr code
 export const GenerateQRCode = async (customURL = null) => {
   try {
     const params = customURL ? { url: customURL } : {};
@@ -88,5 +88,19 @@ export const GenerateQRCode = async (customURL = null) => {
       error.response?.data || error.message
     );
     throw error;
+  }
+};
+
+// Send verification email
+export const SendVerificationEmail = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/send-verification-email",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("SendVerificationEmail error:", error);
+    return error.response.data;
   }
 };

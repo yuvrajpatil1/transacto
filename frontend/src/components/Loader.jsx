@@ -1,111 +1,72 @@
 import React from "react";
-import styled from "styled-components";
 
 const Loader = () => {
   return (
-    <StyledWrapper className="flex justify-center items-center h-dvh w-dvw bg-black">
-      <div className="card">
-        <div className="loader text-lg lg:text-2xl">
-          <p>loading your</p>
-          <div className="words">
-            <span className="word">dashboard...</span>
-            <span className="word">requests...</span>
-            <span className="word">transactions...</span>
+    <div className="flex justify-center items-center h-screen w-screen bg-black">
+      <div className="bg-black p-4 lg:p-8 rounded-xl">
+        <div className="text-gray-400 text-lg lg:text-2xl font-medium flex items-center h-10 px-2 rounded-lg">
+          <span className="mr-2">loading your</span>
+          <div className="relative overflow-hidden h-full">
+            <div
+              className="flex flex-col h-full animate-spin-words"
+              style={{
+                animation: "spinWords 3s infinite",
+              }}
+            >
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                dashboard...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                requests...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                transactions...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                dashboard...
+              </span>
+            </div>
+            <div
+              className="absolute inset-0 pointer-events-none z-10"
+              style={{
+                background:
+                  "linear-gradient(to bottom, #000 10%, transparent 30%, transparent 70%, #000 90%)",
+              }}
+            ></div>
           </div>
         </div>
       </div>
-    </StyledWrapper>
+
+      <style jsx>{`
+        @keyframes spinWords {
+          10% {
+            transform: translateY(-102%);
+          }
+          25% {
+            transform: translateY(-100%);
+          }
+          35% {
+            transform: translateY(-202%);
+          }
+          50% {
+            transform: translateY(-200%);
+          }
+          60% {
+            transform: translateY(-302%);
+          }
+          75% {
+            transform: translateY(-300%);
+          }
+          85% {
+            transform: translateY(-402%);
+          }
+          100% {
+            transform: translateY(-400%);
+          }
+        }
+      `}</style>
+    </div>
   );
 };
-
-const StyledWrapper = styled.div`
-  .card {
-    /* color used to softly clip top and bottom of the .words container */
-    --bg-color: #000;
-    background-color: var(--bg-color);
-    padding: 1rem 2rem;
-    border-radius: 1.25rem;
-  }
-  .loader {
-    color: rgb(124, 124, 124);
-    font-family: inherit;
-    font-weight: 500;
-    -webkit-box-sizing: content-box;
-    box-sizing: content-box;
-    height: 40px;
-    padding: 10px 10px;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    border-radius: 8px;
-  }
-
-  .words {
-    overflow: hidden;
-    position: relative;
-  }
-  .words::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      var(--bg-color) 10%,
-      transparent 30%,
-      transparent 70%,
-      var(--bg-color) 90%
-    );
-    z-index: 20;
-  }
-
-  .word {
-    display: block;
-    height: 100%;
-    padding-left: 6px;
-    color: #f44b00;
-    animation: spin_4991 4s infinite;
-  }
-
-  @keyframes spin_4991 {
-    10% {
-      -webkit-transform: translateY(-102%);
-      transform: translateY(-102%);
-    }
-
-    25% {
-      -webkit-transform: translateY(-100%);
-      transform: translateY(-100%);
-    }
-
-    35% {
-      -webkit-transform: translateY(-202%);
-      transform: translateY(-202%);
-    }
-
-    50% {
-      -webkit-transform: translateY(-200%);
-      transform: translateY(-200%);
-    }
-
-    60% {
-      -webkit-transform: translateY(-302%);
-      transform: translateY(-302%);
-    }
-
-    75% {
-      -webkit-transform: translateY(-300%);
-      transform: translateY(-300%);
-    }
-
-    85% {
-      -webkit-transform: translateY(-402%);
-      transform: translateY(-402%);
-    }
-
-    100% {
-      -webkit-transform: translateY(-400%);
-      transform: translateY(-400%);
-    }
-  }
-`;
 
 export default Loader;

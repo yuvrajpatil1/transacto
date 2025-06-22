@@ -23,6 +23,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { DepositFunds } from "../../apicalls/transactions";
 import { showLoading, hideLoading } from "../../redux/loaderSlice";
+import { toast } from "react-toastify";
 
 // Initialize Stripe
 const stripePromise = loadStripe(
@@ -67,6 +68,18 @@ function StripePaymentForm({
     e.preventDefault();
 
     if (!stripe || !elements || disabled) {
+      toast.warning(
+        "Payment system is not ready. Please wait a moment and try again.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "⏳",
+        }
+      );
       return;
     }
 
@@ -90,6 +103,17 @@ function StripePaymentForm({
         throw new Error(error.message);
       }
 
+      // Show processing toast for better UX
+      toast.info("Processing your payment...", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "💳",
+      });
+
       // Process payment with your backend
       const payload = {
         userId: user._id,
@@ -106,14 +130,58 @@ function StripePaymentForm({
       console.log("Deposit funds response:", response);
 
       if (response.success) {
-        message.success("Card deposit successful!");
+        toast.success(
+          "Card deposit successful! Your account has been credited.",
+          {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "💰",
+          }
+        );
+
+        console.log("Card deposit completed successfully");
         onSuccess();
       } else {
         throw new Error(response.message || "Card deposit failed");
       }
     } catch (error) {
       console.error("Stripe payment error:", error);
-      message.error(error.message || "Card payment failed. Please try again.");
+
+      // Different error messages based on error type
+      let errorMessage = "Card payment failed. Please try again.";
+      let errorIcon = "❌";
+
+      if (error.message.includes("card")) {
+        errorMessage = "Card error: " + error.message;
+        errorIcon = "💳";
+      } else if (
+        error.message.includes("network") ||
+        error.message.includes("connection")
+      ) {
+        errorMessage =
+          "Network error. Please check your connection and try again.";
+        errorIcon = "🌐";
+      } else if (error.message.includes("insufficient")) {
+        errorMessage = "Insufficient funds on your card.";
+        errorIcon = "💸";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 6000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: errorIcon,
+      });
+
       onError(error);
     } finally {
       setIsProcessing(false);

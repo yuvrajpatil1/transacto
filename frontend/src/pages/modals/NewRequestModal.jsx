@@ -13,6 +13,7 @@ import { message } from "antd";
 import { VerifyAccount } from "../../apicalls/transactions";
 import { SendRequest } from "../../apicalls/requests";
 import { showLoading, hideLoading } from "../../redux/loaderSlice";
+import { toast } from "react-toastify";
 
 function NewRequestModal({
   showNewRequestModal,
@@ -146,7 +147,15 @@ function NewRequestModal({
     // If errors exist, abort early
     if (Object.keys(newErrors).length > 0) {
       const firstErrorField = Object.keys(newErrors)[0];
-      message.error(`Please fix the error: ${newErrors[firstErrorField]}`);
+      toast.warning(`Please fix the error: ${newErrors[firstErrorField]}`, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "⚠️",
+      });
       return;
     }
 
@@ -163,17 +172,56 @@ function NewRequestModal({
       dispatch(hideLoading());
 
       if (response.success) {
-        message.success(response.message || "Request sent successfully");
+        toast.success(response.message || "Request sent successfully!", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "📤",
+        });
+
+        console.log("Request sent successfully");
         handleClose();
-        window.location.reload();
+
+        // Add a small delay before reload to show the success message
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+
         if (reloadData) reloadData();
       } else {
-        message.error(response.message || "Failed to send request");
+        toast.error(
+          response.message || "Failed to send request. Please try again.",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "❌",
+          }
+        );
       }
     } catch (error) {
       dispatch(hideLoading());
       console.error("Request error:", error);
-      message.error(error.message || "Failed to send request");
+
+      toast.error(
+        error.message ||
+          "Failed to send request. Please check your connection and try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "🚨",
+        }
+      );
     }
   };
 

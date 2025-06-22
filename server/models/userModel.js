@@ -16,11 +16,11 @@ const UserSchema = new mongoose.Schema(
     },
     contactNo: {
       type: String,
-      required: true,
+      required: false,
     },
     identification: {
       type: String,
-      required: true,
+      required: false,
     },
     identificationNumber: {
       type: String,
@@ -28,11 +28,14 @@ const UserSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      required: true,
+      required: false,
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        // Password is required only if googleId is not present
+        return !this.googleId;
+      },
     },
     balance: {
       type: Number,
@@ -46,10 +49,33 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // New fields for Google OAuth
+    googleId: {
+      type: String,
+      sparse: true, // Allows multiple null values but unique non-null values
+    },
+    profilePicture: {
+      type: String,
+      required: false,
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Pre-save middleware to set authProvider based on googleId
+UserSchema.pre("save", function (next) {
+  if (this.googleId) {
+    this.authProvider = "google";
+    this.isVerified = true; // Auto-verify Google users
+  }
+  next();
+});
 
 module.exports = mongoose.model("User", UserSchema);

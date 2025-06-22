@@ -13,6 +13,7 @@ import { message } from "antd";
 import { TransferFunds, VerifyAccount } from "../../apicalls/transactions";
 import { showLoading, hideLoading } from "../../redux/loaderSlice";
 import { ReloadUser } from "../../redux/usersSlice";
+import { toast } from "react-toastify";
 
 function TransferFundsModal({
   showTransferFundsModal,
@@ -102,7 +103,7 @@ function TransferFundsModal({
     }
 
     if (!formData.reference.trim()) {
-      newErrors.reference = "reference is required";
+      newErrors.reference = "Reference is required";
     }
 
     if (!isVerified) {
@@ -112,7 +113,18 @@ function TransferFundsModal({
     setErrors(newErrors);
 
     // If errors exist, abort early
-    if (Object.keys(newErrors).length > 0) return;
+    if (Object.keys(newErrors).length > 0) {
+      toast.warning("Please fix the errors before proceeding", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "⚠️",
+      });
+      return;
+    }
 
     try {
       dispatch(showLoading());
@@ -129,21 +141,54 @@ function TransferFundsModal({
       dispatch(hideLoading());
 
       if (response.success) {
+        toast.success(response.message || "Transfer completed successfully!", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "💸",
+        });
+
         console.log("Transfer successful");
         handleClose();
         reloadData();
         setShowTransferFundsModal(false);
-        message.success(response.message);
         dispatch(ReloadUser(true));
-        window.location.reload();
+
+        // Add a small delay before reload to show the success message
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } else {
+        toast.error(response.message || "Transfer failed. Please try again.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "❌",
+        });
         console.log("Transfer failed:", response.message);
-        message.error(response.message);
       }
     } catch (error) {
       dispatch(hideLoading());
+      toast.error(
+        error.message ||
+          "Transfer failed. Please check your connection and try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "🚨",
+        }
+      );
       console.error("Transfer error:", error);
-      message.error(response.message);
     }
   };
 

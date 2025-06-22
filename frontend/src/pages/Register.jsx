@@ -16,6 +16,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { RegisterUser } from "../apicalls/users";
 import { message } from "antd";
+import { toast } from "react-toastify";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -102,22 +103,58 @@ export default function Register() {
   };
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     console.log(formData);
+
     try {
       const response = await RegisterUser(formData);
       if (response.success) {
-        message.success(response.message);
-        console.log("Registration successful! Welcome to Transacto Wallet.");
-        navigate("/login");
+        toast.success(response.message || "Registration successful!.", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        setTimeout(() => {
+          navigate("/user-not-verified");
+        }, 1500);
       } else {
-        console.log("Something went wrong!1");
+        toast.error(
+          response.message || "Registration failed. Please try again.",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          }
+        );
+        console.log(
+          "Registration failed:",
+          response.message || "Something went wrong!"
+        );
       }
     } catch (error) {
-      message.error(error.message || "Something went wrong!");
-      console.log("Something went wrong!2");
+      toast.error(
+        error.message ||
+          "Registration failed. Please check your information and try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
+      console.error("Registration error:", error);
     }
 
     setTimeout(() => {

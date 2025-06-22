@@ -23,6 +23,7 @@ import {
   UpdateRequestStatus,
 } from "../apicalls/requests";
 import { message } from "antd";
+import { toast } from "react-toastify";
 
 // Mobile Request Card Component
 const MobileRequestCard = ({
@@ -209,15 +210,40 @@ export default function RequestsPage() {
       const response = await UpdateRequestStatus(requestId, "accepted");
 
       if (response.success) {
-        message.success("Request approved successfully");
+        toast.success("Request approved successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "✅",
+        });
+
         // Refresh the data
         await getData();
         dispatch(ReloadUser(true));
       } else {
-        message.error(response.message || "Failed to approve request");
+        toast.error(response.message || "Failed to approve request", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "❌",
+        });
       }
     } catch (error) {
-      message.error("Failed to approve request");
+      toast.error("Failed to approve request. Please try again.", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "⚠️",
+      });
       console.error("Error approving request:", error);
     } finally {
       setIsLoading(false);
@@ -233,15 +259,40 @@ export default function RequestsPage() {
       const response = await UpdateRequestStatus(requestId, "rejected");
 
       if (response.success) {
-        message.success("Request rejected successfully");
+        toast.success("Request rejected successfully", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "🚫",
+        });
+
         // Refresh the data
         await getData();
         dispatch(ReloadUser(true));
       } else {
-        message.error(response.message || "Failed to reject request");
+        toast.error(response.message || "Failed to reject request", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "❌",
+        });
       }
     } catch (error) {
-      message.error("Failed to reject request");
+      toast.error("Failed to reject request. Please try again.", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "⚠️",
+      });
       console.error("Error rejecting request:", error);
     } finally {
       setIsLoading(false);

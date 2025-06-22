@@ -13,6 +13,9 @@ import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Logout from "./components/Logout";
+import UserNotVerified from "./pages/UserNotVerified";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // ✅ Define your Stripe public key
 const stripePromise = loadStripe(
@@ -82,9 +85,27 @@ function App() {
             }
           />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/user-not-verified" element={<UserNotVerified />} />
           {/* </Elements> */}
         </Routes>
       </BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        toastStyle={{
+          backgroundColor: "#1f2937",
+          color: "#ffffff",
+          border: "1px solid #374151",
+        }}
+      />
     </>
   );
 }
