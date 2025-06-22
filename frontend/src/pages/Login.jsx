@@ -26,10 +26,14 @@ export default function Login() {
     const success = urlParams.get("success");
     const error = urlParams.get("error");
 
-    console.log(token);
+    console.log("Token received:", token);
 
     if (success && token) {
-      toast.success(response.message || "Login successful! Welcome back.", {
+      // Store token in localStorage
+      localStorage.setItem("token", token);
+
+      // Show success message
+      toast.success("Login successful! Welcome back.", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -37,12 +41,28 @@ export default function Login() {
         pauseOnHover: true,
         draggable: true,
       });
-      // Store token in localStorage
-      localStorage.setItem("token", token);
-      // Redirect to dashboard or home page
+
+      // Clean up URL (remove sensitive data)
+      window.history.replaceState({}, "", window.location.pathname);
+
+      // Navigate to dashboard
       navigate("/dashboard");
     } else if (error) {
-      toast.error(error.message || "Login failed. Please try again.", {
+      // Handle different error types
+      let errorMessage = "Login failed. Please try again.";
+
+      switch (error) {
+        case "oauth_failed":
+          errorMessage = "Google authentication failed. Please try again.";
+          break;
+        case "token_generation_failed":
+          errorMessage = "Authentication error. Please try again.";
+          break;
+        default:
+          errorMessage = "Login failed. Please try again.";
+      }
+
+      toast.error(errorMessage, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -50,8 +70,11 @@ export default function Login() {
         pauseOnHover: true,
         draggable: true,
       });
+
       console.error("OAuth error:", error);
-      // Handle error (show message to user)
+
+      // Clean up URL
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, [location, navigate]);
 
