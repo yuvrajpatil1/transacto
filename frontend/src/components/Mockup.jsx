@@ -21,7 +21,7 @@ const Mockup = () => {
                 </div>
                 <div className="flex-1 mx-2 sm:mx-4">
                   <div className="bg-gray-600/40 rounded-md px-2 sm:px-3 py-1 text-xs text-gray-300 text-center">
-                    transacto-vercel.com
+                    transacto.onrender.com
                   </div>
                 </div>
               </div>
