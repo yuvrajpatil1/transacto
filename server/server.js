@@ -110,7 +110,9 @@ app.get(
       });
 
       // Redirect to frontend with token
-      res.redirect(`https://transacto.onrender.com/dashboard`);
+      res.redirect(
+        `https://transacto.onrender.com/dashboard?token=${token}&success=true`
+      );
     } catch (error) {
       console.error("OAuth callback error:", error);
       res.redirect(
