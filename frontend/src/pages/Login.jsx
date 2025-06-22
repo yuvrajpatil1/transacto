@@ -86,8 +86,8 @@ export default function Login() {
     setIsSubmitting(false);
   };
   return (
-    <div className="min-h-screen w-full bg-gradient-to-bl from-black via-[#1e0b06] to-black text-white overflow-hidden">
-      <div className="flex flex-col lg:flex-row min-h-screen">
+    <div className="min-h-dvh w-full bg-gradient-to-bl from-black via-[#1e0b06] to-black text-white overflow-hidden">
+      <div className="flex flex-col lg:flex-row min-h-dvh">
         {/* Left Panel */}
         <div className="lg:w-2/5 bg-black p-8 md:p-16 flex flex-col relative overflow-hidden border-r border-gray-800">
           {/* Animated background elements */}

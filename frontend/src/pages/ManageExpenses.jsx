@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useNavigate } from "react";
 import {
   DollarSign,
   TrendingUp,
@@ -34,6 +34,7 @@ import {
 } from "recharts";
 
 const ManageExpenses = () => {
+  const navigate = useNavigate();
   const [activeView, setActiveView] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [budget, setBudget] = useState(5000);
@@ -285,7 +286,10 @@ const ManageExpenses = () => {
             {label}
           </button>
         ))}
-        <button className="w-full flex items-center px-6 py-3 text-left hover:bg-gray-700/50 transition-colors mt-8 border-t border-gray-700/60 text-gray-300">
+        <button
+          className="w-full flex items-center px-6 py-3 text-left hover:bg-gray-700/50 transition-colors mt-8 border-t border-gray-700/60 text-gray-300"
+          onClick={() => navigate("/logout")}
+        >
           <LogOut size={20} className="mr-3" />
           Logout
         </button>
@@ -735,7 +739,7 @@ const ManageExpenses = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex">
+    <div className="min-h-dvh bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex">
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
@@ -747,7 +751,7 @@ const ManageExpenses = () => {
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-dvh">
         {/* Header */}
         <header className="lg:hidden bg-gray-900/40 backdrop-blur-xl border-b border-gray-700/60">
           <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4">

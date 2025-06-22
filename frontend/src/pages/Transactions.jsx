@@ -113,9 +113,9 @@ export default function TransactionsPage() {
       label: "Logout",
       onClick: () => {
         localStorage.removeItem("token");
-        navigate("/");
+        navigate("/logout");
       },
-      path: "/",
+      path: "/logout",
     },
   ];
 
@@ -154,9 +154,9 @@ export default function TransactionsPage() {
       label: "Logout",
       onClick: () => {
         localStorage.removeItem("token");
-        navigate("/");
+        navigate("/logout");
       },
-      path: "/",
+      path: "/logout",
     },
   ];
 
@@ -254,7 +254,7 @@ export default function TransactionsPage() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex overflow-hidden">
+    <div className="min-h-dvh w-full bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex overflow-hidden">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
@@ -289,7 +289,7 @@ export default function TransactionsPage() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-dvh">
         {/* Main Content Area */}
         <main className="flex-1 p-4 sm:p-4 pt-20 lg:pt-4">
           <div className="lg:hidden text-left p-4 mb-2">

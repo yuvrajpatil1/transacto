@@ -3,14 +3,14 @@ import styled from "styled-components";
 
 const Loader = () => {
   return (
-    <StyledWrapper className="flex justify-center items-center h-screen w-screen bg-black">
+    <StyledWrapper className="flex justify-center items-center h-dvh w-dvw bg-black">
       <div className="card">
         <div className="loader">
-          <p>loading</p>
+          <p>loading your</p>
           <div className="words">
-            <span className="word">your dashboard...</span>
-            <span className="word">your requests...</span>
-            <span className="word">your transactions...</span>
+            <span className="word">dashboard...</span>
+            <span className="word">requests...</span>
+            <span className="word">transactions...</span>
           </div>
         </div>
       </div>

@@ -152,9 +152,9 @@ export default function RequestsPage() {
       label: "Logout",
       onClick: () => {
         localStorage.removeItem("token");
-        navigate("/");
+        navigate("/logout");
       },
-      path: "/",
+      path: "/logout",
     },
   ];
 
@@ -193,9 +193,9 @@ export default function RequestsPage() {
       label: "Logout",
       onClick: () => {
         localStorage.removeItem("token");
-        navigate("/");
+        navigate("/logout");
       },
-      path: "/",
+      path: "/logout",
     },
   ];
 
@@ -335,7 +335,7 @@ export default function RequestsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex">
+    <div className="min-h-dvh bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
@@ -354,7 +354,7 @@ export default function RequestsPage() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-dvh">
         {/* Header */}
         <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/50 backdrop-blur-md border-b border-gray-700/60 z-30">
           <div className="flex items-center justify-between p-4">

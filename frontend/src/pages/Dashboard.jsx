@@ -80,9 +80,9 @@ export default function Dashboard({ children }) {
       label: "Logout",
       onClick: () => {
         localStorage.removeItem("token");
-        navigate("/");
+        navigate("/logout");
       },
-      path: "/",
+      path: "/logout",
     },
   ];
 
@@ -121,9 +121,9 @@ export default function Dashboard({ children }) {
       label: "Logout",
       onClick: () => {
         localStorage.removeItem("token");
-        navigate("/");
+        navigate("/logout");
       },
-      path: "/",
+      path: "/logout",
     },
   ];
 
@@ -258,7 +258,7 @@ export default function Dashboard({ children }) {
     .slice(0, 3);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex overflow-hidden">
+    <div className="min-h-dvh w-full bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex overflow-hidden">
       {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
@@ -294,7 +294,7 @@ export default function Dashboard({ children }) {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-dvh">
         <main className="flex-1 p-4 sm:p-6 pt-20 lg:pt-6">
           {/* Desktop Welcome Message */}
 
