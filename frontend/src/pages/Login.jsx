@@ -27,11 +27,27 @@ export default function Login() {
     const error = urlParams.get("error");
 
     if (success && token) {
+      toast.success(response.message || "Login successful! Welcome back.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       // Store token in localStorage
       localStorage.setItem("token", token);
       // Redirect to dashboard or home page
       navigate("/dashboard");
     } else if (error) {
+      toast.error(error.message || "Login failed. Please try again.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       console.error("OAuth error:", error);
       // Handle error (show message to user)
     }
@@ -40,7 +56,7 @@ export default function Login() {
   const handleGoogleLogin = () => {
     // Redirect to backend OAuth endpoint
     // window.location.href = "http://localhost:5000/auth/google";
-    window.location.href = "https://transacto01.onrender.com/auth/google";
+    window.location.href = "https://transacto.onrender.com/auth/google";
   };
 
   const [formData, setFormData] = useState({
