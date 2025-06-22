@@ -23,7 +23,6 @@ import { message } from "antd";
 import { showLoading, hideLoading } from "../redux/loaderSlice";
 import { useEffect } from "react";
 import DepositFundsModal from "./modals/DepositFundsModal";
-import SlideInOnScrollTable from "../components/SlideInOnScrollTable";
 import ScanToPayModal from "./modals/ScanToPayModal";
 
 // Mock user data
@@ -191,66 +190,62 @@ export default function TransactionsPage() {
 
   // Mobile Transaction Card Component
   const TransactionCard = ({ transaction }) => (
-    <SlideInOnScrollTable>
-      <div className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 mb-4 space-y-3">
-        {/* Header Row */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span
-              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                transaction.sender === user._id
-                  ? "bg-red-900/30 text-red-400 border border-red-400/30"
-                  : "bg-green-900/30 text-green-400 border border-green-400/30"
-              }`}
-            >
-              {transaction.sender === user._id ? "Debit" : "Credit"}
-            </span>
-            <span
-              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                transaction.status === "success"
-                  ? "bg-green-900/30 text-green-400 border border-green-400/30"
-                  : "bg-red-900/30 text-red-400 border border-red-400/30"
-              }`}
-            >
-              {transaction.status}
-            </span>
-          </div>
+    <div className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 mb-4 space-y-3">
+      {/* Header Row */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
           <span
-            className={`text-lg font-bold ${
+            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
               transaction.sender === user._id
-                ? "text-red-400"
-                : "text-green-400"
+                ? "bg-red-900/30 text-red-400 border border-red-400/30"
+                : "bg-green-900/30 text-green-400 border border-green-400/30"
             }`}
           >
-            {transaction.sender === user._id ? "-" : "+"} ₹{transaction.amount}
+            {transaction.sender === user._id ? "Debit" : "Credit"}
+          </span>
+          <span
+            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+              transaction.status === "success"
+                ? "bg-green-900/30 text-green-400 border border-green-400/30"
+                : "bg-red-900/30 text-red-400 border border-red-400/30"
+            }`}
+          >
+            {transaction.status}
           </span>
         </div>
+        <span
+          className={`text-lg font-bold ${
+            transaction.sender === user._id ? "text-red-400" : "text-green-400"
+          }`}
+        >
+          {transaction.sender === user._id ? "-" : "+"} ₹{transaction.amount}
+        </span>
+      </div>
 
-        {/* Details */}
-        <div className="space-y-2 text-sm text-gray-300">
-          <div className="flex justify-between">
-            <span className="text-gray-400">Date:</span>
-            <span>{new Date(transaction.createdAt).toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Reference:</span>
-            <span className="text-right">{transaction.reference}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">To/From:</span>
-            <span className="text-right font-mono text-xs break-all">
-              {transaction.receiver}
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-400">Transaction ID:</span>
-            <span className="text-right font-mono text-xs break-all">
-              {transaction._id}
-            </span>
-          </div>
+      {/* Details */}
+      <div className="space-y-2 text-sm text-gray-300">
+        <div className="flex justify-between">
+          <span className="text-gray-400">Date:</span>
+          <span>{new Date(transaction.createdAt).toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400">Reference:</span>
+          <span className="text-right">{transaction.reference}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400">To/From:</span>
+          <span className="text-right font-mono text-xs break-all">
+            {transaction.receiver}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-400">Transaction ID:</span>
+          <span className="text-right font-mono text-xs break-all">
+            {transaction._id}
+          </span>
         </div>
       </div>
-    </SlideInOnScrollTable>
+    </div>
   );
 
   return (
