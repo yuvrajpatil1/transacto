@@ -373,25 +373,25 @@ export default function Dashboard({ children }) {
                       <div className="space-y-3 sm:space-y-4">
                         <div className="flex flex-row sm:items-center py-2 sm:py-3">
                           <span className="font-medium text-gray-400 text-sm sm:text-lg mb-1 sm:mb-0">
-                            First Name:
+                            First Name:&nbsp;
                           </span>
                           <span className="font-semibold text-gray-50 text-sm sm:text-lg sm:ml-2">
                             {user?.firstName || "N/A"}
                           </span>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-3">
+                        <div className="flex flex-row sm:items-center py-2 sm:py-3">
                           <span className="font-medium text-gray-400 text-sm sm:text-lg mb-1 sm:mb-0">
-                            Last Name:
+                            Last Name:&nbsp;
                           </span>
                           <span className="font-semibold text-gray-50 text-sm sm:text-lg sm:ml-2">
                             {user?.lastName || "N/A"}
                           </span>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-3">
+                        <div className="flex flex-row sm:items-center py-2 sm:py-3">
                           <span className="font-medium text-gray-400 text-sm sm:text-lg mb-1 sm:mb-0">
-                            Email:
+                            Email:&nbsp;
                           </span>
                           <span className="font-semibold text-gray-50 text-sm sm:text-lg sm:ml-2 break-all">
                             {user?.email || "N/A"}
@@ -400,27 +400,27 @@ export default function Dashboard({ children }) {
                       </div>
 
                       <div className="space-y-3 sm:space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-3">
+                        <div className="flex flex-row sm:items-center py-2 sm:py-3">
                           <span className="font-medium text-gray-400 text-sm sm:text-lg mb-1 sm:mb-0">
-                            Contact No.:
+                            Contact No.:&nbsp;
                           </span>
                           <span className="font-semibold text-gray-50 text-sm sm:text-lg sm:ml-2">
                             {user?.contactNo || "N/A"}
                           </span>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-3">
+                        <div className="flex flex-row sm:items-center py-2 sm:py-3">
                           <span className="font-medium text-gray-400 text-sm sm:text-lg mb-1 sm:mb-0">
-                            Identity:
+                            Identity:&nbsp;
                           </span>
                           <span className="font-semibold text-gray-50 text-sm sm:text-lg sm:ml-2">
                             {user?.identification || "N/A"}
                           </span>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-3">
+                        <div className="flex flex-row sm:items-center py-2 sm:py-3">
                           <span className="font-medium text-gray-400 text-sm sm:text-lg mb-1 sm:mb-0">
-                            Id Number:
+                            Id Number:&nbsp;
                           </span>
                           <span className="font-semibold text-gray-50 text-sm sm:text-lg sm:ml-2">
                             {user?.identificationNumber || "N/A"}
