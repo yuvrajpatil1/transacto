@@ -48,7 +48,7 @@ const getVerificationEmailTemplate = (userName, userEmail) => {
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${"https://transacto01.onrender.com"}/login" 
+            <a href="${"https://transacto.onrender.com"}/login" 
                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                       color: white; 
                       padding: 12px 30px; 
@@ -334,7 +334,7 @@ router.get("/generate-qr", authMiddleware, async (req, res) => {
   }
 
   try {
-    const baseURL = "https://transacto01.onrender.com/";
+    const baseURL = "https://transacto.onrender.com/";
     const qrCodeURL = `${baseURL}/user/${userId}`;
 
     const qrCodeData = await QRCode.toDataURL(qrCodeURL, {

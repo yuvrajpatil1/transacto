@@ -91,7 +91,7 @@ function App() {
       </BrowserRouter>
       <ToastContainer
         position="top-right"
-        autoClose={5000}
+        autoClose={4000}
         hideProgressBar={false}
         newestOnTop={false}
         closeOnClick
@@ -101,9 +101,8 @@ function App() {
         pauseOnHover
         theme="dark"
         toastStyle={{
-          backgroundColor: "#1f2937",
+          backgroundColor: "#000",
           color: "#ffffff",
-          border: "1px solid #374151",
         }}
       />
     </>
