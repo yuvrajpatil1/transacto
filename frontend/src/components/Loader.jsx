@@ -25,6 +25,18 @@ const Loader = () => {
               <span className="block h-full pl-1 text-orange-500 leading-10">
                 dashboard...
               </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                dashboard...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                requests...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                transactions...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                dashboard...
+              </span>
             </div>
             <div
               className="absolute inset-0 pointer-events-none z-10"
