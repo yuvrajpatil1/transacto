@@ -97,7 +97,12 @@ export default function Login() {
 
           <div className="relative z-10">
             <div className="flex items-center mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold">Transacto</h1>
+              <h1
+                className="text-4xl md:text-5xl font-bold"
+                onClick={() => navigate("/")}
+              >
+                Transacto
+              </h1>
             </div>
 
             <h2 className="text-2xl md:text-4xl font-semibold mb-6 leading-tight bg-gradient-to-r from-gray-300 via-blue-100 to-purple-200 bg-clip-text text-transparent">

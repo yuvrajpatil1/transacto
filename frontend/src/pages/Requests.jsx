@@ -617,6 +617,30 @@ export default function RequestsPage() {
           </div>
         </main>
       </div>
+      <div className="border-t border-gray-800 pt-8">
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400 mb-4 md:mb-0">
+            <span className="hidden md:block">
+              © 2025 Transacto Technologies Pvt. Ltd. All rights reserved.
+            </span>
+            <span className="md:hidden text-center">
+              © 2025 Transacto Technologies Pvt. Ltd. <br /> All rights
+              reserved.
+            </span>
+          </div>
+          <div className="flex items-center space-x-4 text-sm text-gray-400">
+            <div className="flex items-center space-x-2">
+              <span>Developed with ❤️ by</span>
+              <a
+                className="underline text-white"
+                href="https://linkedin.com/in/yuvrajkpatil"
+              >
+                Yuvraj Patil.
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
