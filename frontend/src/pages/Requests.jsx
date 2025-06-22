@@ -24,7 +24,7 @@ import {
 } from "../apicalls/requests";
 import { message } from "antd";
 import { toast } from "react-toastify";
-import { Transition } from "../Transition";
+import Transition from "../Transition";
 
 // Mobile Request Card Component
 const MobileRequestCard = ({
