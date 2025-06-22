@@ -21,10 +21,12 @@ export default function Login() {
 
   useEffect(() => {
     // Handle OAuth callback
-    const urlParams = new URLSearchParams(location.search);
+    const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
     const success = urlParams.get("success");
     const error = urlParams.get("error");
+
+    console.log(token);
 
     if (success && token) {
       toast.success(response.message || "Login successful! Welcome back.", {
