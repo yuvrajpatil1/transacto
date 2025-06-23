@@ -42,6 +42,13 @@ function Home() {
 
   return (
     <div className="min-h-dvh max-w-dvw bg-gradient-to-br from-black via-slate-900 to-black text-white">
+      <motion.div
+        className="slide-in"
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 1 }}
+        exit={{ scaleY: 1 }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      />
       {/* Navigation */}
       <nav className="fixed  max-w-dvw lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
         <div className="flex items-center space-x-2">
@@ -501,8 +508,15 @@ function Home() {
           </div>
         </div>
       </footer>
+      <motion.div
+        className="slide-out"
+        initial={{ scaleY: 1 }}
+        animate={{ scaleY: 0 }}
+        exit={{ scaleY: 1 }}
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+      />
     </div>
   );
 }
 
-export default Transition(Home);
+export default Home;
