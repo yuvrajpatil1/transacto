@@ -1,11 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-function Transition(OriginalComponent) {
+function Transition() {
   return () => {
     <>
-      <OriginalComponent />
-
       <motion.div
         className="slide-in"
         initial={{ scaleY: 0 }}
