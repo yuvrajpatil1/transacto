@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReloadUser, SetUser } from "../redux/usersSlice";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
 import Loader from "./Loader";
+import Transition from "../Transition";
 
 function ProtectedRoute(props) {
   const dispatch = useDispatch();
@@ -82,7 +83,12 @@ function ProtectedRoute(props) {
   }
 
   // Only render children if user is authenticated
-  return user ? <div>{props.children}</div> : null;
+  return user ? (
+    <div>
+      {" "}
+      <Transition>{props.children}</Transition>
+    </div>
+  ) : null;
 }
 
 export default ProtectedRoute;
