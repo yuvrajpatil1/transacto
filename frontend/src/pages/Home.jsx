@@ -26,7 +26,6 @@ import SlideInOnScroll from "../components/SlideInOnScroll";
 import SlideInOnScrollMockUp from "../components/SlideInOnScrollMockUp";
 import AnimatedCounter from "../components/AnimatedCounter";
 import Transition from "../Transition";
-import { motion } from "framer-motion";
 
 function Home() {
   const navigate = useNavigate();
