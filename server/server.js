@@ -8,7 +8,6 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./models/userModel");
 const jwt = require("jsonwebtoken");
 const { createClient } = require("redis");
-const session = require("express-session");
 const connectRedis = require("connect-redis");
 const RedisStore = connectRedis(session); // ✅ Correct for v9 (no .default)
 
