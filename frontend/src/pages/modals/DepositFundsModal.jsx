@@ -148,6 +148,10 @@ function StripePaymentForm({
           }
         );
 
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+
         console.log("Card deposit completed successfully");
         onSuccess();
       } else {

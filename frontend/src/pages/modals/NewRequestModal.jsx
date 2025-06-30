@@ -86,7 +86,6 @@ function NewRequestModal({
         setVerifiedAccount(response.data);
         setErrors((prev) => ({ ...prev, receiver: "" }));
         message.success("Account verified successfully");
-        window.location.reload();
       } else {
         setIsVerified(false);
         setVerifiedAccount(null);
@@ -182,6 +181,9 @@ function NewRequestModal({
           icon: "📤",
         });
 
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
         console.log("Request sent successfully");
         handleClose();
 
