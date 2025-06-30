@@ -7,20 +7,22 @@ const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./models/userModel"); // Import your User model
 const jwt = require("jsonwebtoken");
-const RedisStore = require("connect-redis");
-const redis = require("redis");
+// For connect-redis v9 with ioredis
+const RedisStore = require("connect-redis").default;
+const Redis = require("ioredis");
 
 const app = express();
 
-// Create Redis client
-const redisClient = redis.createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6379",
-  // Add these options for better error handling
-  socket: {
-    reconnectDelay: 50,
+// Create Redis client using ioredis
+const redisClient = new Redis(
+  process.env.REDIS_URL || "redis://localhost:6379",
+  {
+    // ioredis connection options
+    retryDelayOnFailover: 100,
+    maxRetriesPerRequest: 3,
     lazyConnect: true,
-  },
-});
+  }
+);
 
 // Handle Redis connection events
 redisClient.on("error", (err) => {
@@ -29,6 +31,10 @@ redisClient.on("error", (err) => {
 
 redisClient.on("connect", () => {
   console.log("Connected to Redis");
+});
+
+redisClient.on("ready", () => {
+  console.log("Redis is ready");
 });
 
 // Connect to Redis
@@ -57,7 +63,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "your-session-secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -122,7 +128,7 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     if (user) {
       // Cache user for 1 hour
-      await redisClient.setEx(`user:${id}`, 3600, JSON.stringify(user));
+      await redisClient.setex(`user:${id}`, 3600, JSON.stringify(user));
     }
     done(null, user);
   } catch (error) {
