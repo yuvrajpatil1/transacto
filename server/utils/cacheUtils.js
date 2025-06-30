@@ -1,5 +1,5 @@
 //utils/cacheUtils.js
-const redis = require("../config/redis");
+const redis = require("../config/redisConfig");
 
 class CacheUtils {
   static async get(key) {
