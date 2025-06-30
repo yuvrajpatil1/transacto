@@ -8,18 +8,16 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./models/userModel");
 const jwt = require("jsonwebtoken");
 const { createClient } = require("redis");
-const connectRedis = require("connect-redis");
-const RedisStore = connectRedis(session); // ✅ Correct for v9 (no .default)
 
 const app = express();
 
 // Create Redis client (redis@4)
 const redisClient = createClient({
   username: "default",
-  password: "5Dbth8vILGzSbX2swSsoNJOEt18vScF7",
+  password: process.env.REDIS_PASSWORD,
   socket: {
-    host: "redis-12419.crce179.ap-south-1-1.ec2.redns.redis-cloud.com",
-    port: 12419,
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
   },
 });
 
@@ -29,11 +27,6 @@ redisClient.on("ready", () => console.log("Redis is ready"));
 
 async function init() {
   await redisClient.connect();
-
-  const store = new RedisStore({
-    client: redisClient,
-    prefix: "sess:",
-  });
 
   // Middleware
   app.use(
@@ -49,7 +42,6 @@ async function init() {
 
   app.use(
     session({
-      store,
       secret: process.env.SESSION_SECRET || "your-session-secret",
       resave: false,
       saveUninitialized: false,
