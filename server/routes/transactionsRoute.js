@@ -1,5 +1,8 @@
+//txnsRoutes.js (Updated with caching)
 const router = require("express").Router();
 const authMiddleware = require("../middlewares/authMiddleware");
+const cacheMiddleware = require("../middlewares/cacheMiddleware");
+const CacheUtils = require("../utils/cacheUtils");
 const Transaction = require("../models/transactionModel");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
@@ -15,7 +18,6 @@ const verifyTransactionPin = async (userId, transactionPin) => {
       return { success: false, message: "User not found" };
     }
 
-    // Check if user is OAuth user and doesn't have PIN set
     if (user.authProvider === "google" && !user.transactionPin) {
       return {
         success: false,
@@ -44,7 +46,7 @@ const verifyTransactionPin = async (userId, transactionPin) => {
   }
 };
 
-// Add route to verify PIN separately (called from frontend)
+// Add route to verify PIN separately (No caching for security)
 router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   try {
     const { transactionPin } = req.body;
@@ -70,12 +72,11 @@ router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   }
 });
 
-// Transfer funds with PIN verification
+// Transfer funds with PIN verification (With cache invalidation)
 router.post("/transfer-funds", authMiddleware, async (req, res) => {
   try {
     const { transactionPin, ...transactionData } = req.body;
 
-    // Verify transaction PIN first
     if (!transactionPin) {
       return res.send({
         message: "Transaction PIN is required",
@@ -95,7 +96,6 @@ router.post("/transfer-funds", authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if sender has sufficient balance
     const sender = await User.findById(transactionData.sender);
     if (!sender) {
       return res.send({
@@ -111,19 +111,22 @@ router.post("/transfer-funds", authMiddleware, async (req, res) => {
       });
     }
 
-    // Save transaction
     const newTransaction = new Transaction(transactionData);
     await newTransaction.save();
 
-    // Decrease sender's balance
     await User.findByIdAndUpdate(transactionData.sender, {
       $inc: { balance: -transactionData.amount },
     });
 
-    // Increase receiver's balance
     await User.findByIdAndUpdate(transactionData.receiver, {
       $inc: { balance: transactionData.amount },
     });
+
+    // Invalidate relevant caches
+    await CacheUtils.invalidateUserCache(transactionData.sender);
+    await CacheUtils.invalidateUserCache(transactionData.receiver);
+    await CacheUtils.invalidateTransactionCache(transactionData.sender);
+    await CacheUtils.invalidateTransactionCache(transactionData.receiver);
 
     res.send({
       message: "Transaction successful",
@@ -139,45 +142,55 @@ router.post("/transfer-funds", authMiddleware, async (req, res) => {
   }
 });
 
-// Verify account (no PIN needed for this)
-router.post("/verify-account", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.body.receiver).select("-password");
-    if (user) {
+// Verify account (With caching)
+router.post(
+  "/verify-account",
+  authMiddleware,
+  cacheMiddleware((req) => `verify-account:${req.body.receiver}`, 1800), // 30 minutes cache
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.body.receiver).select("-password");
+      if (user) {
+        res.send({
+          message: "Account verified",
+          data: {
+            name: `${user.firstName} ${user.lastName}`,
+            accountNumber: user._id,
+            bankName: "Transacto Wallet",
+          },
+          success: true,
+        });
+      } else {
+        res.send({
+          message: "Account not found",
+          data: null,
+          success: false,
+        });
+      }
+    } catch (error) {
       res.send({
-        message: "Account verified",
-        data: {
-          name: `${user.firstName} ${user.lastName}`,
-          accountNumber: user._id,
-          bankName: "Transacto Wallet",
-        },
-        success: true,
-      });
-    } else {
-      res.send({
-        message: "Account not found",
-        data: null,
+        message: "Something went wrong",
+        data: error.message,
         success: false,
       });
     }
-  } catch (error) {
-    res.send({
-      message: "Something went wrong",
-      data: error.message,
-      success: false,
-    });
   }
-});
+);
 
-// Get all transactions for a user (no PIN needed for viewing)
+// Get all transactions for a user (With caching)
 router.post(
   "/get-all-transactions-by-user",
   authMiddleware,
+  cacheMiddleware(
+    (req) => CacheUtils.getUserTransactionsKey(req.body.userId),
+    900
+  ), // 15 minutes cache
   async (req, res) => {
     try {
       const transactions = await Transaction.find({
         $or: [{ sender: req.body.userId }, { receiver: req.body.userId }],
       }).sort({ createdAt: -1 });
+
       res.send({
         message: "transactions fetched",
         data: transactions,
@@ -193,7 +206,7 @@ router.post(
   }
 );
 
-// Fixed deposit funds with proper PIN verification
+// Deposit funds with proper PIN verification (With cache invalidation)
 router.post("/deposit-funds", authMiddleware, async (req, res) => {
   try {
     const {
@@ -207,7 +220,6 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
       transactionPin,
     } = req.body;
 
-    // Validate required fields
     if (!userId || !amount || !paymentMethod || !reference) {
       return res.send({
         success: false,
@@ -216,7 +228,6 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
       });
     }
 
-    // Validate amount
     if (isNaN(amount) || amount <= 0) {
       return res.send({
         success: false,
@@ -224,7 +235,6 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
       });
     }
 
-    // ALWAYS verify transaction PIN for ALL payment methods
     if (!transactionPin) {
       return res.send({
         success: false,
@@ -252,12 +262,10 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
       userId: userId,
     };
 
-    // Handle different payment methods
     if (paymentMethod === "card" && paymentMethodId) {
       try {
-        // Create Stripe payment intent (PIN already verified above)
         const paymentIntent = await stripe.paymentIntents.create({
-          amount: Math.round(amount * 100), // Convert ₹ to paise
+          amount: Math.round(amount * 100),
           currency: "inr",
           payment_method: paymentMethodId,
           confirm: true,
@@ -288,7 +296,6 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
         });
       }
     } else {
-      // For bank transfer and UPI, set status as pending (PIN already verified above)
       transactionData.status = "pending";
 
       if (paymentMethod === "bank_transfer" && bankDetails) {
@@ -300,15 +307,17 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
       }
     }
 
-    // Save transaction to database
     const newTransaction = new Transaction(transactionData);
     await newTransaction.save();
 
-    // Update user balance only for successful card payments
     if (transactionData.status === "success") {
       await User.findByIdAndUpdate(userId, {
         $inc: { balance: parseFloat(amount) },
       });
+
+      // Invalidate relevant caches
+      await CacheUtils.invalidateUserCache(userId);
+      await CacheUtils.invalidateTransactionCache(userId);
     }
 
     return res.send({

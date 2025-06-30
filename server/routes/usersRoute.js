@@ -1,13 +1,16 @@
+//usersRoute.js (Updated with caching)
 const router = require("express").Router();
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
+const cacheMiddleware = require("../middlewares/cacheMiddleware");
+const CacheUtils = require("../utils/cacheUtils");
 const QRCode = require("qrcode");
 const nodemailer = require("nodemailer");
 
 // Email configuration
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
@@ -86,7 +89,7 @@ const getVerificationEmailTemplate = (userName, userEmail) => {
   };
 };
 
-// Register User (Updated to handle transaction PIN)
+// Register User (Updated with cache invalidation)
 router.post("/register", async (req, res) => {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
@@ -105,11 +108,11 @@ router.post("/register", async (req, res) => {
       req.body.password = hashedPassword;
     }
 
-    // Transaction PIN is already hashed from frontend, so we can use it directly
-    // Note: The PIN comes pre-hashed from the frontend registration form
-
     const newUser = new User(req.body);
     await newUser.save();
+
+    // Invalidate all users cache
+    await CacheUtils.del(CacheUtils.getAllUsersKey());
 
     res.send({
       message: "User Created Successfully!",
@@ -124,7 +127,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login User (Updated to handle OAuth users)
+// Login User (No caching needed as it's authentication)
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -183,53 +186,62 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Get User Info (keeping your existing implementation)
-router.post("/get-user-info", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.userId);
-    console.log(req.userId + "Yuv");
-    user.password = "";
-    user.transactionPin = ""; // Hide transaction PIN from response
+// Get User Info (With caching)
+router.post(
+  "/get-user-info",
+  authMiddleware,
+  cacheMiddleware((req) => CacheUtils.getUserKey(req.userId), 1800), // 30 minutes cache
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.userId);
+      console.log(req.userId + "Yuv");
+      user.password = "";
+      user.transactionPin = "";
 
-    res.send({
-      message: "User info fetched successfully",
-      data: user,
-      success: true,
-    });
-  } catch (error) {
-    res.send({
-      message: error.message,
-      success: false,
-    });
+      res.send({
+        message: "User info fetched successfully",
+        data: user,
+        success: true,
+      });
+    } catch (error) {
+      res.send({
+        message: error.message,
+        success: false,
+      });
+    }
   }
-});
+);
 
-// Get all users (keeping your existing implementation)
-router.get("/get-all-users", authMiddleware, async (req, res) => {
-  try {
-    const users = await User.find();
-    // Hide sensitive information for all users
-    const sanitizedUsers = users.map((user) => {
-      const userObj = user.toObject();
-      userObj.password = "";
-      userObj.transactionPin = "";
-      return userObj;
-    });
+// Get all users (With caching)
+router.get(
+  "/get-all-users",
+  authMiddleware,
+  cacheMiddleware(CacheUtils.getAllUsersKey(), 1800), // 30 minutes cache
+  async (req, res) => {
+    try {
+      const users = await User.find();
+      const sanitizedUsers = users.map((user) => {
+        const userObj = user.toObject();
+        userObj.password = "";
+        userObj.transactionPin = "";
+        return userObj;
+      });
 
-    res.send({
-      message: "Users fetched successfully",
-      data: sanitizedUsers,
-      success: true,
-    });
-  } catch (error) {
-    res.send({
-      message: error.message,
-      success: false,
-    });
+      res.send({
+        message: "Users fetched successfully",
+        data: sanitizedUsers,
+        success: true,
+      });
+    } catch (error) {
+      res.send({
+        message: error.message,
+        success: false,
+      });
+    }
   }
-});
+);
 
-// Verify Transaction PIN endpoint
+// Verify Transaction PIN endpoint (No caching for security)
 router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   try {
     const { transactionPin } = req.body;
@@ -249,7 +261,6 @@ router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if user is OAuth user (they might not have a transaction PIN)
     if (user.authProvider === "google" && !user.transactionPin) {
       return res.status(400).send({
         success: false,
@@ -279,7 +290,7 @@ router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   }
 });
 
-// Update Transaction PIN endpoint
+// Update Transaction PIN endpoint (With cache invalidation)
 router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
   try {
     const { currentPin, newPin } = req.body;
@@ -301,13 +312,15 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
 
     // For OAuth users, they might be setting PIN for the first time
     if (user.authProvider === "google" && !user.transactionPin) {
-      // Hash the new PIN and save it
       const salt = await bcrypt.genSalt(12);
       const hashedNewPin = await bcrypt.hash(newPin, salt);
 
       await User.findByIdAndUpdate(req.userId, {
         transactionPin: hashedNewPin,
       });
+
+      // Invalidate user cache
+      await CacheUtils.invalidateUserCache(req.userId);
 
       return res.send({
         success: true,
@@ -336,6 +349,9 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
       transactionPin: hashedNewPin,
     });
 
+    // Invalidate user cache
+    await CacheUtils.invalidateUserCache(req.userId);
+
     res.send({
       success: true,
       message: "Transaction PIN updated successfully",
@@ -348,7 +364,7 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
   }
 });
 
-// Send verification email (keeping your existing implementation)
+// Send verification email (No caching needed)
 router.post("/send-verification-email", authMiddleware, async (req, res) => {
   try {
     const { userId, userName, userEmail } = req.body;
@@ -389,7 +405,7 @@ router.post("/send-verification-email", authMiddleware, async (req, res) => {
   }
 });
 
-// Update user verified status (keeping your existing implementation)
+// Update user verified status (With cache invalidation)
 router.post(
   "/update-user-verified-status",
   authMiddleware,
@@ -410,15 +426,15 @@ router.post(
         });
       }
 
+      // Invalidate caches
+      await CacheUtils.invalidateUserCache(selectedUser);
+
       if (isVerified) {
         try {
           const emailTemplate = getVerificationEmailTemplate(
             updatedUser.firstName || updatedUser.name || "User",
             updatedUser.email
           );
-
-          console.log(updatedUser.email);
-          console.log(emailTemplate);
 
           const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -451,42 +467,46 @@ router.post(
   }
 );
 
-// Generate QR (keeping your existing implementation)
-router.get("/generate-qr", authMiddleware, async (req, res) => {
-  console.log("QR Code route hit! User ID:", req.userId);
+// Generate QR (With caching)
+router.get(
+  "/generate-qr",
+  authMiddleware,
+  cacheMiddleware((req) => CacheUtils.getQRCodeKey(req.userId), 7200), // 2 hours cache
+  async (req, res) => {
+    console.log("QR Code route hit! User ID:", req.userId);
 
-  const userId = req.userId;
+    const userId = req.userId;
 
-  if (!userId) {
-    return res.status(400).json({
-      success: false,
-      message: "Missing user ID",
-    });
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing user ID",
+      });
+    }
+
+    try {
+      const baseURL = "https://transacto.onrender.com/";
+      const qrCodeURL = `${baseURL}/user/${userId}`;
+
+      const qrCodeData = await QRCode.toDataURL(qrCodeURL, {
+        width: 256,
+        margin: 2,
+      });
+
+      res.json({
+        success: true,
+        data: qrCodeData,
+        url: qrCodeURL,
+        message: "QR Code generated successfully",
+      });
+    } catch (err) {
+      console.error("QR Code generation error:", err);
+      res.status(500).json({
+        success: false,
+        message: "Error generating QR code",
+      });
+    }
   }
-
-  try {
-    const baseURL = "https://transacto.onrender.com/";
-    // "http://localhost:5173";
-    const qrCodeURL = `${baseURL}/user/${userId}`;
-
-    const qrCodeData = await QRCode.toDataURL(qrCodeURL, {
-      width: 256,
-      margin: 2,
-    });
-
-    res.json({
-      success: true,
-      data: qrCodeData,
-      url: qrCodeURL,
-      message: "QR Code generated successfully",
-    });
-  } catch (err) {
-    console.error("QR Code generation error:", err);
-    res.status(500).json({
-      success: false,
-      message: "Error generating QR code",
-    });
-  }
-});
+);
 
 module.exports = router;

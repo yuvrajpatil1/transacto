@@ -33,10 +33,25 @@ app.use(
     },
   })
 );
+
+// Use Redis for session storage
+app.use(
+  session({
+    store: new RedisStore({ client: redis }),
+    secret: process.env.SESSION_SECRET || "your-session-secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: false,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Google OAuth Strategy
+// Google OAuth Strategy (same as before)
 passport.use(
   new GoogleStrategy(
     {
@@ -47,7 +62,6 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if user already exists
         let user = await User.findOne({ email: profile.emails[0].value });
 
         if (user) {
@@ -57,8 +71,8 @@ passport.use(
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             email: profile.emails[0].value,
-            identificationNumber: `GOOGLE_${profile.id}`, // Required field
-            isVerified: true, // Auto-verify Google users
+            identificationNumber: `GOOGLE_${profile.id}`,
+            isVerified: true,
             profilePicture: profile.photos[0]?.value,
             googleId: profile.id,
             authProvider: "google",
@@ -80,14 +94,24 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
+    // Try to get user from cache first
+    const cachedUser = await redis.get(`user:${id}`);
+    if (cachedUser) {
+      return done(null, JSON.parse(cachedUser));
+    }
+
     const user = await User.findById(id);
+    if (user) {
+      // Cache user for 1 hour
+      await redis.setex(`user:${id}`, 3600, JSON.stringify(user));
+    }
     done(null, user);
   } catch (error) {
     done(error, null);
   }
 });
 
-// OAuth Routes
+// OAuth Routes (same as before)
 app.get(
   "/auth/google",
   passport.authenticate("google", {
@@ -102,12 +126,10 @@ app.get(
   }),
   async (req, res) => {
     try {
-      // Generate JWT token for the authenticated user
       const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, {
         expiresIn: "1d",
       });
 
-      // Redirect to frontend with token
       res.redirect(
         `https://transacto.onrender.com/login?token=${token}&success=true`
       );
@@ -120,7 +142,6 @@ app.get(
   }
 );
 
-// Logout route
 app.get("/auth/logout", (req, res) => {
   req.logout((err) => {
     if (err) {
@@ -147,7 +168,6 @@ app.use("/api/users", usersRoute);
 app.use("/api/transactions", transactionsRoute);
 app.use("/api/requests", requestRoute);
 
-// Server start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
