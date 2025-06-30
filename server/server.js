@@ -7,12 +7,12 @@ const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./models/userModel");
 const jwt = require("jsonwebtoken");
-const RedisStore = require("connect-redis").default;
 const { createClient } = require("redis");
+const RedisStore = require("connect-redis"); // ✅ Correct for v9 (no .default)
 
 const app = express();
 
-// Create Redis client using redis@4
+// Create Redis client (redis@4)
 const redisClient = createClient({
   username: "default",
   password: "5Dbth8vILGzSbX2swSsoNJOEt18vScF7",
@@ -29,7 +29,12 @@ redisClient.on("ready", () => console.log("Redis is ready"));
 async function init() {
   await redisClient.connect();
 
-  // Middlewares
+  const store = new RedisStore({
+    client: redisClient,
+    prefix: "sess:",
+  });
+
+  // Middleware
   app.use(
     cors({
       origin: "https://transacto.onrender.com",
@@ -41,13 +46,9 @@ async function init() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // Sessions
   app.use(
     session({
-      store: new RedisStore({
-        client: redisClient,
-        prefix: "sess:",
-      }),
+      store,
       secret: process.env.SESSION_SECRET || "your-session-secret",
       resave: false,
       saveUninitialized: false,
@@ -62,7 +63,7 @@ async function init() {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Google OAuth Strategy
+  // Google OAuth
   passport.use(
     new GoogleStrategy(
       {
@@ -116,7 +117,7 @@ async function init() {
     }
   });
 
-  // OAuth Routes
+  // Auth Routes
   app.get(
     "/auth/google",
     passport.authenticate("google", {
@@ -137,7 +138,6 @@ async function init() {
           process.env.JWT_SECRET,
           { expiresIn: "1d" }
         );
-
         res.redirect(
           `https://transacto.onrender.com/login?token=${token}&success=true`
         );
