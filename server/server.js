@@ -9,7 +9,7 @@ const User = require("./models/userModel");
 const jwt = require("jsonwebtoken");
 
 // Redis (required before route handlers using cache)
-const redis = require("./config/redis");
+const redis = require("./config/redisConfig");
 
 // Connect Redis explicitly since lazyConnect: true
 redis.connect().catch((err) => {
