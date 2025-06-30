@@ -81,7 +81,7 @@ export default function Login() {
   const handleGoogleLogin = () => {
     // Redirect to backend OAuth endpoint
     window.location.href =
-      "http://localhost:5000/auth/google" ||
+      // "http://localhost:5000/auth/google" ||
       "https://transacto-backend.onrender.com/auth/google";
   };
 
