@@ -27,7 +27,6 @@ import {
 import { useDispatch, useSelector } from "react-redux"; // ✅ Already imported
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import SlideInOnScrollTable from "../components/SlideInOnScrollTable";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
 import { message } from "antd";
 import { useEffect } from "react";

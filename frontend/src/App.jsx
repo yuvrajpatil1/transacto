@@ -17,6 +17,7 @@ import UserNotVerified from "./pages/UserNotVerified";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AnimatePresence } from "framer-motion";
+import ForgotTransactionPinModal from "./pages/modals/ForgotTransactionPinModal";
 
 // ✅ Define your Stripe public key
 const stripePromise = loadStripe(

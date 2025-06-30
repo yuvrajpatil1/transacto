@@ -737,6 +737,26 @@ function DepositFundsModal({
             </p>
           </div>
 
+          {/* Stripe Card Form for Card Payments */}
+          {formData.paymentMethod === "card" && (
+            <div className="space-y-4 border-t border-gray-700/60 pt-4">
+              <h3 className="text-sm font-medium text-gray-300 flex items-center">
+                <CreditCard className="w-4 h-4 mr-2 text-amber-400" />
+                Card Payment
+              </h3>
+              <Elements stripe={stripePromise}>
+                <StripePaymentForm
+                  amount={formData.amount}
+                  reference={formData.reference}
+                  transactionPin={formData.transactionPin}
+                  onSuccess={handleCardPaymentSuccess}
+                  onError={handleCardPaymentError}
+                  disabled={!isFormValid}
+                />
+              </Elements>
+            </div>
+          )}
+
           {/* Transaction PIN */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
@@ -780,26 +800,6 @@ function DepositFundsModal({
               Enter your 4-6 digit transaction PIN to confirm the deposit
             </p>
           </div>
-
-          {/* Stripe Card Form for Card Payments */}
-          {formData.paymentMethod === "card" && (
-            <div className="space-y-4 border-t border-gray-700/60 pt-4">
-              <h3 className="text-sm font-medium text-gray-300 flex items-center">
-                <CreditCard className="w-4 h-4 mr-2 text-amber-400" />
-                Card Payment
-              </h3>
-              <Elements stripe={stripePromise}>
-                <StripePaymentForm
-                  amount={formData.amount}
-                  reference={formData.reference}
-                  transactionPin={formData.transactionPin}
-                  onSuccess={handleCardPaymentSuccess}
-                  onError={handleCardPaymentError}
-                  disabled={!isFormValid}
-                />
-              </Elements>
-            </div>
-          )}
 
           {/* Info Box */}
           <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">

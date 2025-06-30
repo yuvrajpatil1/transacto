@@ -14,6 +14,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { LoginUser } from "../apicalls/users";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import ForgotTransactionPinModal from "./modals/ForgotTransactionPinModal";
+import ForgotPasswordModal from "./modals/ForgotPasswordModal";
 
 export default function Login() {
   const location = useLocation();
@@ -81,7 +83,7 @@ export default function Login() {
   const handleGoogleLogin = () => {
     // Redirect to backend OAuth endpoint
     window.location.href =
-      // "http://localhost:5000/auth/google" ||
+      // "http://localhost:5000/auth/google",
       "https://transacto-backend.onrender.com/auth/google";
   };
 
@@ -94,6 +96,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -348,19 +351,21 @@ export default function Login() {
                     Remember me
                   </label>
                 </div>
-                {/* <button
+                <button
                   type="button"
                   className="text-sm text-blue-400 hover:text-blue-300 hover:underline transition-colors"
                   onClick={() => {
-                    toast.info("Forgot password functionality coming soon!", {
-                      position: "top-right",
-                      autoClose: 3000,
-                    });
+                    setShowForgotPasswordModal(true);
                   }}
                 >
                   Forgot password?
-                </button> */}
+                </button>
               </div>
+
+              <ForgotPasswordModal
+                showForgotPasswordModal={showForgotPasswordModal}
+                setShowForgotPasswordModal={setShowForgotPasswordModal}
+              />
 
               {/* Submit Button */}
               <button

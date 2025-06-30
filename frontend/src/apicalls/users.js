@@ -133,3 +133,118 @@ export const SendVerificationEmail = async (payload) => {
     return error.response.data;
   }
 };
+
+// Add these API calls to your existing API file
+
+// Send OTP for PIN reset
+export const SendPinResetOTP = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/send-pin-reset-otp",
+      payload
+    );
+    console.log(data + "yuvvvv");
+    return data;
+  } catch (error) {
+    console.error("SendPinResetOTP error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// Verify OTP for PIN reset
+export const VerifyPinResetOTP = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/verify-pin-reset-otp",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("VerifyPinResetOTP error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// Reset transaction PIN
+export const ResetTransactionPin = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/reset-transaction-pin",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("ResetTransactionPin error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// Resend OTP for PIN reset
+export const ResendPinResetOTP = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/resend-pin-reset-otp",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("ResendPinResetOTP error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// Send OTP for password reset
+export const SendPasswordResetOTP = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/send-password-reset-otp",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("SendPasswordResetOTP error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// Verify OTP for password reset
+export const VerifyPasswordResetOTP = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/verify-password-reset-otp",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("VerifyPasswordResetOTP error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// Reset password
+export const ResetPassword = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/reset-password",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("ResetPassword error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// Resend OTP for password reset
+export const ResendPasswordResetOTP = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/resend-password-reset-otp",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("ResendPasswordResetOTP error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};

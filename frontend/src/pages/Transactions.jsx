@@ -24,6 +24,7 @@ import { showLoading, hideLoading } from "../redux/loaderSlice";
 import { useEffect } from "react";
 import DepositFundsModal from "./modals/DepositFundsModal";
 import ScanToPayModal from "./modals/ScanToPayModal";
+import ForgotTransactionPinModal from "./modals/ForgotTransactionPinModal";
 
 // Mock user data
 const mockUser = {
@@ -42,6 +43,7 @@ export default function TransactionsPage() {
   const [showTransferFundsModal, setShowTransferFundsModal] = useState(false);
   const [showDepositFundsModal, setShowDepositFundsModal] = useState(false);
   const [showScanToPayModal, setShowScanToPayModal] = useState(false);
+  const [showForgotPinModal, setShowForgotPinModal] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("transactions");
   const [searchTerm, setSearchTerm] = useState("");
@@ -292,6 +294,12 @@ export default function TransactionsPage() {
             <p className="text-xs text-gray-300">
               Balance: ₹{user?.balance?.toLocaleString("en-IN") || "0"}
             </p>
+            <p
+              className="text-xs py-2 cursor-pointer underline text-gray-300"
+              onClick={() => setShowForgotPinModal(true)}
+            >
+              Reset Transaction PIN
+            </p>
           </div>
           <div className="max-w-5xl mx-auto mt-2">
             {/* Desktop Page Header */}
@@ -304,7 +312,18 @@ export default function TransactionsPage() {
                   Current Balance: ₹
                   {user?.balance?.toLocaleString("en-IN") || "0"}
                 </p>
+                <p
+                  className="text-sm py-2 cursor-pointer underline text-gray-300"
+                  onClick={() => setShowForgotPinModal(true)}
+                >
+                  Reset Transaction PIN
+                </p>
               </div>
+
+              <ForgotTransactionPinModal
+                showForgotPinModal={showForgotPinModal}
+                setShowForgotPinModal={setShowForgotPinModal}
+              />
 
               {/* Desktop Action Buttons */}
               <div className="flex space-x-3">
