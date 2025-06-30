@@ -63,8 +63,8 @@ router.post("/send-request", authMiddleware, async (req, res) => {
     }
 
     // Check if receiver exists (with caching for user verification)
-    const cacheKey = `user:${receiver}`;
-    let receiverUser = await CacheUtils.getFromCache(cacheKey);
+    // const cacheKey = `user:${receiver}`;
+    // let receiverUser = await CacheUtils.getFromCache(cacheKey);
 
     if (!receiverUser) {
       receiverUser = await User.findById(receiver);
@@ -138,8 +138,8 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
     }
 
     // Check cache first for request
-    const requestCacheKey = `request:${requestId}`;
-    let request = await CacheUtils.getFromCache(requestCacheKey);
+    // const requestCacheKey = `request:${requestId}`;
+    // let request = await CacheUtils.getFromCache(requestCacheKey);
 
     if (!request) {
       request = await Request.findById(requestId).populate("sender receiver");
@@ -178,8 +178,8 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
       const amount = request.amount;
 
       // Get receiver user with caching
-      const receiverCacheKey = `user:${request.receiver._id}`;
-      let receiverUser = await CacheUtils.getFromCache(receiverCacheKey);
+      // const receiverCacheKey = `user:${request.receiver._id}`;
+      // let receiverUser = await CacheUtils.getFromCache(receiverCacheKey);
 
       if (!receiverUser) {
         receiverUser = await User.findById(request.receiver._id);
