@@ -8,8 +8,37 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./models/userModel"); // Import your User model
 const jwt = require("jsonwebtoken");
 const RedisStore = require("connect-redis").default;
+const redis = require("redis");
 
 const app = express();
+
+// Create Redis client
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL || "redis://localhost:6379",
+  // Add these options for better error handling
+  socket: {
+    reconnectDelay: 50,
+    lazyConnect: true,
+  },
+});
+
+// Handle Redis connection events
+redisClient.on("error", (err) => {
+  console.error("Redis Client Error:", err);
+});
+
+redisClient.on("connect", () => {
+  console.log("Connected to Redis");
+});
+
+// Connect to Redis
+(async () => {
+  try {
+    await redisClient.connect();
+  } catch (error) {
+    console.error("Failed to connect to Redis:", error);
+  }
+})();
 
 // Middlewares
 app.use(
@@ -23,27 +52,16 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "your-session-secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  })
-);
 
-// Use Redis for session storage
+// Session middleware with Redis store
 app.use(
   session({
-    store: new RedisStore({ client: redis }),
+    store: new RedisStore({ client: redisClient }),
     secret: process.env.SESSION_SECRET || "your-session-secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false,
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
@@ -52,7 +70,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Google OAuth Strategy (same as before)
+// Google OAuth Strategy
 passport.use(
   new GoogleStrategy(
     {
@@ -96,7 +114,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
   try {
     // Try to get user from cache first
-    const cachedUser = await redis.get(`user:${id}`);
+    const cachedUser = await redisClient.get(`user:${id}`);
     if (cachedUser) {
       return done(null, JSON.parse(cachedUser));
     }
@@ -104,7 +122,7 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     if (user) {
       // Cache user for 1 hour
-      await redis.setex(`user:${id}`, 3600, JSON.stringify(user));
+      await redisClient.setEx(`user:${id}`, 3600, JSON.stringify(user));
     }
     done(null, user);
   } catch (error) {
@@ -112,7 +130,7 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-// OAuth Routes (same as before)
+// OAuth Routes
 app.get(
   "/auth/google",
   passport.authenticate("google", {
@@ -168,6 +186,18 @@ const requestRoute = require("./routes/requestRoute");
 app.use("/api/users", usersRoute);
 app.use("/api/transactions", transactionsRoute);
 app.use("/api/requests", requestRoute);
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("Shutting down gracefully...");
+  try {
+    await redisClient.quit();
+    console.log("Redis connection closed");
+  } catch (error) {
+    console.error("Error closing Redis connection:", error);
+  }
+  process.exit(0);
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
