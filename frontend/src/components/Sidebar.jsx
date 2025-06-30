@@ -36,7 +36,7 @@ export default function Sidebar({
         {/* Mobile Close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-2 text-white lg:hidden hover:bg-slate-600 p-2 rounded-lg"
+          className="absolute top-4 right-2 text-white lg:hidden hover:bg-slate-600 p-2 rounded-lg cursor-pointer"
         >
           <X className="w-6 h-6" />
         </button>

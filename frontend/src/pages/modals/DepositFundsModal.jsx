@@ -225,7 +225,7 @@ function StripePaymentForm({
       <button
         type="submit"
         disabled={!stripe || disabled || isProcessing}
-        className="w-full px-6 py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center"
+        className="w-full px-6 py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center cursor-pointer"
       >
         {isProcessing ? (
           <>
@@ -518,7 +518,7 @@ function DepositFundsModal({
 
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-400 hover:text-white"
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-400 hover:text-white cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -761,7 +761,7 @@ function DepositFundsModal({
               <button
                 type="button"
                 onClick={() => setShowPin(!showPin)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white cursor-pointer transition-colors"
               >
                 {showPin ? (
                   <EyeOff className="w-5 h-5" />

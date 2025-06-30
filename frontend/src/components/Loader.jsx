@@ -26,9 +26,6 @@ const Loader = () => {
                 dashboard...
               </span>
               <span className="block h-full pl-1 text-orange-500 leading-10">
-                dashboard...
-              </span>
-              <span className="block h-full pl-1 text-orange-500 leading-10">
                 requests...
               </span>
               <span className="block h-full pl-1 text-orange-500 leading-10">
@@ -36,6 +33,12 @@ const Loader = () => {
               </span>
               <span className="block h-full pl-1 text-orange-500 leading-10">
                 dashboard...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                requests...
+              </span>
+              <span className="block h-full pl-1 text-orange-500 leading-10">
+                transactions...
               </span>
             </div>
             <div
