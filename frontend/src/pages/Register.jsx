@@ -12,11 +12,13 @@ import {
   FileText,
   CheckCircle,
   ArrowRight,
+  KeyRound,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { RegisterUser } from "../apicalls/users";
 import { message } from "antd";
 import { toast } from "react-toastify";
+import bcrypt from "bcryptjs";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -30,10 +32,15 @@ export default function Register() {
     address: "",
     password: "",
     confirmPassword: "",
+    transactionPin: "",
+    confirmTransactionPin: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showTransactionPin, setShowTransactionPin] = useState(false);
+  const [showConfirmTransactionPin, setShowConfirmTransactionPin] =
+    useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -47,10 +54,20 @@ export default function Register() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // Handle PIN input - only allow digits and limit length
+    if (name === "transactionPin" || name === "confirmTransactionPin") {
+      const numericValue = value.replace(/\D/g, "").slice(0, 6);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: numericValue,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
 
     // Clear error when user starts typing
     if (errors[name]) {
@@ -98,6 +115,20 @@ export default function Register() {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
+    if (!formData.transactionPin) {
+      newErrors.transactionPin = "Transaction PIN is required";
+    } else if (formData.transactionPin.length < 4) {
+      newErrors.transactionPin = "PIN must be at least 4 digits";
+    } else if (formData.transactionPin.length > 6) {
+      newErrors.transactionPin = "PIN must be at most 6 digits";
+    }
+
+    if (!formData.confirmTransactionPin) {
+      newErrors.confirmTransactionPin = "Please confirm your transaction PIN";
+    } else if (formData.transactionPin !== formData.confirmTransactionPin) {
+      newErrors.confirmTransactionPin = "PINs do not match";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -107,10 +138,26 @@ export default function Register() {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    console.log(formData);
 
     try {
-      const response = await RegisterUser(formData);
+      // Hash the transaction PIN before sending to backend
+      const saltRounds = 12;
+      const hashedTransactionPin = await bcrypt.hash(
+        formData.transactionPin,
+        saltRounds
+      );
+
+      const dataToSubmit = {
+        ...formData,
+        transactionPin: hashedTransactionPin,
+        // Remove confirm fields as they're not needed in the backend
+        confirmPassword: undefined,
+        confirmTransactionPin: undefined,
+      };
+
+      console.log(dataToSubmit);
+
+      const response = await RegisterUser(dataToSubmit);
       if (response.success) {
         toast.success(response.message || "Registration successful!.", {
           position: "top-right",
@@ -519,6 +566,87 @@ export default function Register() {
                   {errors.confirmPassword && (
                     <p className="text-red-400 text-sm mt-1">
                       {errors.confirmPassword}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Transaction PIN Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <KeyRound className="w-4 h-4 inline mr-2" />
+                    Transaction PIN (4-6 digits)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showTransactionPin ? "text" : "password"}
+                      name="transactionPin"
+                      value={formData.transactionPin}
+                      onChange={handleInputChange}
+                      maxLength={6}
+                      className={`w-full px-4 py-3 pr-12 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-white placeholder-gray-400 backdrop-blur-sm ${
+                        errors.transactionPin
+                          ? "border-red-500"
+                          : "border-gray-600"
+                      }`}
+                      placeholder="Enter your transaction PIN"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowTransactionPin(!showTransactionPin)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                    >
+                      {showTransactionPin ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.transactionPin && (
+                    <p className="text-red-400 text-sm mt-1">
+                      {errors.transactionPin}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <KeyRound className="w-4 h-4 inline mr-2" />
+                    Confirm Transaction PIN
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmTransactionPin ? "text" : "password"}
+                      name="confirmTransactionPin"
+                      value={formData.confirmTransactionPin}
+                      onChange={handleInputChange}
+                      maxLength={6}
+                      className={`w-full px-4 py-3 pr-12 bg-gray-800/50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-white placeholder-gray-400 backdrop-blur-sm ${
+                        errors.confirmTransactionPin
+                          ? "border-red-500"
+                          : "border-gray-600"
+                      }`}
+                      placeholder="Confirm your transaction PIN"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmTransactionPin(!showConfirmTransactionPin)
+                      }
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                    >
+                      {showConfirmTransactionPin ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.confirmTransactionPin && (
+                    <p className="text-red-400 text-sm mt-1">
+                      {errors.confirmTransactionPin}
                     </p>
                   )}
                 </div>

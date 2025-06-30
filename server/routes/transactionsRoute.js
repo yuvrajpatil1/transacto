@@ -2,25 +2,127 @@ const router = require("express").Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 const Transaction = require("../models/transactionModel");
 const User = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 const { v4: uuid } = require("uuid");
 
-// Transfer funds
+// Helper function to verify transaction PIN
+const verifyTransactionPin = async (userId, transactionPin) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
+    // Check if user is OAuth user and doesn't have PIN set
+    if (user.authProvider === "google" && !user.transactionPin) {
+      return {
+        success: false,
+        message: "Transaction PIN not set. Please set your PIN first.",
+        code: "PIN_NOT_SET",
+      };
+    }
+
+    if (!user.transactionPin) {
+      return {
+        success: false,
+        message: "Transaction PIN not found",
+        code: "PIN_NOT_SET",
+      };
+    }
+
+    const validPin = await bcrypt.compare(transactionPin, user.transactionPin);
+    if (!validPin) {
+      return { success: false, message: "Invalid transaction PIN" };
+    }
+
+    return { success: true, message: "PIN verified successfully" };
+  } catch (error) {
+    console.error("PIN verification error:", error);
+    return { success: false, message: "PIN verification failed" };
+  }
+};
+
+// Add route to verify PIN separately (called from frontend)
+router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
+  try {
+    const { transactionPin } = req.body;
+
+    if (!transactionPin) {
+      return res.send({
+        success: false,
+        message: "Transaction PIN is required",
+      });
+    }
+
+    const pinVerification = await verifyTransactionPin(
+      req.userId,
+      transactionPin
+    );
+    return res.send(pinVerification);
+  } catch (error) {
+    console.error("PIN verification route error:", error);
+    return res.send({
+      success: false,
+      message: "PIN verification failed",
+    });
+  }
+});
+
+// Transfer funds with PIN verification
 router.post("/transfer-funds", authMiddleware, async (req, res) => {
   try {
+    const { transactionPin, ...transactionData } = req.body;
+
+    // Verify transaction PIN first
+    if (!transactionPin) {
+      return res.send({
+        message: "Transaction PIN is required",
+        success: false,
+      });
+    }
+
+    const pinVerification = await verifyTransactionPin(
+      req.userId,
+      transactionPin
+    );
+    if (!pinVerification.success) {
+      return res.send({
+        message: pinVerification.message,
+        success: false,
+        code: pinVerification.code,
+      });
+    }
+
+    // Check if sender has sufficient balance
+    const sender = await User.findById(transactionData.sender);
+    if (!sender) {
+      return res.send({
+        message: "Sender not found",
+        success: false,
+      });
+    }
+
+    if (sender.balance < transactionData.amount) {
+      return res.send({
+        message: "Insufficient balance",
+        success: false,
+      });
+    }
+
     // Save transaction
-    const newTransaction = new Transaction(req.body);
+    const newTransaction = new Transaction(transactionData);
     await newTransaction.save();
 
     // Decrease sender's balance
-    await User.findByIdAndUpdate(req.body.sender, {
-      $inc: { balance: -req.body.amount },
+    await User.findByIdAndUpdate(transactionData.sender, {
+      $inc: { balance: -transactionData.amount },
     });
 
     // Increase receiver's balance
-    await User.findByIdAndUpdate(req.body.receiver, {
-      $inc: { balance: req.body.amount },
+    await User.findByIdAndUpdate(transactionData.receiver, {
+      $inc: { balance: transactionData.amount },
     });
 
     res.send({
@@ -37,7 +139,7 @@ router.post("/transfer-funds", authMiddleware, async (req, res) => {
   }
 });
 
-// Verify account
+// Verify account (no PIN needed for this)
 router.post("/verify-account", authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.body.receiver).select("-password");
@@ -67,7 +169,7 @@ router.post("/verify-account", authMiddleware, async (req, res) => {
   }
 });
 
-//get all txns for a user
+// Get all transactions for a user (no PIN needed for viewing)
 router.post(
   "/get-all-transactions-by-user",
   authMiddleware,
@@ -83,7 +185,7 @@ router.post(
       });
     } catch (error) {
       res.send({
-        message: "transactions fetched",
+        message: "transactions fetch failed",
         data: error.message,
         success: false,
       });
@@ -91,7 +193,7 @@ router.post(
   }
 );
 
-// Deposit funds using stripe
+// Fixed deposit funds with proper PIN verification
 router.post("/deposit-funds", authMiddleware, async (req, res) => {
   try {
     const {
@@ -102,6 +204,7 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
       reference,
       bankDetails,
       upiDetails,
+      transactionPin,
     } = req.body;
 
     // Validate required fields
@@ -121,6 +224,24 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
       });
     }
 
+    // ALWAYS verify transaction PIN for ALL payment methods
+    if (!transactionPin) {
+      return res.send({
+        success: false,
+        message: "Transaction PIN is required",
+        code: "PIN_REQUIRED",
+      });
+    }
+
+    const pinVerification = await verifyTransactionPin(userId, transactionPin);
+    if (!pinVerification.success) {
+      return res.send({
+        message: pinVerification.message,
+        success: false,
+        code: pinVerification.code,
+      });
+    }
+
     let transactionData = {
       sender: userId,
       receiver: userId,
@@ -134,7 +255,7 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
     // Handle different payment methods
     if (paymentMethod === "card" && paymentMethodId) {
       try {
-        // Create Stripe payment intent
+        // Create Stripe payment intent (PIN already verified above)
         const paymentIntent = await stripe.paymentIntents.create({
           amount: Math.round(amount * 100), // Convert ₹ to paise
           currency: "inr",
@@ -167,7 +288,7 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
         });
       }
     } else {
-      // For bank transfer and UPI, set status as pending
+      // For bank transfer and UPI, set status as pending (PIN already verified above)
       transactionData.status = "pending";
 
       if (paymentMethod === "bank_transfer" && bankDetails) {
@@ -207,52 +328,5 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
     });
   }
 });
-
-// Deposit funds using stripe
-// router.post("/deposit-funds", authMiddleware, async (req, res) => {
-//   try {
-//     const {
-//       userId,
-//       amount,
-//       reference,
-//       paymentMethod,
-//       bankDetails,
-//       status,
-//       type,
-//       timestamp,
-//     } = req.body;
-
-//     const newTransaction = new Transaction({
-//       sender: userId,
-//       receiver: userId, // since deposit is to self
-//       amount,
-//       reference,
-//       status,
-//       type,
-//       paymentMethod,
-//       bankDetails,
-//       createdAt: timestamp,
-//     });
-
-//     await newTransaction.save();
-
-//     // Optionally, update balance instantly or wait for admin approval
-//     await User.findByIdAndUpdate(userId, {
-//       $inc: { balance: amount },
-//     });
-
-//     res.send({
-//       message: "Deposit request submitted",
-//       data: newTransaction,
-//       success: true,
-//     });
-//   } catch (error) {
-//     res.send({
-//       message: "Deposit failed",
-//       data: error.message,
-//       success: false,
-//     });
-//   }
-// });
 
 module.exports = router;

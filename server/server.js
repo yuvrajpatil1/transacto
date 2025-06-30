@@ -13,8 +13,8 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: "https://transacto.onrender.com",
     // origin: "http://localhost:5173",
+    origin: "https://transacto.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -28,7 +28,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: false, // Set to true in production with HTTPS
+      secure: false,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
@@ -51,19 +51,17 @@ passport.use(
         let user = await User.findOne({ email: profile.emails[0].value });
 
         if (user) {
-          // User exists, return user
           return done(null, user);
         } else {
-          // Create new user
           const newUser = new User({
             firstName: profile.name.givenName,
             lastName: profile.name.familyName,
             email: profile.emails[0].value,
-            // You might want to generate a random password or handle this differently
-            password: "google-oauth", // This should be handled securely
+            identificationNumber: `GOOGLE_${profile.id}`, // Required field
             isVerified: true, // Auto-verify Google users
             profilePicture: profile.photos[0]?.value,
             googleId: profile.id,
+            authProvider: "google",
           });
 
           user = await newUser.save();

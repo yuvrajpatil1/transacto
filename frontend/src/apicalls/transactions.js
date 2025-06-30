@@ -1,6 +1,6 @@
 import { axiosInstance } from ".";
 
-//verify receiver account
+//verify receiver account (no PIN needed)
 export const VerifyAccount = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -13,7 +13,7 @@ export const VerifyAccount = async (payload) => {
   }
 };
 
-// transfer funds
+// transfer funds with PIN verification
 export const TransferFunds = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -26,7 +26,7 @@ export const TransferFunds = async (payload) => {
   }
 };
 
-// get all txns for a user
+// get all txns for a user (no PIN needed)
 export const GetTransactionsOfUser = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -44,6 +44,7 @@ export const GetTransactionsOfUser = async (payload) => {
   }
 };
 
+// deposit funds with PIN verification for all payment methods
 export const DepositFunds = async (payload) => {
   try {
     const response = await axiosInstance.post(
@@ -52,6 +53,25 @@ export const DepositFunds = async (payload) => {
     );
     return response.data;
   } catch (error) {
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+// NEW: Verify PIN function (to be called before processing payments)
+export const VerifyTransactionPin = async (transactionPin) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/transactions/verify-transaction-pin",
+      { transactionPin },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error("VerifyTransactionPin error:", error);
     return error.response?.data || { success: false, message: error.message };
   }
 };

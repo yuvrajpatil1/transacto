@@ -80,8 +80,9 @@ export default function Login() {
 
   const handleGoogleLogin = () => {
     // Redirect to backend OAuth endpoint
-    // window.location.href = "http://localhost:5000/auth/google";
-    window.location.href = "https://transacto-backend.onrender.com/auth/google";
+    window.location.href =
+      "http://localhost:5000/auth/google" ||
+      "https://transacto-backend.onrender.com/auth/google";
   };
 
   const [formData, setFormData] = useState({

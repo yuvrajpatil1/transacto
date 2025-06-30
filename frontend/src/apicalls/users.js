@@ -1,3 +1,4 @@
+//apicalls for user
 import axios from "axios";
 import { axiosInstance } from ".";
 
@@ -71,6 +72,34 @@ export const UpdateUserVerifiedStatus = async (payload) => {
   } catch (error) {
     console.error("UpdateUserVerifiedStatus error:", error);
     throw error;
+  }
+};
+
+//verify transaction PIN
+export const VerifyTransactionPin = async (transactionPin) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/verify-transaction-pin",
+      { transactionPin }
+    );
+    return data;
+  } catch (error) {
+    console.error("VerifyTransactionPin error:", error);
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+//update transaction PIN
+export const UpdateTransactionPin = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post(
+      "/api/users/update-transaction-pin",
+      payload
+    );
+    return data;
+  } catch (error) {
+    console.error("UpdateTransactionPin error:", error);
+    return error.response?.data || { success: false, message: error.message };
   }
 };
 

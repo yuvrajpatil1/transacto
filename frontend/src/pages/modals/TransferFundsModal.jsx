@@ -8,6 +8,9 @@ import {
   User,
   IndianRupee,
   FileText,
+  Lock,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { message } from "antd";
 import { TransferFunds, VerifyAccount } from "../../apicalls/transactions";
@@ -23,10 +26,12 @@ function TransferFundsModal({
   const { user } = useSelector((state) => state.users);
   const [isVerified, setIsVerified] = useState();
   const [isVerifying, setIsVerifying] = useState(false);
+  const [showPin, setShowPin] = useState(false);
   const [formData, setFormData] = useState({
     receiver: "",
     amount: "",
     reference: "",
+    transactionPin: "",
   });
   const [errors, setErrors] = useState({});
   const [verifiedAccount, setVerifiedAccount] = useState(null);
@@ -85,31 +90,53 @@ function TransferFundsModal({
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const validateForm = () => {
     const newErrors = {};
 
+    // Account number validation
     if (!formData.receiver.trim()) {
       newErrors.receiver = "Account number is required";
     }
 
+    // Amount validation
     if (!formData.amount.trim()) {
       newErrors.amount = "Amount is required";
     } else if (isNaN(formData.amount) || parseFloat(formData.amount) <= 0) {
       newErrors.amount = "Please enter a valid amount";
     } else if (parseFloat(formData.amount) > user.balance) {
       newErrors.amount = "Insufficient balance";
+    } else if (parseFloat(formData.amount) < 1) {
+      newErrors.amount = "Minimum transfer amount is ₹1";
     }
 
+    // Reference validation
     if (!formData.reference.trim()) {
       newErrors.reference = "Reference is required";
+    } else if (formData.reference.trim().length < 3) {
+      newErrors.reference = "Reference must be at least 3 characters";
     }
 
+    // Transaction PIN validation
+    if (!formData.transactionPin.trim()) {
+      newErrors.transactionPin = "Transaction PIN is required";
+    } else if (formData.transactionPin.length < 4) {
+      newErrors.transactionPin = "PIN must be at least 4 digits";
+    } else if (formData.transactionPin.length > 6) {
+      newErrors.transactionPin = "PIN must not exceed 6 digits";
+    }
+
+    // Account verification check
     if (!isVerified) {
       newErrors.receiver = "Please verify the account first";
     }
 
+    return newErrors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newErrors = validateForm();
     setErrors(newErrors);
 
     // If errors exist, abort early
@@ -130,11 +157,13 @@ function TransferFundsModal({
       dispatch(showLoading());
 
       const payload = {
-        ...formData,
+        receiver: formData.receiver,
+        amount: parseFloat(formData.amount),
+        reference: formData.reference,
+        transactionPin: formData.transactionPin,
         sender: user._id,
         type: "debit",
         status: "success",
-        // reference: values.receiver,
       };
 
       const response = await TransferFunds(payload);
@@ -162,15 +191,31 @@ function TransferFundsModal({
           window.location.reload();
         }, 1500);
       } else {
-        toast.error(response.message || "Transfer failed. Please try again.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          icon: "❌",
-        });
+        // Handle specific PIN-related errors
+        if (response.code === "PIN_NOT_SET") {
+          toast.error("Please set your transaction PIN first in settings.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "🔐",
+          });
+        } else {
+          toast.error(
+            response.message || "Transfer failed. Please try again.",
+            {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              icon: "❌",
+            }
+          );
+        }
         console.log("Transfer failed:", response.message);
       }
     } catch (error) {
@@ -196,10 +241,12 @@ function TransferFundsModal({
     setShowTransferFundsModal(false);
     setIsVerified(false);
     setIsVerifying(false);
+    setShowPin(false);
     setFormData({
       receiver: "",
       amount: "",
       reference: "",
+      transactionPin: "",
     });
     setErrors({});
     setVerifiedAccount(null);
@@ -341,19 +388,23 @@ function TransferFundsModal({
                 {errors.amount}
               </p>
             )}
+            <p className="text-xs text-gray-400">
+              Available Balance: ₹{user.balance?.toLocaleString("en-IN")}
+            </p>
           </div>
 
-          {/* reference */}
+          {/* Reference */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <FileText className="w-4 h-4 mr-2 text-amber-400" />
-              reference
+              Reference
             </label>
             <textarea
               value={formData.reference}
               onChange={(e) => handleInputChange("reference", e.target.value)}
-              placeholder="Enter transfer reference"
+              placeholder="Enter transfer reference or notes"
               rows="3"
+              maxLength="200"
               className={`w-full px-4 py-3 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors resize-none ${
                 errors.reference
                   ? "border-red-500 focus:ring-red-500"
@@ -366,6 +417,67 @@ function TransferFundsModal({
                 {errors.reference}
               </p>
             )}
+            <p className="text-xs text-gray-400">
+              {formData.reference.length}/200 characters
+            </p>
+          </div>
+
+          {/* Transaction PIN */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300 flex items-center">
+              <Lock className="w-4 h-4 mr-2 text-amber-400" />
+              Transaction PIN
+            </label>
+            <div className="relative">
+              <input
+                type={showPin ? "text" : "password"}
+                value={formData.transactionPin}
+                onChange={(e) =>
+                  handleInputChange("transactionPin", e.target.value)
+                }
+                placeholder="Enter your transaction PIN"
+                maxLength="6"
+                className={`w-full px-4 py-3 pr-12 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+                  errors.transactionPin
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-600 focus:ring-amber-500"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPin(!showPin)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                {showPin ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+            {errors.transactionPin && (
+              <p className="text-sm text-red-400 flex items-center">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.transactionPin}
+              </p>
+            )}
+            <p className="text-xs text-gray-400">
+              Enter your 4-6 digit transaction PIN to confirm the transfer
+            </p>
+          </div>
+
+          {/* Info Box */}
+          <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
+            <div className="flex items-center text-amber-400 mb-2">
+              <AlertCircle className="w-5 h-5 mr-2" />
+              <span className="font-medium">Important Information</span>
+            </div>
+            <div className="text-sm text-gray-300 space-y-1">
+              <p>• Transfers are processed instantly</p>
+              <p>• Please verify recipient details carefully</p>
+              <p>• Transaction PIN is required for security</p>
+              <p>• Ensure sufficient balance before transferring</p>
+            </div>
           </div>
 
           {/* Action Buttons */}

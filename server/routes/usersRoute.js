@@ -86,7 +86,7 @@ const getVerificationEmailTemplate = (userName, userEmail) => {
   };
 };
 
-// Register User (Updated to handle both regular and OAuth users)
+// Register User (Updated to handle transaction PIN)
 router.post("/register", async (req, res) => {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
@@ -104,6 +104,9 @@ router.post("/register", async (req, res) => {
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
       req.body.password = hashedPassword;
     }
+
+    // Transaction PIN is already hashed from frontend, so we can use it directly
+    // Note: The PIN comes pre-hashed from the frontend registration form
 
     const newUser = new User(req.body);
     await newUser.save();
@@ -186,6 +189,7 @@ router.post("/get-user-info", authMiddleware, async (req, res) => {
     const user = await User.findById(req.userId);
     console.log(req.userId + "Yuv");
     user.password = "";
+    user.transactionPin = ""; // Hide transaction PIN from response
 
     res.send({
       message: "User info fetched successfully",
@@ -204,13 +208,140 @@ router.post("/get-user-info", authMiddleware, async (req, res) => {
 router.get("/get-all-users", authMiddleware, async (req, res) => {
   try {
     const users = await User.find();
+    // Hide sensitive information for all users
+    const sanitizedUsers = users.map((user) => {
+      const userObj = user.toObject();
+      userObj.password = "";
+      userObj.transactionPin = "";
+      return userObj;
+    });
+
     res.send({
       message: "Users fetched successfully",
-      data: users,
+      data: sanitizedUsers,
       success: true,
     });
   } catch (error) {
     res.send({
+      message: error.message,
+      success: false,
+    });
+  }
+});
+
+// Verify Transaction PIN endpoint
+router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
+  try {
+    const { transactionPin } = req.body;
+
+    if (!transactionPin) {
+      return res.status(400).send({
+        success: false,
+        message: "Transaction PIN is required",
+      });
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if user is OAuth user (they might not have a transaction PIN)
+    if (user.authProvider === "google" && !user.transactionPin) {
+      return res.status(400).send({
+        success: false,
+        message: "Transaction PIN not set for OAuth users",
+        code: "PIN_NOT_SET",
+      });
+    }
+
+    const validPin = await bcrypt.compare(transactionPin, user.transactionPin);
+
+    if (!validPin) {
+      return res.status(401).send({
+        success: false,
+        message: "Invalid transaction PIN",
+      });
+    }
+
+    res.send({
+      success: true,
+      message: "Transaction PIN verified successfully",
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: error.message,
+      success: false,
+    });
+  }
+});
+
+// Update Transaction PIN endpoint
+router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
+  try {
+    const { currentPin, newPin } = req.body;
+
+    if (!currentPin || !newPin) {
+      return res.status(400).send({
+        success: false,
+        message: "Current PIN and new PIN are required",
+      });
+    }
+
+    const user = await User.findById(req.userId);
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // For OAuth users, they might be setting PIN for the first time
+    if (user.authProvider === "google" && !user.transactionPin) {
+      // Hash the new PIN and save it
+      const salt = await bcrypt.genSalt(12);
+      const hashedNewPin = await bcrypt.hash(newPin, salt);
+
+      await User.findByIdAndUpdate(req.userId, {
+        transactionPin: hashedNewPin,
+      });
+
+      return res.send({
+        success: true,
+        message: "Transaction PIN set successfully",
+      });
+    }
+
+    // Verify current PIN
+    const validCurrentPin = await bcrypt.compare(
+      currentPin,
+      user.transactionPin
+    );
+
+    if (!validCurrentPin) {
+      return res.status(401).send({
+        success: false,
+        message: "Invalid current transaction PIN",
+      });
+    }
+
+    // Hash and update new PIN
+    const salt = await bcrypt.genSalt(12);
+    const hashedNewPin = await bcrypt.hash(newPin, salt);
+
+    await User.findByIdAndUpdate(req.userId, {
+      transactionPin: hashedNewPin,
+    });
+
+    res.send({
+      success: true,
+      message: "Transaction PIN updated successfully",
+    });
+  } catch (error) {
+    res.status(500).send({
       message: error.message,
       success: false,
     });
@@ -335,6 +466,7 @@ router.get("/generate-qr", authMiddleware, async (req, res) => {
 
   try {
     const baseURL = "https://transacto.onrender.com/";
+    // "http://localhost:5173";
     const qrCodeURL = `${baseURL}/user/${userId}`;
 
     const qrCodeData = await QRCode.toDataURL(qrCodeURL, {

@@ -12,6 +12,9 @@ import {
   Building,
   Smartphone,
   Loader2,
+  Lock,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { message } from "antd";
 import { loadStripe } from "@stripe/stripe-js";
@@ -54,6 +57,7 @@ const cardElementOptions = {
 function StripePaymentForm({
   amount,
   reference,
+  transactionPin,
   onSuccess,
   onError,
   disabled,
@@ -123,6 +127,7 @@ function StripePaymentForm({
         paymentMethodId: paymentMethod.id,
         reference: reference,
         paymentMethod: "card",
+        transactionPin: transactionPin,
         timestamp: new Date().toISOString(),
       };
 
@@ -146,7 +151,20 @@ function StripePaymentForm({
         console.log("Card deposit completed successfully");
         onSuccess();
       } else {
-        throw new Error(response.message || "Card deposit failed");
+        // Handle specific PIN-related errors
+        if (response.code === "PIN_NOT_SET") {
+          toast.error("Please set your transaction PIN first in settings.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "🔐",
+          });
+        } else {
+          throw new Error(response.message || "Card deposit failed");
+        }
       }
     } catch (error) {
       console.error("Stripe payment error:", error);
@@ -226,10 +244,12 @@ function DepositFundsModal({
   const { user } = useSelector((state) => state.users);
   const dispatch = useDispatch();
 
+  const [showPin, setShowPin] = useState(false);
   const [formData, setFormData] = useState({
     amount: "",
     paymentMethod: "bank_transfer",
     reference: "",
+    transactionPin: "",
     bankDetails: {
       accountNumber: "",
       ifscCode: "",
@@ -304,6 +324,13 @@ function DepositFundsModal({
       newErrors.reference = "Reference must be at least 3 characters";
     }
 
+    // Transaction PIN validation
+    if (!formData.transactionPin.trim()) {
+      newErrors.transactionPin = "Transaction PIN is required";
+    } else if (formData.transactionPin.length < 4) {
+      newErrors.transactionPin = "PIN must be at least 4 digits";
+    }
+
     // Payment method specific validation
     if (formData.paymentMethod === "bank_transfer") {
       if (!formData.bankDetails.accountNumber.trim()) {
@@ -341,7 +368,18 @@ function DepositFundsModal({
     const newErrors = validateForm();
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length > 0) return;
+    if (Object.keys(newErrors).length > 0) {
+      toast.warning("Please fix the errors before proceeding", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        icon: "⚠️",
+      });
+      return;
+    }
 
     try {
       dispatch(showLoading());
@@ -359,28 +397,75 @@ function DepositFundsModal({
       dispatch(hideLoading());
 
       if (response.success) {
-        message.success(
-          response.message || "Deposit request submitted successfully!"
+        toast.success(
+          response.message || "Deposit request submitted successfully!",
+          {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "💰",
+          }
         );
         handleClose();
         window.location.reload();
         if (reloadData) reloadData();
       } else {
-        message.error(response.message || "Deposit request failed");
+        // Handle specific PIN-related errors
+        if (response.code === "PIN_NOT_SET") {
+          toast.error("Please set your transaction PIN first in settings.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "🔐",
+          });
+        } else {
+          toast.error(
+            response.message || "Deposit request failed. Please try again.",
+            {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              icon: "❌",
+            }
+          );
+        }
       }
     } catch (error) {
       dispatch(hideLoading());
       console.error("Deposit error:", error);
-      message.error(error.message || "Something went wrong");
+      toast.error(
+        error.message ||
+          "Deposit failed. Please check your connection and try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          icon: "🚨",
+        }
+      );
     }
   };
 
   const handleClose = () => {
     setShowDepositFundsModal(false);
+    setShowPin(false);
     setFormData({
       amount: "",
       paymentMethod: "bank_transfer",
       reference: "",
+      transactionPin: "",
       bankDetails: {
         accountNumber: "",
         ifscCode: "",
@@ -648,6 +733,50 @@ function DepositFundsModal({
             </p>
           </div>
 
+          {/* Transaction PIN */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-300 flex items-center">
+              <Lock className="w-4 h-4 mr-2 text-amber-400" />
+              Transaction PIN
+            </label>
+            <div className="relative">
+              <input
+                type={showPin ? "text" : "password"}
+                value={formData.transactionPin}
+                onChange={(e) =>
+                  handleInputChange("transactionPin", e.target.value)
+                }
+                placeholder="Enter your transaction PIN"
+                maxLength="6"
+                className={`w-full px-4 py-3 pr-12 bg-gray-700/50 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+                  errors.transactionPin
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-600 focus:ring-amber-500"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPin(!showPin)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              >
+                {showPin ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+            {errors.transactionPin && (
+              <p className="text-sm text-red-400 flex items-center">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.transactionPin}
+              </p>
+            )}
+            <p className="text-xs text-gray-400">
+              Enter your 4-6 digit transaction PIN to confirm the deposit
+            </p>
+          </div>
+
           {/* Stripe Card Form for Card Payments */}
           {formData.paymentMethod === "card" && (
             <div className="space-y-4 border-t border-gray-700/60 pt-4">
@@ -659,6 +788,7 @@ function DepositFundsModal({
                 <StripePaymentForm
                   amount={formData.amount}
                   reference={formData.reference}
+                  transactionPin={formData.transactionPin}
                   onSuccess={handleCardPaymentSuccess}
                   onError={handleCardPaymentError}
                   disabled={!isFormValid}
@@ -679,6 +809,7 @@ function DepositFundsModal({
                   <p>• Card payments are processed instantly</p>
                   <p>• Your card details are securely handled by Stripe</p>
                   <p>• You will receive immediate confirmation</p>
+                  <p>• Transaction PIN is required for security</p>
                 </>
               ) : (
                 <>
@@ -687,6 +818,7 @@ function DepositFundsModal({
                   </p>
                   <p>• You will receive a confirmation email once processed</p>
                   <p>• Ensure all details are correct to avoid delays</p>
+                  <p>• Transaction PIN is required for security</p>
                 </>
               )}
             </div>

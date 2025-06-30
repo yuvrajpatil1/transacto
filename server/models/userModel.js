@@ -37,6 +37,14 @@ const UserSchema = new mongoose.Schema(
         return !this.googleId;
       },
     },
+    // Added transaction PIN field
+    transactionPin: {
+      type: String,
+      required: function () {
+        // Transaction PIN is required only if googleId is not present
+        return !this.googleId;
+      },
+    },
     balance: {
       type: Number,
       default: 0,

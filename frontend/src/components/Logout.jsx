@@ -15,7 +15,7 @@ const Logout = () => {
     dispatch(SetUser(null));
 
     // Navigate to login page
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   }, [navigate, dispatch]);
 
   return null; // Or a loading spinner
