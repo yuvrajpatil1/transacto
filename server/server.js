@@ -4,34 +4,30 @@ require("dotenv").config();
 const QRCode = require("qrcode");
 const passport = require("passport");
 const session = require("express-session");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const User = require("./models/userModel"); // Import your User model
-const jwt = require("jsonwebtoken");
-const RedisStore = require("connect-redis").default;
+const RedisStore = require("connect-redis")(session);
 const redis = require("redis");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const jwt = require("jsonwebtoken");
+const User = require("./models/userModel");
 
 const app = express();
 
-// Create Redis client
+// Redis Client
 const redisClient = redis.createClient({
   url: process.env.REDIS_URL || "redis://localhost:6379",
-  // Add these options for better error handling
   socket: {
     reconnectDelay: 50,
     lazyConnect: true,
   },
 });
 
-// Handle Redis connection events
 redisClient.on("error", (err) => {
   console.error("Redis Client Error:", err);
 });
-
 redisClient.on("connect", () => {
   console.log("Connected to Redis");
 });
 
-// Connect to Redis
 (async () => {
   try {
     await redisClient.connect();
@@ -40,10 +36,9 @@ redisClient.on("connect", () => {
   }
 })();
 
-// Middlewares
+// Middleware
 app.use(
   cors({
-    // origin: "http://localhost:5173",
     origin: "https://transacto.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -53,7 +48,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware with Redis store
+// Session Middleware with Redis
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
@@ -61,8 +56,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -113,7 +108,6 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    // Try to get user from cache first
     const cachedUser = await redisClient.get(`user:${id}`);
     if (cachedUser) {
       return done(null, JSON.parse(cachedUser));
@@ -121,8 +115,7 @@ passport.deserializeUser(async (id, done) => {
 
     const user = await User.findById(id);
     if (user) {
-      // Cache user for 1 hour
-      await redisClient.setEx(`user:${id}`, 3600, JSON.stringify(user));
+      await redisClient.setEx(`user:${id}`, 3600, JSON.stringify(user)); // cache 1 hour
     }
     done(null, user);
   } catch (error) {
@@ -133,9 +126,7 @@ passport.deserializeUser(async (id, done) => {
 // OAuth Routes
 app.get(
   "/auth/google",
-  passport.authenticate("google", {
-    scope: ["profile", "email"],
-  })
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 app.get(
@@ -143,7 +134,7 @@ app.get(
   passport.authenticate("google", {
     failureRedirect: "https://transacto.onrender.com/login?error=oauth_failed",
   }),
-  async (req, res) => {
+  (req, res) => {
     try {
       const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, {
         expiresIn: "1d",
@@ -163,9 +154,9 @@ app.get(
 
 app.get("/auth/logout", (req, res) => {
   req.logout((err) => {
-    if (err) {
+    if (err)
       return res.status(500).json({ success: false, message: "Logout failed" });
-    }
+
     req.session.destroy((err) => {
       if (err) {
         return res
@@ -177,7 +168,7 @@ app.get("/auth/logout", (req, res) => {
   });
 });
 
-// Routes
+// API Routes
 const dbconfig = require("./config/dbconfig");
 const usersRoute = require("./routes/usersRoute");
 const transactionsRoute = require("./routes/transactionsRoute");
