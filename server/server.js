@@ -7,22 +7,18 @@ const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./models/userModel"); // Import your User model
 const jwt = require("jsonwebtoken");
-// For connect-redis v9 with ioredis
-const RedisStore = require("connect-redis").default;
-const Redis = require("ioredis");
+const redis = require("redis");
 
 const app = express();
 
-// Create Redis client using ioredis
-const redisClient = new Redis(
-  process.env.REDIS_URL || "redis://localhost:6379",
-  {
-    // ioredis connection options
-    retryDelayOnFailover: 100,
-    maxRetriesPerRequest: 3,
+// Create Redis client for caching only (not sessions)
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL || "redis://localhost:6379",
+  socket: {
+    reconnectDelay: 50,
     lazyConnect: true,
-  }
-);
+  },
+});
 
 // Handle Redis connection events
 redisClient.on("error", (err) => {
@@ -31,10 +27,6 @@ redisClient.on("error", (err) => {
 
 redisClient.on("connect", () => {
   console.log("Connected to Redis");
-});
-
-redisClient.on("ready", () => {
-  console.log("Redis is ready");
 });
 
 // Connect to Redis
@@ -49,7 +41,6 @@ redisClient.on("ready", () => {
 // Middlewares
 app.use(
   cors({
-    // origin: "http://localhost:5173",
     origin: "https://transacto.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -59,19 +50,63 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware with Redis store
+// SOLUTION 1: Use MemoryStore temporarily (for development/testing)
+// NOTE: This won't persist sessions across server restarts
 app.use(
   session({
-    store: new RedisStore({ client: redisClient }),
-    secret: process.env.SESSION_SECRET || "your-session-secret",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
 );
+
+// SOLUTION 2: Alternative - Custom Redis session handling
+// Uncomment this if you want custom Redis session management
+/*
+const customSessionStore = {
+  get: async (sid, callback) => {
+    try {
+      const session = await redisClient.get(`sess:${sid}`);
+      callback(null, session ? JSON.parse(session) : null);
+    } catch (error) {
+      callback(error);
+    }
+  },
+  set: async (sid, session, callback) => {
+    try {
+      await redisClient.setEx(`sess:${sid}`, 86400, JSON.stringify(session)); // 24 hours
+      callback(null);
+    } catch (error) {
+      callback(error);
+    }
+  },
+  destroy: async (sid, callback) => {
+    try {
+      await redisClient.del(`sess:${sid}`);
+      callback(null);
+    } catch (error) {
+      callback(error);
+    }
+  }
+};
+
+app.use(
+  session({
+    store: customSessionStore,
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
+*/
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -128,7 +163,7 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     if (user) {
       // Cache user for 1 hour
-      await redisClient.setex(`user:${id}`, 3600, JSON.stringify(user));
+      await redisClient.setEx(`user:${id}`, 3600, JSON.stringify(user));
     }
     done(null, user);
   } catch (error) {
