@@ -301,6 +301,11 @@ export default function TransactionsPage() {
               Reset Transaction PIN
             </p>
           </div>
+          <ForgotTransactionPinModal
+            showForgotPinModal={showForgotPinModal}
+            setShowForgotPinModal={setShowForgotPinModal}
+          />
+
           <div className="max-w-5xl mx-auto mt-2">
             {/* Desktop Page Header */}
             <div className="hidden lg:flex items-center justify-between mb-8">
