@@ -7,6 +7,7 @@ const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("./models/userModel"); // Import your User model
 const jwt = require("jsonwebtoken");
+const RedisStore = require("connect-redis").default;
 
 const app = express();
 
