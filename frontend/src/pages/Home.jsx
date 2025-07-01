@@ -45,7 +45,7 @@ function Home() {
       {/* Navigation */}
       <nav className="fixed max-w-full lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <span className="text-3xl font-bold text-white">Transacto</span>
+          <span className="text-4xl font-bold text-white">Transacto</span>
         </div>
 
         <div className="flex items-center space-x-4">
