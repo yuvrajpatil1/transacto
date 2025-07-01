@@ -1,10 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-const xss = require("xss-clean");
-const mongoSanitize = require("express-mongo-sanitize");
-const hpp = require("hpp");
 require("dotenv").config();
 const QRCode = require("qrcode");
 const passport = require("passport");
@@ -23,92 +18,28 @@ redis.connect().catch((err) => {
 
 const app = express();
 
-// Security Middlewares
-// Helmet for security headers (Conservative configuration)
-app.use(
-  helmet({
-    contentSecurityPolicy: false, // Disable CSP initially to avoid breaking frontend
-    crossOriginEmbedderPolicy: false, // Disable COEP to avoid breaking OAuth
-    crossOriginOpenerPolicy: false, // Disable COOP to avoid breaking OAuth
-    crossOriginResourcePolicy: false, // Disable CORP to avoid breaking resources
-  })
-);
-
-// Rate limiting (More lenient settings)
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // Higher limit to avoid breaking normal usage
-  message: {
-    error: "Too many requests from this IP, please try again later.",
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req) => {
-    // Skip rate limiting for certain routes if needed
-    return req.path.includes("/auth/google");
-  },
-});
-
-// Apply rate limiting to all routes
-app.use(limiter);
-
-// Stricter rate limiting for auth routes
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // More lenient than before
-  message: {
-    error: "Too many authentication attempts, please try again later.",
-  },
-});
-
-// Apply stricter rate limiting to auth routes
-app.use("/auth", authLimiter);
-app.use("/api/users/login", authLimiter);
-app.use("/api/users/register", authLimiter);
-
-// XSS protection
-app.use(xss());
-
-// NoSQL injection protection
-app.use(mongoSanitize());
-
-// HTTP Parameter Pollution protection
-app.use(
-  hpp({
-    whitelist: ["sort", "fields", "page", "limit"], // Add parameters that should allow duplicates
-  })
-);
-
-// CORS configuration (moved after security middlewares)
+// Middlewares
 app.use(
   cors({
     origin: "https://transacto.onrender.com",
-    // origin: "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// Body parsing middlewares
-app.use(express.json({ limit: "10mb" })); // Add size limit for security
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-
-// Session configuration
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || "your-session-secret",
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: false,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      httpOnly: true, // Added for security
-      sameSite: "lax", // Added for CSRF protection
     },
   })
 );
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -219,28 +150,6 @@ const requestRoute = require("./routes/requestRoute");
 app.use("/api/users", usersRoute);
 app.use("/api/transactions", transactionsRoute);
 app.use("/api/requests", requestRoute);
-
-// Global error handler for security
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-
-  // Don't leak error details in production
-  const isDevelopment = process.env.NODE_ENV === "development";
-
-  res.status(err.status || 500).json({
-    success: false,
-    message: isDevelopment ? err.message : "Something went wrong!",
-    ...(isDevelopment && { stack: err.stack }),
-  });
-});
-
-// Handle 404 - using a safer approach
-app.use((req, res, next) => {
-  res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
-});
 
 // Server start
 const PORT = process.env.PORT || 5000;
