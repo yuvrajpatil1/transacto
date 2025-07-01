@@ -726,16 +726,6 @@ const SystemArchitecture = () => {
                   "Blocks malicious duplicate params",
                 ],
               },
-              {
-                title: "Enhanced CORS",
-                icon: Globe,
-                features: [
-                  "Maintained existing CORS config",
-                  "Already properly configured",
-                  "No changes needed",
-                  "Secure cross-origin requests",
-                ],
-              },
             ].map((security, index) => (
               <div
                 key={index}
