@@ -48,18 +48,20 @@ function Home() {
           <span className="text-3xl font-bold text-white">Transacto</span>
         </div>
 
-        <button
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
-          onClick={() => navigate("/register")}
-        >
-          Get Started
-        </button>
-        <button
-          className="hidden lg:block text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium transition-all duration-300 inline-flex items-center space-x-2 bg-gray-800/50 mb-6 border border-gray-700"
-          onClick={() => navigate("/docs")}
-        >
-          Docs
-        </button>
+        <div>
+          <button
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+            onClick={() => navigate("/register")}
+          >
+            Get Started
+          </button>
+          <button
+            className="hidden lg:block text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium transition-all duration-300 inline-flex items-center space-x-2 bg-gray-800/50 mb-6 border border-gray-700"
+            onClick={() => navigate("/docs")}
+          >
+            Docs
+          </button>
+        </div>
       </nav>
 
       {/* Hero Section */}
