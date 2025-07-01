@@ -43,14 +43,14 @@ function Home() {
   return (
     <div className="min-h-dvh max-w-dvw bg-gradient-to-br from-black via-slate-900 to-black text-white">
       {/* Navigation */}
-      <nav className="fixed max-w-full lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
+      <nav className="fixed max-w-full lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-8 py-6 lg:px-12 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span className="text-4xl font-bold text-white">Transacto</span>
         </div>
 
         <div className="flex items-center space-x-4">
           <button
-            className="hidden lg:block text-white px-8 py-6 text-md lg:text-lg rounded-lg font-medium transition-all duration-300 lg:inline-flex items-center space-x-2 bg-gray-800/50 border border-gray-700 hover:bg-gray-700/50"
+            className="hidden lg:block text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium transition-all duration-300 lg:inline-flex items-center space-x-2 bg-gray-800/50 border border-gray-700 hover:bg-gray-700/50"
             onClick={() => navigate("/docs")}
           >
             Docs
