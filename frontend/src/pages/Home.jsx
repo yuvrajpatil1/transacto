@@ -54,6 +54,12 @@ function Home() {
         >
           Get Started
         </button>
+        <button
+          className="hidden lg:block text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium transition-all duration-300 inline-flex items-center space-x-2 bg-gray-800/50 mb-6 border border-gray-700"
+          onClick={() => navigate("/docs")}
+        >
+          Docs
+        </button>
       </nav>
 
       {/* Hero Section */}

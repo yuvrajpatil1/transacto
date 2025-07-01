@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Transactions from "./pages/Transactions";
+import Docs from "./pages/Docs";
 import Users from "./pages/Users";
 import Dashboard from "./pages/Dashboard";
 import Requests from "./pages/Requests";
@@ -88,6 +89,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/docs" element={<Docs />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/user-not-verified" element={<UserNotVerified />} />
             {/* </Elements> */}
