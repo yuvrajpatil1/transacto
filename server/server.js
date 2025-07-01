@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
-// const xss = require("xss-clean"); // Removed due to compatibility issues
+const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 require("dotenv").config();
@@ -66,10 +66,8 @@ app.use("/auth", authLimiter);
 app.use("/api/users/login", authLimiter);
 app.use("/api/users/register", authLimiter);
 
-// XSS protection (Alternative approach using express.json built-in sanitization)
-// Note: Modern Express versions have built-in XSS protection
-// For additional XSS protection, we're relying on Helmet's security headers
-// and input validation in your route handlers
+// XSS protection
+app.use(xss());
 
 // NoSQL injection protection
 app.use(mongoSanitize());
