@@ -279,23 +279,23 @@ const SystemArchitecture = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white">
+      {/* Header */}
+
+      <nav className="fixed  max-w-dvw lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="text-3xl font-bold text-white">Transacto</span>
+        </div>
+
+        <div className="flex flex-row">
+          <button
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+            onClick={() => navigate("/register")}
+          >
+            Get Started
+          </button>
+        </div>
+      </nav>
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
-        {/* Header */}
-        <nav className="fixed  max-w-dvw lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-3xl font-bold text-white">Transacto</span>
-          </div>
-
-          <div className="flex flex-row">
-            <button
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
-              onClick={() => navigate("/register")}
-            >
-              Get Started
-            </button>
-          </div>
-        </nav>
-
         {/* Tech Stack */}
         <div className="mb-12">
           <div className="text-center mb-6">
@@ -753,38 +753,38 @@ const SystemArchitecture = () => {
           </div>
         </div>
         {/* Bottom Footer */}
-        <div className="border-t border-gray-800 pt-8">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400 mb-4 md:mb-0">
-              <span className="hidden md:block">
-                © 2025 Transacto Technologies Pvt. Ltd. All rights reserved.
-              </span>
-              <span className="md:hidden text-center">
-                © 2025 Transacto Technologies Pvt. Ltd. <br /> All rights
-                reserved.
-              </span>
-              <div className="flex items-center space-x-4">
-                <a href="#" className="hover:text-white transition-colors">
-                  Privacy Policy
-                </a>
-                <a href="#" className="hover:text-white transition-colors">
-                  Terms of Service
-                </a>
-                <a href="#" className="hover:text-white transition-colors">
-                  Cookie Policy
-                </a>
-              </div>
+      </div>
+      <div className="border-t border-gray-800 pt-8">
+        <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400 mb-4 md:mb-0">
+            <span className="hidden md:block">
+              © 2025 Transacto Technologies Pvt. Ltd. All rights reserved.
+            </span>
+            <span className="md:hidden text-center">
+              © 2025 Transacto Technologies Pvt. Ltd. <br /> All rights
+              reserved.
+            </span>
+            <div className="flex items-center space-x-4">
+              <a href="#" className="hover:text-white transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-white transition-colors">
+                Terms of Service
+              </a>
+              <a href="#" className="hover:text-white transition-colors">
+                Cookie Policy
+              </a>
             </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-400">
-              <div className="flex items-center space-x-2">
-                <span>Developed with ❤️ by</span>
-                <a
-                  className="underline text-white"
-                  href="https://linkedin.com/in/yuvrajkpatil"
-                >
-                  Yuvraj Patil.
-                </a>
-              </div>
+          </div>
+          <div className="flex items-center space-x-4 text-sm text-gray-400">
+            <div className="flex items-center space-x-2">
+              <span>Developed with ❤️ by</span>
+              <a
+                className="underline text-white"
+                href="https://linkedin.com/in/yuvrajkpatil"
+              >
+                Yuvraj Patil.
+              </a>
             </div>
           </div>
         </div>
