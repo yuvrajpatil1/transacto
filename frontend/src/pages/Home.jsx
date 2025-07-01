@@ -50,7 +50,7 @@ function Home() {
 
         <div className="flex items-center space-x-4">
           <button
-            className="hidden lg:block text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium transition-all duration-300 inline-flex items-center space-x-2 bg-gray-800/50 border border-gray-700 hover:bg-gray-700/50"
+            className="hidden lg:block text-white px-8 py-6 text-md lg:text-lg rounded-lg font-medium transition-all duration-300 lg:inline-flex items-center space-x-2 bg-gray-800/50 border border-gray-700 hover:bg-gray-700/50"
             onClick={() => navigate("/docs")}
           >
             Docs
