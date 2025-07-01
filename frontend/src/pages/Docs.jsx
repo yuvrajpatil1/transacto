@@ -752,6 +752,17 @@ const SystemArchitecture = () => {
             ))}
           </div>
         </div>
+        <div className="flex items-center space-x-4 text-sm text-gray-400">
+          <div className="flex items-center space-x-2">
+            <span>Developed with ❤️ by</span>
+            <a
+              className="underline text-white"
+              href="https://linkedin.com/in/yuvrajkpatil"
+            >
+              Yuvraj Patil.
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
