@@ -281,14 +281,20 @@ const SystemArchitecture = () => {
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
         {/* Header */}
-        <div className="text-center mb-12 pb-8 border-b border-gray-800">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
-            Transacto System Architecture
-          </h1>
-          <p className="text-xl text-gray-400">
-            Comprehensive overview of our digital wallet infrastructure
-          </p>
-        </div>
+        <nav className="fixed  max-w-dvw lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-3xl font-bold text-white">Transacto</span>
+          </div>
+
+          <div className="flex flex-row">
+            <button
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 text-md lg:text-lg rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+              onClick={() => navigate("/register")}
+            >
+              Get Started
+            </button>
+          </div>
+        </nav>
 
         {/* Tech Stack */}
         <div className="mb-12">
@@ -313,23 +319,23 @@ const SystemArchitecture = () => {
           {/* Legend */}
           <div className="flex flex-wrap justify-center gap-6 mb-8">
             <div className="flex items-center space-x-2 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
-              <div className="w-3 h-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded"></div>
+              <div className="w-3 h-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50 rounded"></div>
               <span className="text-sm text-gray-300">Frontend Layer</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
-              <div className="w-3 h-3 bg-gradient-to-r from-green-600 to-teal-600 rounded"></div>
+              <div className="w-3 h-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50 rounded"></div>
               <span className="text-sm text-gray-300">Backend Services</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
-              <div className="w-3 h-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded"></div>
+              <div className="w-3 h-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50 rounded"></div>
               <span className="text-sm text-gray-300">Database</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
-              <div className="w-3 h-3 bg-gradient-to-r from-orange-600 to-red-600 rounded"></div>
+              <div className="w-3 h-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50 rounded"></div>
               <span className="text-sm text-gray-300">External Services</span>
             </div>
             <div className="flex items-center space-x-2 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
-              <div className="w-3 h-3 bg-gradient-to-r from-yellow-600 to-orange-600 rounded"></div>
+              <div className="w-3 h-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50 rounded"></div>
               <span className="text-sm text-gray-300">Cache Layer</span>
             </div>
           </div>
@@ -347,43 +353,43 @@ const SystemArchitecture = () => {
                 id="login"
                 title="Login/Register"
                 type="frontend"
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="dashboard"
                 title="Dashboard"
                 type="frontend"
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="transfer"
                 title="Money Transfer"
                 type="frontend"
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="request"
                 title="Payment Requests"
                 type="frontend"
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="deposit"
                 title="Deposit Funds"
                 type="frontend"
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="qr"
                 title="QR Code"
                 type="frontend"
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="profile"
                 title="Profile Settings"
                 type="frontend"
-                className="bg-gradient-to-r from-blue-600 to-purple-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
             </div>
           </div>
@@ -398,43 +404,43 @@ const SystemArchitecture = () => {
                 id="auth"
                 title="Authentication"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="user-api"
                 title="User Management"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="transaction-api"
                 title="Transaction API"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="request-api"
                 title="Request API"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="pin-verify"
                 title="PIN Verification"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="otp"
                 title="OTP Service"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="middleware"
                 title="Middleware"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
             </div>
           </div>
@@ -449,31 +455,31 @@ const SystemArchitecture = () => {
                 id="redis"
                 title="Cache Layer"
                 type="cache"
-                className="bg-gradient-to-r from-yellow-600 to-orange-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="users"
                 title="Users Collection"
                 type="database"
-                className="bg-gradient-to-r from-purple-600 to-pink-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="transactions"
                 title="Transactions"
                 type="database"
-                className="bg-gradient-to-r from-purple-600 to-pink-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="requests"
                 title="Requests"
                 type="database"
-                className="bg-gradient-to-r from-purple-600 to-pink-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="otp-store"
                 title="OTP Store"
                 type="backend"
-                className="bg-gradient-to-r from-green-600 to-teal-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
             </div>
           </div>
@@ -488,25 +494,25 @@ const SystemArchitecture = () => {
                 id="stripe"
                 title="Stripe Payments"
                 type="external"
-                className="bg-gradient-to-r from-orange-600 to-red-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="gmail"
                 title="Gmail SMTP"
                 type="external"
-                className="bg-gradient-to-r from-orange-600 to-red-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="oauth"
                 title="Google OAuth"
                 type="external"
-                className="bg-gradient-to-r from-orange-600 to-red-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
               <NodeComponent
                 id="qr-service"
                 title="QR Generator"
                 type="external"
-                className="bg-gradient-to-r from-orange-600 to-red-600"
+                className="bg-gray-800/50 rounded-lg px-3 py-3 border border-gray-700/50"
               />
             </div>
           </div>
