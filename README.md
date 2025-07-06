@@ -113,7 +113,7 @@ _Direct money transfer interface with account number input, amount selection, an
 ![Deposit Funds](./frontend/src/assets/transacto-deposit.png)
 _Multiple deposit options powered by Stripe integration supporting UPI, bank transfers, and credit/debit cards_
 
-### 💰 Money Request System
+### Money Request System
 
 ![Money Requests](./frontend/src/assets/transacto-requests.png)
 _Comprehensive request management system with separate views for sent/received requests and approval workflows_
@@ -256,23 +256,6 @@ PUT /api/requests/:id/approve - Approve request
 PUT /api/requests/:id/reject - Reject request
 ```
 
-## Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow ESLint and Prettier configurations
-- Write comprehensive tests for new features
-- Update documentation for any API changes
-- Ensure security best practices are followed
-
 ## Key Learnings
 
 This project enhanced understanding of:
@@ -284,7 +267,7 @@ This project enhanced understanding of:
 - Modern React patterns with Redux Toolkit
 - Security best practices for web applications
 
-## 💡 Acknowledgments
+## Acknowledgments
 
 - Stripe for secure payment processing
 - MongoDB for reliable data storage
