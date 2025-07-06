@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const usersSlice = createSlice({
-  name: "users", // This goes here
+  name: "users",
   initialState: {
-    user: null, // This is where you'll store logged-in user data
+    user: null,
     reloadUser: false,
   },
   reducers: {

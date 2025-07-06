@@ -1,8 +1,6 @@
-//utils/cacheUtils.js - Improved Version
 const redis = require("../config/redisConfig");
 
 class CacheUtils {
-  // Basic cache operations
   static async get(key) {
     try {
       const data = await redis.get(key);
@@ -13,7 +11,6 @@ class CacheUtils {
     }
   }
 
-  // Alias for get method to match your existing code
   static async getFromCache(key) {
     return this.get(key);
   }
@@ -28,7 +25,6 @@ class CacheUtils {
     }
   }
 
-  // Alias for set method to match your existing code
   static async setCache(key, data, ttl = 3600) {
     return this.set(key, data, ttl);
   }
@@ -43,7 +39,6 @@ class CacheUtils {
     }
   }
 
-  // Alias for del method to match your existing code
   static async deleteFromCache(key) {
     return this.del(key);
   }
@@ -61,7 +56,6 @@ class CacheUtils {
     }
   }
 
-  // Cache keys generators
   static getUserKey(userId) {
     return `user:${userId}`;
   }
@@ -94,7 +88,6 @@ class CacheUtils {
     return `request:${requestId}`;
   }
 
-  // Cache invalidation helpers
   static async invalidateUserCache(userId) {
     try {
       const keysToDelete = [
@@ -106,7 +99,6 @@ class CacheUtils {
         this.getSentRequestsKey(userId),
       ];
 
-      // Delete all keys
       for (const key of keysToDelete) {
         await this.del(key);
       }
@@ -150,7 +142,6 @@ class CacheUtils {
     }
   }
 
-  // Clear all cache (for debugging)
   static async clearAllCache() {
     try {
       await redis.flushall();
@@ -162,7 +153,6 @@ class CacheUtils {
     }
   }
 
-  // Get cache info (for debugging)
   static async getCacheInfo() {
     try {
       const info = await redis.info("memory");

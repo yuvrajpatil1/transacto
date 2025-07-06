@@ -1,6 +1,6 @@
 import { axiosInstance } from ".";
 
-// Add new expense
+//add new expense
 export const AddExpense = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -13,7 +13,7 @@ export const AddExpense = async (payload) => {
   }
 };
 
-// Add new income
+//add new income
 export const AddIncome = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -26,7 +26,7 @@ export const AddIncome = async (payload) => {
   }
 };
 
-// Get all expenses
+//get all expenses
 export const GetExpenses = async () => {
   try {
     const { data } = await axiosInstance.get("/api/expenses/get-expenses");
@@ -36,7 +36,7 @@ export const GetExpenses = async () => {
   }
 };
 
-// Get all income
+//get all income
 export const GetIncome = async () => {
   try {
     const { data } = await axiosInstance.get("/api/expenses/get-income");
@@ -46,7 +46,7 @@ export const GetIncome = async () => {
   }
 };
 
-// Delete expense
+//delete expense
 export const DeleteExpense = async (expenseId) => {
   try {
     const { data } = await axiosInstance.delete(
@@ -58,7 +58,7 @@ export const DeleteExpense = async (expenseId) => {
   }
 };
 
-// Delete income
+//delete income
 export const DeleteIncome = async (incomeId) => {
   try {
     const { data } = await axiosInstance.delete(
@@ -70,7 +70,7 @@ export const DeleteIncome = async (incomeId) => {
   }
 };
 
-// Set/Update budget
+//set/update budget
 export const SetBudget = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -83,7 +83,7 @@ export const SetBudget = async (payload) => {
   }
 };
 
-// Get budget
+//get budget
 export const GetBudget = async () => {
   try {
     const { data } = await axiosInstance.get("/api/expenses/get-budget");
@@ -93,7 +93,7 @@ export const GetBudget = async () => {
   }
 };
 
-// Get dashboard data
+//get dashboard data
 export const GetDashboardData = async () => {
   try {
     const { data } = await axiosInstance.get(

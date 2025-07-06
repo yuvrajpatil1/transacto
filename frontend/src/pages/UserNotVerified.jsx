@@ -22,7 +22,7 @@ export default function UserNotVerified() {
 
   useEffect(() => {
     if (emailStatus?.type === "success") {
-      setTimeLeft(60); // 60 seconds cooldown
+      setTimeLeft(60);
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -58,12 +58,11 @@ export default function UserNotVerified() {
     setEmailStatus(null);
 
     try {
-      // Simulate API call
       const SendVerificationEmail = async (payload) => {
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve({
-              success: Math.random() > 0.2, // 80% success rate for demo
+              success: Math.random() > 0.2,
               message:
                 Math.random() > 0.2
                   ? "Email sent successfully!"
@@ -102,7 +101,6 @@ export default function UserNotVerified() {
     } finally {
       setIsResending(false);
 
-      // Clear error messages after 5 seconds, but keep success messages
       if (emailStatus?.type !== "success") {
         setTimeout(() => {
           setEmailStatus(null);
@@ -126,9 +124,7 @@ export default function UserNotVerified() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-bl from-black via-gray-900 to-black text-white overflow-hidden">
       <div className="flex flex-col lg:flex-row min-h-screen">
-        {/* Left Panel */}
         <div className="lg:w-2/5 bg-black p-8 md:p-16 flex flex-col relative overflow-hidden border-r border-gray-800">
-          {/* Animated background elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent"></div>
           <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
@@ -196,11 +192,9 @@ export default function UserNotVerified() {
           </div>
         </div>
 
-        {/* Right Panel - Verification Status */}
         <div className="lg:w-3/5 flex items-center justify-center px-8 py-16 bg-gray-900/30">
           <div className="w-full max-w-md text-center">
             <div className="mb-8">
-              {/* Animated verification icon */}
               <div className="mx-auto w-24 h-24 bg-gradient-to-r from-blue-500/20 to-purple-600/20 rounded-full flex items-center justify-center mb-6 border border-blue-500/20 relative">
                 <Clock className="w-12 h-12 text-blue-400 animate-pulse" />
                 <div className="absolute inset-0 rounded-full border-2 border-blue-500/30 animate-spin border-t-blue-500"></div>
@@ -214,7 +208,6 @@ export default function UserNotVerified() {
               </p>
             </div>
 
-            {/* Status Card */}
             <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6 mb-8 backdrop-blur-sm">
               <div className="flex items-center justify-center mb-4">
                 <AlertCircle className="w-6 h-6 text-yellow-400 mr-2" />
@@ -254,7 +247,6 @@ export default function UserNotVerified() {
                 </p>
               </div>
 
-              {/* Email Status Messages */}
               {emailStatus && (
                 <div
                   className={`rounded-lg p-4 mb-4 transition-all duration-300 ${
@@ -281,7 +273,6 @@ export default function UserNotVerified() {
               )}
             </div>
 
-            {/* Action Buttons */}
             <div className="space-y-4">
               <button
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center group cursor-pointer"

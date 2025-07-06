@@ -33,15 +33,12 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: function () {
-        // Password is required only if googleId is not present
         return !this.googleId;
       },
     },
-    // Added transaction PIN field
     transactionPin: {
       type: String,
       required: function () {
-        // Transaction PIN is required only if googleId is not present
         return !this.googleId;
       },
     },
@@ -57,10 +54,9 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    // New fields for Google OAuth
     googleId: {
       type: String,
-      sparse: true, // Allows multiple null values but unique non-null values
+      sparse: true,
     },
     profilePicture: {
       type: String,
@@ -77,11 +73,10 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-// Pre-save middleware to set authProvider based on googleId
 UserSchema.pre("save", function (next) {
   if (this.googleId) {
     this.authProvider = "google";
-    this.isVerified = true; // Auto-verify Google users
+    this.isVerified = true;
   }
   next();
 });

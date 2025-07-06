@@ -1,6 +1,3 @@
-// ISSUES IDENTIFIED AND FIXES:
-
-// 1. MISSING DISPATCH IMPORT - You're using dispatch but haven't imported it
 import React, { useState } from "react";
 import {
   Home,
@@ -24,14 +21,14 @@ import {
   Activity,
   CreditCard,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux"; // ✅ Already imported
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
 import { message } from "antd";
 import { useEffect } from "react";
 import { GetTransactionsOfUser } from "../apicalls/transactions";
-import { GenerateQRCode } from "../apicalls/users"; // ✅ Make sure this path is correct
+import { GenerateQRCode } from "../apicalls/users";
 
 export default function Dashboard({ children }) {
   const { user } = useSelector((state) => state.users);
@@ -40,7 +37,6 @@ export default function Dashboard({ children }) {
   const [qrCode, setQrCode] = useState("");
   const [txnData, setTxnData] = useState([]);
 
-  // 2. DISPATCH DECLARATION - Move dispatch declaration to the top
   const dispatch = useDispatch();
 
   const location = useLocation();
@@ -50,7 +46,6 @@ export default function Dashboard({ children }) {
 
   const navigate = useNavigate();
 
-  // ... (menu arrays remain the same)
   const userMenu = [
     {
       id: "dashboard",
@@ -128,7 +123,6 @@ export default function Dashboard({ children }) {
 
   const menuToRender = user?.isAdmin ? adminMenu : userMenu;
 
-  // Quick Actions Data
   const quickActions = [
     {
       id: "send",
@@ -164,7 +158,6 @@ export default function Dashboard({ children }) {
     },
   ];
 
-  // 3. IMPROVED QR CODE FUNCTION WITH BETTER ERROR HANDLING
   const getQrCode = async () => {
     if (!user?._id) {
       console.log("User ID not available yet");
@@ -172,27 +165,26 @@ export default function Dashboard({ children }) {
     }
 
     try {
-      console.log("Generating QR code for user:", user._id); // Debug log
+      console.log("Generating QR code for user:", user._id);
       dispatch(showLoading());
 
       const response = await GenerateQRCode({ userId: user._id });
-      console.log("QR Code response:", response); // Debug log
+      console.log("QR Code response:", response);
 
       if (response.success) {
         setQrCode(response.data);
-        console.log("QR code set successfully"); // Debug log
+        console.log("QR code set successfully");
       } else {
         message.error("Failed to generate QR code");
       }
     } catch (error) {
-      console.error("QR Code generation error:", error); // Better error logging
+      console.error("QR Code generation error:", error);
       message.error(error.message || "Failed to generate QR code");
     } finally {
       dispatch(hideLoading());
     }
   };
 
-  // 4. IMPROVED TRANSACTION DATA FUNCTION
   const getTxnData = async () => {
     if (!user?._id) {
       console.log("User ID not available yet");
@@ -200,11 +192,11 @@ export default function Dashboard({ children }) {
     }
 
     try {
-      console.log("Fetching transactions for user:", user._id); // Debug log
+      console.log("Fetching transactions for user:", user._id);
       dispatch(showLoading());
 
       const response = await GetTransactionsOfUser({ userId: user._id });
-      console.log("Transactions response:", response); // Debug log
+      console.log("Transactions response:", response);
 
       if (response.success) {
         setTxnData(response.data);
@@ -212,29 +204,27 @@ export default function Dashboard({ children }) {
         message.error("Failed to fetch transactions");
       }
     } catch (error) {
-      console.error("Transaction fetch error:", error); // Better error logging
+      console.error("Transaction fetch error:", error);
       message.error(error.message || "Failed to fetch transactions");
     } finally {
       dispatch(hideLoading());
     }
   };
 
-  // 5. IMPROVED useEffect WITH DEPENDENCY ARRAYS
   useEffect(() => {
     if (user?._id) {
-      console.log("User loaded, fetching QR code..."); // Debug log
+      console.log("User loaded, fetching QR code...");
       getQrCode();
     }
-  }, [user?._id]); // Better dependency array
+  }, [user?._id]);
 
   useEffect(() => {
     if (user?._id) {
-      console.log("User loaded, fetching transactions..."); // Debug log
+      console.log("User loaded, fetching transactions...");
       getTxnData();
     }
-  }, [user?._id]); // Better dependency array
+  }, [user?._id]);
 
-  // Utility functions
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     message.success("Account number copied to clipboard!");
@@ -251,14 +241,12 @@ export default function Dashboard({ children }) {
     setIsSidebarOpen(false);
   };
 
-  // Get recent transactions (last 3, sorted by time)
   const recentTransactions = txnData
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 3);
 
   return (
     <div className="min-h-dvh w-full bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex overflow-hidden">
-      {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-md z-40 lg:hidden"
@@ -266,7 +254,6 @@ export default function Dashboard({ children }) {
         />
       )}
 
-      {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/50 backdrop-blur-md border-b border-gray-700/60 z-30">
         <div className="flex items-center justify-between p-4">
           <button
@@ -283,7 +270,6 @@ export default function Dashboard({ children }) {
         </div>
       </div>
 
-      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -292,28 +278,20 @@ export default function Dashboard({ children }) {
         setActiveTab={setActiveTab}
       />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-dvh">
         <main className="flex-1 p-4 sm:p-6 pt-20 lg:pt-6">
-          {/* Desktop Welcome Message */}
-
           <div className="max-w-5xl mx-auto space-y-6">
             <div className="hidden lg:block mb-8">
               <h1 className="text-3xl font-bold text-gray-100">
                 Hi {user?.firstName || "User"}, Welcome to Transacto!
               </h1>
             </div>
-            {/* Balance Card - Mobile Optimized */}
             <div className="flex flex-col lg:flex-row mt-4 gap-6">
               {" "}
-              {/* 6. FIXED LAYOUT */}
-              {/* User Details Card */}
               <div className="flex-1">
                 <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-2xl overflow-hidden shadow-xl">
-                  {/* Balance Header */}
                   <div className="bg-gradient-to-r from-amber-600 to-orange-600 p-4 sm:p-6 text-white">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      {/* Account Info */}
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm sm:text-lg font-semibold mb-2">
                           Account Number
@@ -332,7 +310,6 @@ export default function Dashboard({ children }) {
                         </div>
                       </div>
 
-                      {/* Balance Info */}
                       <div className="flex items-center justify-between w-full sm:w-auto">
                         <div>
                           <h3 className="text-sm sm:text-lg font-semibold mb-1">
@@ -366,7 +343,6 @@ export default function Dashboard({ children }) {
                     </div>
                   </div>
 
-                  {/* User Details */}
                   <div className="p-4 sm:p-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                       <div className="space-y-3 sm:space-y-4">
@@ -430,7 +406,6 @@ export default function Dashboard({ children }) {
                   </div>
                 </div>
               </div>
-              {/* 7. FIXED QR CODE SECTION */}
               <div className="lg:w-80 flex-shrink-0">
                 <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-2xl overflow-hidden shadow-xl h-full">
                   <div className="p-6 flex flex-col items-center justify-center h-full">
@@ -438,7 +413,6 @@ export default function Dashboard({ children }) {
                       Payment QR Code
                     </h3>
 
-                    {/* 8. BETTER QR CODE RENDERING WITH LOADING STATE */}
                     {qrCode ? (
                       <div className="text-center">
                         <img
@@ -468,9 +442,6 @@ export default function Dashboard({ children }) {
                 </div>
               </div>
             </div>
-
-            {/* Rest of the component remains the same... */}
-            {/* Quick Actions */}
             <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-2xl p-4 sm:p-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-100 mb-4 sm:mb-6">
                 Quick Actions
@@ -493,7 +464,6 @@ export default function Dashboard({ children }) {
               </div>
             </div>
 
-            {/* Recent Activity - keeping original structure */}
             <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-2xl p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-100">
@@ -509,7 +479,6 @@ export default function Dashboard({ children }) {
 
               {recentTransactions.length > 0 ? (
                 <div className="space-y-4">
-                  {/* Desktop Table View - keeping original */}
                   <div className="hidden lg:block overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-gray-900/60">
@@ -600,7 +569,6 @@ export default function Dashboard({ children }) {
                     </table>
                   </div>
 
-                  {/* Mobile Card View - keeping original TransactionCard component */}
                   <div className="lg:hidden">
                     {recentTransactions.map((transaction) => (
                       <div key={transaction._id}>
@@ -666,7 +634,6 @@ export default function Dashboard({ children }) {
   );
 }
 
-// TransactionCard Component (keeping original)
 const TransactionCard = ({ transaction, user }) => {
   const getTransactionType = () => {
     if (transaction.sender._id === transaction.receiver._id) {

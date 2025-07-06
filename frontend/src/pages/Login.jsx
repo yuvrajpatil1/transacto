@@ -22,7 +22,6 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Handle OAuth callback
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
     const success = urlParams.get("success");
@@ -31,10 +30,8 @@ export default function Login() {
     console.log("Token received:", token);
 
     if (success && token) {
-      // Store token in localStorage
       localStorage.setItem("token", token);
 
-      // Show success message
       toast.success("Login successful! Welcome back.", {
         position: "top-right",
         autoClose: 3000,
@@ -44,13 +41,10 @@ export default function Login() {
         draggable: true,
       });
 
-      // Clean up URL (remove sensitive data)
       window.history.replaceState({}, "", window.location.pathname);
 
-      // Navigate to dashboard
       navigate("/dashboard");
     } else if (error) {
-      // Handle different error types
       let errorMessage = "Login failed. Please try again.";
 
       switch (error) {
@@ -75,13 +69,11 @@ export default function Login() {
 
       console.error("OAuth error:", error);
 
-      // Clean up URL
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, [location, navigate]);
 
   const handleGoogleLogin = () => {
-    // Redirect to backend OAuth endpoint
     window.location.href =
       // "http://localhost:5000/auth/google",
       "https://transacto-backend.onrender.com/auth/google";
@@ -105,7 +97,6 @@ export default function Login() {
       [name]: type === "checkbox" ? checked : value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -151,7 +142,6 @@ export default function Login() {
           draggable: true,
         });
         localStorage.setItem("token", response.data);
-        // Add a small delay to show the success message before redirecting
         setTimeout(() => {
           window.location.href = "/dashboard";
         }, 1000);
@@ -197,9 +187,7 @@ export default function Login() {
   return (
     <div className="min-h-dvh w-full bg-gradient-to-bl from-black via-[#1e0b06] to-black text-white overflow-hidden">
       <div className="flex flex-col lg:flex-row min-h-dvh">
-        {/* Left Panel */}
         <div className="lg:w-2/5 bg-black p-8 md:p-16 flex flex-col relative overflow-hidden border-r border-gray-800">
-          {/* Animated background elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent"></div>
           <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-blue-500/10 rounded-full blur-xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-purple-500/10 rounded-full blur-xl animate-pulse delay-1000"></div>
@@ -267,7 +255,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Right Panel - Login Form */}
         <div className="lg:w-3/5 flex items-center justify-center px-12 py-16 bg-gray-900/30">
           <div className="w-full max-w-md">
             <div className="mb-8">
@@ -278,7 +265,6 @@ export default function Login() {
             </div>
 
             <div className="space-y-6">
-              {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   <Mail className="w-4 h-4 inline mr-2" />
@@ -299,7 +285,6 @@ export default function Login() {
                 )}
               </div>
 
-              {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   <Lock className="w-4 h-4 inline mr-2" />
@@ -333,7 +318,6 @@ export default function Login() {
                 )}
               </div>
 
-              {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
@@ -367,7 +351,6 @@ export default function Login() {
                 setShowForgotPasswordModal={setShowForgotPasswordModal}
               />
 
-              {/* Submit Button */}
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
@@ -386,7 +369,6 @@ export default function Login() {
                 )}
               </button>
 
-              {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-700" />
@@ -398,7 +380,6 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Social Login Buttons */}
               <div className="flex items-center justify-center">
                 <button
                   type="button"
@@ -427,7 +408,6 @@ export default function Login() {
                 </button>
               </div>
 
-              {/* Sign Up Link */}
               <p className="text-center text-sm text-gray-400">
                 Don't have an account?{" "}
                 <button

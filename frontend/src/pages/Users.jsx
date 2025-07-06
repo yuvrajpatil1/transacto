@@ -23,7 +23,6 @@ import { hideLoading, showLoading } from "../redux/loaderSlice";
 import { GetAllUsers, UpdateUserVerifiedStatus } from "../apicalls/users";
 import { message } from "antd";
 
-// Mobile User Card Component
 const MobileUserCard = ({ user, formatDate, onUpdateStatus }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -72,7 +71,6 @@ const MobileUserCard = ({ user, formatDate, onUpdateStatus }) => {
         </div>
       </div>
 
-      {/* Action Button */}
       <div className="mb-3">
         {user.isVerified ? (
           <button
@@ -266,12 +264,10 @@ export default function UsersPage() {
     }
   };
 
-  // Load data on component mount
   useEffect(() => {
     getData();
   }, []);
 
-  // Filter users based on active tab
   const getFilteredUsers = () => {
     switch (activeTabContent) {
       case "admins":
@@ -287,7 +283,6 @@ export default function UsersPage() {
 
   const currentUsers = getFilteredUsers();
 
-  // Statistics
   const stats = {
     total: users.length,
     admins: users.filter((u) => u.isAdmin).length,
@@ -297,7 +292,6 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-dvh bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex">
-      {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
@@ -305,7 +299,6 @@ export default function UsersPage() {
         />
       )}
 
-      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -314,9 +307,7 @@ export default function UsersPage() {
         setActiveTab={setActiveTab}
       />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-dvh">
-        {/* Header */}
         <header className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/50 backdrop-blur-md border-b border-gray-700/60 z-30">
           <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-center">
@@ -330,20 +321,17 @@ export default function UsersPage() {
             <div className="text-3xl lg:text-sm text-center text-gray-400">
               <span className="font-semibold text-white">Transacto</span>
             </div>
-            <div className="w-10" /> {/* Spacer for centering */}
+            <div className="w-10" />
           </div>
         </header>
 
-        {/* Main Content Area */}
         <main className="mt-12 lg:mt-0 flex-1 p-4 lg:p-4 max-w-dvw">
           <div className="max-w-5xl mx-auto mt-2 no-scrollbar">
-            {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 lg:mb-8 gap-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-100">
                 USERS
               </h1>
 
-              {/* Refresh Button */}
               <button
                 className="w-full sm:w-auto px-4 lg:px-6 py-2 lg:py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors text-sm lg:text-base"
                 onClick={getData}
@@ -353,7 +341,6 @@ export default function UsersPage() {
               </button>
             </div>
 
-            {/* Tab Navigation */}
             <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl overflow-hidden mb-6">
               <div className="flex border-b border-gray-700/60 overflow-x-auto">
                 <button
@@ -408,7 +395,6 @@ export default function UsersPage() {
                 </button>
               </div>
 
-              {/* Mobile View - Cards */}
               <div className="block lg:hidden">
                 {currentUsers.length > 0 ? (
                   <div className="p-4">
@@ -436,7 +422,6 @@ export default function UsersPage() {
                 )}
               </div>
 
-              {/* Desktop View - Table */}
               <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-900/60">
@@ -559,7 +544,6 @@ export default function UsersPage() {
                   </tbody>
                 </table>
 
-                {/* Empty State for Desktop */}
                 {currentUsers.length === 0 && (
                   <div className="text-center py-12">
                     <Users className="w-12 h-12 text-gray-500 mx-auto mb-4" />
@@ -576,7 +560,6 @@ export default function UsersPage() {
               </div>
             </div>
 
-            {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
               <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl p-4 lg:p-6">
                 <div className="flex items-center justify-between">

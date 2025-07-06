@@ -8,17 +8,12 @@ const Logout = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Clear token from localStorage
     localStorage.removeItem("token");
-
-    // Clear user from Redux state
     dispatch(SetUser(null));
-
-    // Navigate to login page
     navigate("/", { replace: true });
   }, [navigate, dispatch]);
 
-  return null; // Or a loading spinner
+  return null;
 };
 
 export default Logout;

@@ -26,7 +26,6 @@ import DepositFundsModal from "./modals/DepositFundsModal";
 import ScanToPayModal from "./modals/ScanToPayModal";
 import ForgotTransactionPinModal from "./modals/ForgotTransactionPinModal";
 
-// Mock user data
 const mockUser = {
   firstName: "Sathya",
   lastName: "Reddy",
@@ -163,7 +162,6 @@ export default function TransactionsPage() {
 
   const menuToRender = user?.isAdmin ? adminMenu : userMenu;
 
-  // Filter transactions based on search and filter type
   const filteredTransactions = data.filter((transaction) => {
     const isCredit = transaction.receiver === user._id;
     const type = isCredit ? "credit" : "debit";
@@ -190,10 +188,8 @@ export default function TransactionsPage() {
     filteredTransactions.length / transactionsPerPage
   );
 
-  // Mobile Transaction Card Component
   const TransactionCard = ({ transaction }) => (
     <div className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 mb-4 space-y-3">
-      {/* Header Row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span
@@ -224,7 +220,6 @@ export default function TransactionsPage() {
         </span>
       </div>
 
-      {/* Details */}
       <div className="space-y-2 text-sm text-gray-300">
         <div className="flex justify-between">
           <span className="text-gray-400">Date:</span>
@@ -252,7 +247,6 @@ export default function TransactionsPage() {
 
   return (
     <div className="min-h-dvh w-full bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex overflow-hidden">
-      {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/30 bg-opacity-50 z-40 lg:hidden"
@@ -260,7 +254,6 @@ export default function TransactionsPage() {
         />
       )}
 
-      {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/50 backdrop-blur-md border-b border-gray-700/60 z-30">
         <div className="flex items-center justify-between p-4">
           <button
@@ -272,11 +265,10 @@ export default function TransactionsPage() {
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-100">Transacto</h1>
           </div>
-          <div className="w-10" /> {/* Spacer for centering */}
+          <div className="w-10" />
         </div>
       </div>
 
-      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -285,9 +277,7 @@ export default function TransactionsPage() {
         setActiveTab={setActiveTab}
       />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-dvh">
-        {/* Main Content Area */}
         <main className="flex-1 p-4 sm:p-4 pt-20 lg:pt-4">
           <div className="lg:hidden text-left p-4 mb-2">
             <h1 className="text-2xl font-bold text-gray-100">TRANSACTIONS</h1>
@@ -307,7 +297,6 @@ export default function TransactionsPage() {
           />
 
           <div className="max-w-5xl mx-auto mt-2">
-            {/* Desktop Page Header */}
             <div className="hidden lg:flex items-center justify-between mb-8">
               <div>
                 <h1 className="text-3xl font-bold text-gray-100">
@@ -330,7 +319,6 @@ export default function TransactionsPage() {
                 setShowForgotPinModal={setShowForgotPinModal}
               />
 
-              {/* Desktop Action Buttons */}
               <div className="flex space-x-3">
                 <button
                   className="px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors"
@@ -353,7 +341,6 @@ export default function TransactionsPage() {
               </div>
             </div>
 
-            {/* Mobile Action Buttons */}
             <div className="lg:hidden grid grid-cols-3 gap-2 mb-6">
               <button
                 className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition-colors text-sm"
@@ -388,12 +375,9 @@ export default function TransactionsPage() {
               setShowScanToPayModal={setShowScanToPayModal}
             />
 
-            {/* Filters and Search */}
             <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-2xl p-4 sm:p-6 mb-6">
               <div className="flex flex-col gap-4">
-                {/* Top Row - Search and Filter */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  {/* Search */}
                   <div className="relative flex-1 min-w-0">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                     <input
@@ -405,7 +389,6 @@ export default function TransactionsPage() {
                     />
                   </div>
 
-                  {/* Filter */}
                   <div className="relative sm:min-w-[150px]">
                     <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                     <select
@@ -432,7 +415,6 @@ export default function TransactionsPage() {
                   </div>
                 </div>
 
-                {/* Bottom Row - Export Button */}
                 <div className="flex justify-between items-center">
                   <div className="text-sm text-gray-400">
                     {filteredTransactions.length} of {data.length} transactions
@@ -441,9 +423,7 @@ export default function TransactionsPage() {
               </div>
             </div>
 
-            {/* Transactions Content */}
             <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-2xl overflow-hidden">
-              {/* Desktop Table View */}
               <div className="hidden lg:block">
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -551,7 +531,6 @@ export default function TransactionsPage() {
                 </div>
               </div>
 
-              {/* Mobile Card View */}
               <div className="lg:hidden p-4 sm:p-6">
                 {filteredTransactions.map((transaction) => (
                   <TransactionCard
@@ -561,7 +540,6 @@ export default function TransactionsPage() {
                 ))}
               </div>
 
-              {/* Empty State */}
               {filteredTransactions.length === 0 && (
                 <div className="text-center py-12 px-4">
                   <ArrowRightLeft className="w-12 h-12 text-gray-500 mx-auto mb-4" />
@@ -573,7 +551,6 @@ export default function TransactionsPage() {
               )}
             </div>
 
-            {/* Pagination */}
             {currentTransactions.length > 0 && (
               <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-gray-400 order-2 sm:order-1">

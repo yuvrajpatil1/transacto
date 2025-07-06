@@ -25,7 +25,6 @@ import {
 import { message } from "antd";
 import { toast } from "react-toastify";
 
-// Mobile Request Card Component
 const MobileRequestCard = ({
   request,
   activeTabContent,
@@ -220,7 +219,6 @@ export default function RequestsPage() {
           icon: "✅",
         });
 
-        // Refresh the data
         await getData();
         dispatch(ReloadUser(true));
       } else {
@@ -269,7 +267,6 @@ export default function RequestsPage() {
           icon: "🚫",
         });
 
-        // Refresh the data
         await getData();
         dispatch(ReloadUser(true));
       } else {
@@ -364,19 +361,15 @@ export default function RequestsPage() {
       dispatch(hideLoading());
     }
   };
-
-  // Load data on component mount
   useEffect(() => {
     if (user) {
       getData();
     }
   }, [user]);
 
-  // Get current requests based on active tab
   const currentRequests =
     activeTabContent === "sent" ? data.sent : data.received;
 
-  // Helper function to get the display name for a request
   const getDisplayName = (request, tab) => {
     if (tab === "sent") {
       return request.receiver?.firstName + " " + request.receiver?.lastName;
@@ -387,7 +380,6 @@ export default function RequestsPage() {
 
   return (
     <div className="min-h-dvh bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex">
-      {/* Mobile Overlay */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
@@ -395,7 +387,6 @@ export default function RequestsPage() {
         />
       )}
 
-      {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -404,9 +395,7 @@ export default function RequestsPage() {
         setActiveTab={setActiveTab}
       />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-dvh">
-        {/* Header */}
         <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900/50 backdrop-blur-md border-b border-gray-700/60 z-30">
           <div className="flex items-center justify-between p-4">
             <button
@@ -418,20 +407,17 @@ export default function RequestsPage() {
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-100">Transacto</h1>
             </div>
-            <div className="w-10" /> {/* Spacer for centering */}
+            <div className="w-10" />
           </div>
         </div>
 
-        {/* Main Content Area */}
         <main className="flex-1 p-4 lg:p-6">
           <div className="max-w-5xl mx-auto mt-18 lg:mt-0">
-            {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 lg:mb-8 gap-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-100">
                 REQUESTS
               </h1>
 
-              {/* Request Money Button */}
               <button
                 className="w-full sm:w-auto px-4 lg:px-6 py-2 lg:py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors text-sm lg:text-base"
                 onClick={() => setShowNewRequestModal(true)}
@@ -443,10 +429,9 @@ export default function RequestsPage() {
             <NewRequestModal
               showNewRequestModal={showNewRequestModal}
               setShowNewRequestModal={setShowNewRequestModal}
-              onRequestSent={getData} // Refresh data when a new request is sent
+              onRequestSent={getData}
             />
 
-            {/* Tab Navigation */}
             <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl overflow-hidden mb-6">
               <div className="flex border-b border-gray-700/60">
                 <button
@@ -475,7 +460,6 @@ export default function RequestsPage() {
                 </button>
               </div>
 
-              {/* Mobile View - Cards */}
               <div className="block lg:hidden">
                 {currentRequests.length > 0 ? (
                   <div className="p-4">
@@ -511,7 +495,6 @@ export default function RequestsPage() {
                 )}
               </div>
 
-              {/* Desktop View - Table */}
               <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-900/60">
@@ -598,7 +581,6 @@ export default function RequestsPage() {
                   </tbody>
                 </table>
 
-                {/* Empty State for Desktop */}
                 {currentRequests.length === 0 && (
                   <div className="text-center py-12">
                     {activeTabContent === "sent" ? (
@@ -619,7 +601,6 @@ export default function RequestsPage() {
               </div>
             </div>
 
-            {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl p-4 lg:p-6">
                 <div className="flex items-center justify-between">

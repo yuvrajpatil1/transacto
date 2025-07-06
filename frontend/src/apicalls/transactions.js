@@ -13,7 +13,7 @@ export const VerifyAccount = async (payload) => {
   }
 };
 
-// transfer funds with PIN verification
+//transfer funds with PIN verification
 export const TransferFunds = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -26,7 +26,7 @@ export const TransferFunds = async (payload) => {
   }
 };
 
-// get all txns for a user (no PIN needed)
+//get all txns for a user (no PIN needed)
 export const GetTransactionsOfUser = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -44,7 +44,7 @@ export const GetTransactionsOfUser = async (payload) => {
   }
 };
 
-// deposit funds with PIN verification for all payment methods
+//deposit funds with PIN verification for all payment methods
 export const DepositFunds = async (payload) => {
   try {
     const response = await axiosInstance.post(
@@ -57,7 +57,7 @@ export const DepositFunds = async (payload) => {
   }
 };
 
-// NEW: Verify PIN function (to be called before processing payments)
+//vrify PIN
 export const VerifyTransactionPin = async (transactionPin) => {
   try {
     const { data } = await axiosInstance.post(

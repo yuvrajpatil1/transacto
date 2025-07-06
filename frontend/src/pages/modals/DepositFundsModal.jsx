@@ -1,6 +1,5 @@
 import React, { useState, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Form } from "antd"; // Added missing import
 import {
   X,
   CheckCircle,
@@ -28,12 +27,10 @@ import { DepositFunds } from "../../apicalls/transactions";
 import { showLoading, hideLoading } from "../../redux/loaderSlice";
 import { toast } from "react-toastify";
 
-// Initialize Stripe
 const stripePromise = loadStripe(
   "pk_test_51RardOGbXFaGwlspj1ykMlqt1zYKGrXSN33WZwiHJzAUQRbVP7Qe2cz9S6mx8rLx1QrjaYO2MKlaWsmjPLJqq6p000MJvSo6MK"
 );
 
-// Card Element Options
 const cardElementOptions = {
   style: {
     base: {
@@ -53,7 +50,6 @@ const cardElementOptions = {
   hidePostalCode: true,
 };
 
-// Stripe Payment Form Component
 function StripePaymentForm({
   amount,
   reference,
@@ -93,7 +89,6 @@ function StripePaymentForm({
     try {
       const cardElement = elements.getElement(CardElement);
 
-      // Create payment method
       const { error, paymentMethod } = await stripe.createPaymentMethod({
         type: "card",
         card: cardElement,
@@ -107,7 +102,6 @@ function StripePaymentForm({
         throw new Error(error.message);
       }
 
-      // Show processing toast for better UX
       toast.info("Processing your payment...", {
         position: "top-right",
         autoClose: 2000,
@@ -118,7 +112,6 @@ function StripePaymentForm({
         icon: "💳",
       });
 
-      // Process payment with your backend
       const payload = {
         userId: user._id,
         amount: parseFloat(amount),
@@ -155,7 +148,6 @@ function StripePaymentForm({
         console.log("Card deposit completed successfully");
         onSuccess();
       } else {
-        // Handle specific PIN-related errors
         if (response.code === "PIN_NOT_SET") {
           toast.error("Please set your transaction PIN first in settings.", {
             position: "top-right",
@@ -173,7 +165,6 @@ function StripePaymentForm({
     } catch (error) {
       console.error("Stripe payment error:", error);
 
-      // Different error messages based on error type
       let errorMessage = "Card payment failed. Please try again.";
       let errorIcon = "❌";
 
@@ -288,7 +279,6 @@ function DepositFundsModal({
       }));
     }
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -310,7 +300,6 @@ function DepositFundsModal({
   const validateForm = () => {
     const newErrors = {};
 
-    // Amount validation
     if (!formData.amount.trim()) {
       newErrors.amount = "Amount is required";
     } else if (isNaN(formData.amount) || parseFloat(formData.amount) <= 0) {
@@ -321,21 +310,18 @@ function DepositFundsModal({
       newErrors.amount = "Maximum deposit amount is ₹1,00,000";
     }
 
-    // Reference validation
     if (!formData.reference.trim()) {
       newErrors.reference = "Reference is required";
     } else if (formData.reference.trim().length < 3) {
       newErrors.reference = "Reference must be at least 3 characters";
     }
 
-    // Transaction PIN validation
     if (!formData.transactionPin.trim()) {
       newErrors.transactionPin = "Transaction PIN is required";
     } else if (formData.transactionPin.length < 4) {
       newErrors.transactionPin = "PIN must be at least 4 digits";
     }
 
-    // Payment method specific validation
     if (formData.paymentMethod === "bank_transfer") {
       if (!formData.bankDetails.accountNumber.trim()) {
         newErrors["bankDetails.accountNumber"] = "Account number is required";
@@ -392,7 +378,7 @@ function DepositFundsModal({
         ...formData,
         userId: user._id,
         amount: parseFloat(formData.amount),
-        status: "pending", // Non-card payments need approval
+        status: "pending",
         type: "deposit",
         timestamp: new Date().toISOString(),
       };
@@ -417,7 +403,6 @@ function DepositFundsModal({
         window.location.reload();
         if (reloadData) reloadData();
       } else {
-        // Handle specific PIN-related errors
         if (response.code === "PIN_NOT_SET") {
           toast.error("Please set your transaction PIN first in settings.", {
             position: "top-right",
@@ -504,7 +489,6 @@ function DepositFundsModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/60">
           <div>
             <h2 className="text-xl font-bold text-gray-100 flex items-center">
@@ -524,9 +508,7 @@ function DepositFundsModal({
           </button>
         </div>
 
-        {/* Form */}
         <div className="p-6 space-y-6">
-          {/* Amount */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <IndianRupee className="w-4 h-4 mr-2 text-amber-400" />
@@ -557,7 +539,6 @@ function DepositFundsModal({
             </p>
           </div>
 
-          {/* Payment Method */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <SelectedPaymentIcon className="w-4 h-4 mr-2 text-amber-400" />
@@ -596,7 +577,6 @@ function DepositFundsModal({
             </div>
           </div>
 
-          {/* Bank Details for Bank Transfer */}
           {formData.paymentMethod === "bank_transfer" && (
             <div className="space-y-4 border-t border-gray-700/60 pt-4">
               <h3 className="text-sm font-medium text-gray-300 flex items-center">
@@ -675,7 +655,6 @@ function DepositFundsModal({
             </div>
           )}
 
-          {/* UPI Details for UPI Payment */}
           {formData.paymentMethod === "upi" && (
             <div className="space-y-4 border-t border-gray-700/60 pt-4">
               <h3 className="text-sm font-medium text-gray-300 flex items-center">
@@ -708,7 +687,6 @@ function DepositFundsModal({
             </div>
           )}
 
-          {/* Reference */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <FileText className="w-4 h-4 mr-2 text-amber-400" />
@@ -737,7 +715,6 @@ function DepositFundsModal({
             </p>
           </div>
 
-          {/* Stripe Card Form for Card Payments */}
           {formData.paymentMethod === "card" && (
             <div className="space-y-4 border-t border-gray-700/60 pt-4">
               <h3 className="text-sm font-medium text-gray-300 flex items-center">
@@ -757,7 +734,6 @@ function DepositFundsModal({
             </div>
           )}
 
-          {/* Transaction PIN */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <Lock className="w-4 h-4 mr-2 text-amber-400" />
@@ -801,7 +777,6 @@ function DepositFundsModal({
             </p>
           </div>
 
-          {/* Info Box */}
           <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
             <div className="flex items-center text-amber-400 mb-2">
               <AlertCircle className="w-5 h-5 mr-2" />
@@ -828,7 +803,6 @@ function DepositFundsModal({
             </div>
           </div>
 
-          {/* Action Buttons - Only show for non-card payments */}
           {formData.paymentMethod !== "card" && (
             <div className="flex gap-3 pt-4">
               <button
@@ -849,7 +823,6 @@ function DepositFundsModal({
             </div>
           )}
 
-          {/* Cancel button for card payments */}
           {formData.paymentMethod === "card" && (
             <div className="pt-4">
               <button

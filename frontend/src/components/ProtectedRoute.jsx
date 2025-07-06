@@ -39,7 +39,6 @@ function ProtectedRoute(props) {
   };
 
   useEffect(() => {
-    // Skip protection logic if we're on the root path
     if (location.pathname === "/") {
       setIsChecking(false);
       return;
@@ -60,19 +59,15 @@ function ProtectedRoute(props) {
   }, [user, location.pathname]);
 
   useEffect(() => {
-    // Skip if on root path
     if (location.pathname === "/" || !reloadUser) return;
 
     setIsChecking(true);
     getData();
   }, [reloadUser, location.pathname]);
 
-  // If we're on root path, just render children without protection
   if (location.pathname === "/") {
     return <div>{props.children}</div>;
   }
-
-  // Show loading while checking authentication for protected routes
   if (isChecking) {
     return (
       <div>
@@ -81,7 +76,6 @@ function ProtectedRoute(props) {
     );
   }
 
-  // Only render children if user is authenticated
   return user ? <div>{props.children}</div> : null;
 }
 

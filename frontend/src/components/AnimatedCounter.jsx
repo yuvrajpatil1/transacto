@@ -7,18 +7,16 @@ const AnimatedCounter = ({ children, duration = 2.5 }) => {
   const isInView = useInView(ref, { once: true, threshold: 0.3 });
 
   const extractNumberAndFormat = (text) => {
-    // Extract number and format from text like "5L+", "₹50Cr+", "99.9%"
     const match = text.match(/(₹?)(\d+(?:\.\d+)?)(L|Cr|%|\+|.*)/);
     if (!match) return { prefix: "", number: 0, suffix: text };
 
     const [, prefix, numberStr, suffix] = match;
     let number = parseFloat(numberStr);
 
-    // Convert to actual numbers for animation
     if (suffix.includes("Cr")) {
-      number = number; // Keep as is for display
+      number = number;
     } else if (suffix.includes("L")) {
-      number = number; // Keep as is for display
+      number = number;
     }
 
     return { prefix, number, suffix };
@@ -40,12 +38,10 @@ const AnimatedCounter = ({ children, duration = 2.5 }) => {
             1
           );
 
-          // Easing function
           const easeOutQuart = 1 - Math.pow(1 - progress, 4);
           const currentValue =
             startValue + (number - startValue) * easeOutQuart;
 
-          // Format the display text
           let formattedValue;
           if (suffix.includes("%")) {
             formattedValue = currentValue.toFixed(1);
@@ -74,7 +70,6 @@ const AnimatedCounter = ({ children, duration = 2.5 }) => {
   const processChildren = (children) => {
     return React.Children.map(children, (child) => {
       if (typeof child === "string") {
-        // Check if string contains numbers that should be animated
         if (/\d/.test(child)) {
           return <AnimatedText originalText={child} />;
         }

@@ -120,7 +120,7 @@ export const GenerateQRCode = async (customURL = null) => {
   }
 };
 
-// Send verification email
+//send verification email
 export const SendVerificationEmail = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -134,9 +134,7 @@ export const SendVerificationEmail = async (payload) => {
   }
 };
 
-// Add these API calls to your existing API file
-
-// Send OTP for PIN reset
+//send OTP - PIN reset
 export const SendPinResetOTP = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -151,7 +149,7 @@ export const SendPinResetOTP = async (payload) => {
   }
 };
 
-// Verify OTP for PIN reset
+//verify OTp - PIN reset
 export const VerifyPinResetOTP = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -165,7 +163,7 @@ export const VerifyPinResetOTP = async (payload) => {
   }
 };
 
-// Reset transaction PIN
+//reset transaction PIN
 export const ResetTransactionPin = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -179,7 +177,7 @@ export const ResetTransactionPin = async (payload) => {
   }
 };
 
-// Resend OTP for PIN reset
+//resend OTP for PIN reset
 export const ResendPinResetOTP = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -193,7 +191,7 @@ export const ResendPinResetOTP = async (payload) => {
   }
 };
 
-// Send OTP for password reset
+//send OTP for password reset
 export const SendPasswordResetOTP = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -207,7 +205,7 @@ export const SendPasswordResetOTP = async (payload) => {
   }
 };
 
-// Verify OTP for password reset
+//verify OTP for password reset
 export const VerifyPasswordResetOTP = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -221,7 +219,7 @@ export const VerifyPasswordResetOTP = async (payload) => {
   }
 };
 
-// Reset password
+//reset password
 export const ResetPassword = async (payload) => {
   try {
     const { data } = await axiosInstance.post(
@@ -235,7 +233,7 @@ export const ResetPassword = async (payload) => {
   }
 };
 
-// Resend OTP for password reset
+//resend OTP for password reset
 export const ResendPasswordResetOTP = async (payload) => {
   try {
     const { data } = await axiosInstance.post(

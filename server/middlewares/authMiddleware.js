@@ -11,10 +11,9 @@ module.exports = function (req, res, next) {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Set userId on req object, not req.body
     req.userId = decoded.userId;
     console.log("🔐 Received Auth Header:", req.headers.authorization);
-    console.log("👤 User ID from token:", req.userId); // Add this for debugging
+    console.log("👤 User ID from token:", req.userId);
 
     next();
   } catch (error) {

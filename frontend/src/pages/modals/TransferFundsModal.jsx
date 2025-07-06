@@ -42,7 +42,6 @@ function TransferFundsModal({
       [field]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -93,12 +92,10 @@ function TransferFundsModal({
   const validateForm = () => {
     const newErrors = {};
 
-    // Account number validation
     if (!formData.receiver.trim()) {
       newErrors.receiver = "Account number is required";
     }
 
-    // Amount validation
     if (!formData.amount.trim()) {
       newErrors.amount = "Amount is required";
     } else if (isNaN(formData.amount) || parseFloat(formData.amount) <= 0) {
@@ -109,14 +106,12 @@ function TransferFundsModal({
       newErrors.amount = "Minimum transfer amount is ₹1";
     }
 
-    // Reference validation
     if (!formData.reference.trim()) {
       newErrors.reference = "Reference is required";
     } else if (formData.reference.trim().length < 3) {
       newErrors.reference = "Reference must be at least 3 characters";
     }
 
-    // Transaction PIN validation
     if (!formData.transactionPin.trim()) {
       newErrors.transactionPin = "Transaction PIN is required";
     } else if (formData.transactionPin.length < 4) {
@@ -125,7 +120,6 @@ function TransferFundsModal({
       newErrors.transactionPin = "PIN must not exceed 6 digits";
     }
 
-    // Account verification check
     if (!isVerified) {
       newErrors.receiver = "Please verify the account first";
     }
@@ -139,7 +133,6 @@ function TransferFundsModal({
     const newErrors = validateForm();
     setErrors(newErrors);
 
-    // If errors exist, abort early
     if (Object.keys(newErrors).length > 0) {
       toast.warning("Please fix the errors before proceeding", {
         position: "top-right",
@@ -186,12 +179,10 @@ function TransferFundsModal({
         setShowTransferFundsModal(false);
         dispatch(ReloadUser(true));
 
-        // Add a small delay before reload to show the success message
         setTimeout(() => {
           window.location.reload();
         }, 1500);
       } else {
-        // Handle specific PIN-related errors
         if (response.code === "PIN_NOT_SET") {
           toast.error("Please set your transaction PIN first in settings.", {
             position: "top-right",
@@ -257,7 +248,6 @@ function TransferFundsModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/60">
           <div>
             <h2 className="text-xl font-bold text-gray-100 flex items-center">
@@ -277,9 +267,7 @@ function TransferFundsModal({
           </button>
         </div>
 
-        {/* Form */}
         <div className="p-6 space-y-6">
-          {/* Account Number Section */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <User className="w-4 h-4 mr-2 text-amber-400" />
@@ -338,7 +326,6 @@ function TransferFundsModal({
               </button>
             </div>
 
-            {/* Verification Success */}
             {isVerified && verifiedAccount && (
               <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
                 <div className="flex items-center text-green-400 mb-2">
@@ -363,7 +350,6 @@ function TransferFundsModal({
             )}
           </div>
 
-          {/* Amount */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <IndianRupee className="w-4 h-4 mr-2 text-amber-400" />
@@ -393,7 +379,6 @@ function TransferFundsModal({
             </p>
           </div>
 
-          {/* Reference */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <FileText className="w-4 h-4 mr-2 text-amber-400" />
@@ -422,7 +407,6 @@ function TransferFundsModal({
             </p>
           </div>
 
-          {/* Transaction PIN */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <Lock className="w-4 h-4 mr-2 text-amber-400" />
@@ -466,7 +450,6 @@ function TransferFundsModal({
             </p>
           </div>
 
-          {/* Info Box */}
           <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
             <div className="flex items-center text-amber-400 mb-2">
               <AlertCircle className="w-5 h-5 mr-2" />
@@ -480,7 +463,6 @@ function TransferFundsModal({
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"

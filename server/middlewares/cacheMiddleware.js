@@ -1,7 +1,5 @@
-//middlewares/cacheMiddleware.js
 const CacheUtils = require("../utils/cacheUtils");
 
-// Generic cache middleware
 const cacheMiddleware = (keyGenerator, ttl = 3600) => {
   return async (req, res, next) => {
     try {
@@ -14,10 +12,8 @@ const cacheMiddleware = (keyGenerator, ttl = 3600) => {
         return res.send(cachedData);
       }
 
-      // Store original res.send
       const originalSend = res.send;
 
-      // Override res.send to cache successful responses
       res.send = function (data) {
         if (data && data.success) {
           CacheUtils.set(cacheKey, data, ttl);

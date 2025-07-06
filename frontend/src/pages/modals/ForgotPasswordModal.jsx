@@ -25,7 +25,7 @@ function ForgotPasswordModal({
   showForgotPasswordModal,
   setShowForgotPasswordModal,
 }) {
-  const [currentStep, setCurrentStep] = useState(1); // 1: Email verification, 2: OTP verification, 3: Set new password
+  const [currentStep, setCurrentStep] = useState(1);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -44,7 +44,6 @@ function ForgotPasswordModal({
       [field]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -55,7 +54,6 @@ function ForgotPasswordModal({
 
   const dispatch = useDispatch();
 
-  // Start resend timer
   const startResendTimer = () => {
     setResendTimer(60);
     const timer = setInterval(() => {
@@ -195,14 +193,12 @@ function ForgotPasswordModal({
   const validatePasswordForm = () => {
     const newErrors = {};
 
-    // New password validation
     if (!formData.newPassword.trim()) {
       newErrors.newPassword = "New password is required";
     } else if (formData.newPassword.length < 6) {
       newErrors.newPassword = "Password must be at least 6 characters long";
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword.trim()) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.newPassword !== formData.confirmPassword) {
@@ -355,7 +351,6 @@ function ForgotPasswordModal({
       case 1:
         return (
           <div className="space-y-6">
-            {/* Email Input */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Mail className="w-4 h-4 mr-2 text-amber-400" />
@@ -383,7 +378,6 @@ function ForgotPasswordModal({
               </p>
             </div>
 
-            {/* Info Box */}
             <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
               <div className="flex items-center text-amber-400 mb-2">
                 <Shield className="w-5 h-5 mr-2" />
@@ -397,7 +391,6 @@ function ForgotPasswordModal({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
@@ -421,7 +414,6 @@ function ForgotPasswordModal({
       case 2:
         return (
           <div className="space-y-6">
-            {/* OTP Verification Success */}
             <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
               <div className="flex items-center text-green-400 mb-2">
                 <CheckCircle className="w-5 h-5 mr-2" />
@@ -432,7 +424,6 @@ function ForgotPasswordModal({
               </div>
             </div>
 
-            {/* OTP Input */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Key className="w-4 h-4 mr-2 text-amber-400" />
@@ -459,7 +450,6 @@ function ForgotPasswordModal({
                 </p>
               )}
 
-              {/* Resend OTP */}
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-400">Didn't receive the code?</span>
                 <button
@@ -477,7 +467,6 @@ function ForgotPasswordModal({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
@@ -501,7 +490,6 @@ function ForgotPasswordModal({
       case 3:
         return (
           <div className="space-y-6">
-            {/* Success Message */}
             <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
               <div className="flex items-center text-green-400 mb-2">
                 <CheckCircle className="w-5 h-5 mr-2" />
@@ -512,7 +500,6 @@ function ForgotPasswordModal({
               </div>
             </div>
 
-            {/* New Password */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Lock className="w-4 h-4 mr-2 text-amber-400" />
@@ -552,7 +539,6 @@ function ForgotPasswordModal({
               )}
             </div>
 
-            {/* Confirm Password */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Lock className="w-4 h-4 mr-2 text-amber-400" />
@@ -592,7 +578,6 @@ function ForgotPasswordModal({
               )}
             </div>
 
-            {/* Info Box */}
             <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
               <div className="flex items-center text-amber-400 mb-2">
                 <Shield className="w-5 h-5 mr-2" />
@@ -608,7 +593,6 @@ function ForgotPasswordModal({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
@@ -650,7 +634,6 @@ function ForgotPasswordModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/60">
           <div>
             <h2 className="text-xl font-bold text-gray-100 flex items-center">
@@ -670,7 +653,6 @@ function ForgotPasswordModal({
           </button>
         </div>
 
-        {/* Progress Bar */}
         <div className="px-6 pt-4 text-center items-center justify-center">
           <div className="flex items-center space-x-2">
             {[1, 2, 3].map((step) => (
@@ -700,7 +682,6 @@ function ForgotPasswordModal({
           </div>
         </div>
 
-        {/* Form Content */}
         <div className="p-6">{renderStepContent()}</div>
       </div>
     </div>

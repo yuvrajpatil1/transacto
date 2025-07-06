@@ -1,4 +1,3 @@
-//usersRoute.js (Updated with caching)
 const router = require("express").Router();
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
@@ -9,7 +8,6 @@ const CacheUtils = require("../utils/cacheUtils");
 const QRCode = require("qrcode");
 const nodemailer = require("nodemailer");
 
-// Email configuration
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -18,7 +16,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Email templates (keeping your existing template)
+//mail template
 const getVerificationEmailTemplate = (userName, userEmail) => {
   return {
     subject: "Account Verified - Welcome to Transacto!",
@@ -89,7 +87,7 @@ const getVerificationEmailTemplate = (userName, userEmail) => {
   };
 };
 
-// Register User (Updated with cache invalidation)
+//register User
 router.post("/register", async (req, res) => {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
@@ -101,7 +99,6 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // Only hash password if it's provided (not for OAuth users)
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -111,7 +108,6 @@ router.post("/register", async (req, res) => {
     const newUser = new User(req.body);
     await newUser.save();
 
-    // Invalidate all users cache
     await CacheUtils.del(CacheUtils.getAllUsersKey());
 
     res.send({
@@ -127,7 +123,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login User (No caching needed as it's authentication)
+//login User
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
@@ -139,7 +135,6 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Check if user is OAuth user
     if (user.authProvider === "google") {
       return res.status(400).send({
         success: false,
@@ -160,7 +155,6 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    // Check if user is verified
     if (!user.isVerified) {
       return res.status(403).send({
         success: false,
@@ -186,11 +180,11 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Get User Info (With caching)
+//get User Info
 router.post(
   "/get-user-info",
   authMiddleware,
-  cacheMiddleware((req) => CacheUtils.getUserKey(req.userId), 1800), // 30 minutes cache
+  cacheMiddleware((req) => CacheUtils.getUserKey(req.userId), 1800),
   async (req, res) => {
     try {
       const user = await User.findById(req.userId);
@@ -212,11 +206,11 @@ router.post(
   }
 );
 
-// Get all users (With caching)
+//get all users
 router.get(
   "/get-all-users",
   authMiddleware,
-  cacheMiddleware(CacheUtils.getAllUsersKey(), 1800), // 30 minutes cache
+  cacheMiddleware(CacheUtils.getAllUsersKey(), 1800),
   async (req, res) => {
     try {
       const users = await User.find();
@@ -241,7 +235,7 @@ router.get(
   }
 );
 
-// Verify Transaction PIN endpoint (No caching for security)
+//verify Transaction PIN endpoint
 router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   try {
     const { transactionPin } = req.body;
@@ -290,7 +284,7 @@ router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   }
 });
 
-// Update Transaction PIN endpoint (With cache invalidation)
+//update Transaction PIN endpoint
 router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
   try {
     const { currentPin, newPin } = req.body;
@@ -310,7 +304,6 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
       });
     }
 
-    // For OAuth users, they might be setting PIN for the first time
     if (user.authProvider === "google" && !user.transactionPin) {
       const salt = await bcrypt.genSalt(12);
       const hashedNewPin = await bcrypt.hash(newPin, salt);
@@ -319,7 +312,6 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
         transactionPin: hashedNewPin,
       });
 
-      // Invalidate user cache
       await CacheUtils.invalidateUserCache(req.userId);
 
       return res.send({
@@ -328,7 +320,6 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
       });
     }
 
-    // Verify current PIN
     const validCurrentPin = await bcrypt.compare(
       currentPin,
       user.transactionPin
@@ -341,7 +332,6 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
       });
     }
 
-    // Hash and update new PIN
     const salt = await bcrypt.genSalt(12);
     const hashedNewPin = await bcrypt.hash(newPin, salt);
 
@@ -349,7 +339,6 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
       transactionPin: hashedNewPin,
     });
 
-    // Invalidate user cache
     await CacheUtils.invalidateUserCache(req.userId);
 
     res.send({
@@ -364,7 +353,7 @@ router.post("/update-transaction-pin", authMiddleware, async (req, res) => {
   }
 });
 
-// Send verification email (No caching needed)
+//send verification email
 router.post("/send-verification-email", authMiddleware, async (req, res) => {
   try {
     const { userId, userName, userEmail } = req.body;
@@ -405,7 +394,7 @@ router.post("/send-verification-email", authMiddleware, async (req, res) => {
   }
 });
 
-// Update user verified status (With cache invalidation)
+//update user verified status
 router.post(
   "/update-user-verified-status",
   authMiddleware,
@@ -426,7 +415,6 @@ router.post(
         });
       }
 
-      // Invalidate caches
       await CacheUtils.invalidateUserCache(selectedUser);
 
       if (isVerified) {
@@ -467,11 +455,11 @@ router.post(
   }
 );
 
-// Generate QR (With caching)
+//generate QR
 router.get(
   "/generate-qr",
   authMiddleware,
-  cacheMiddleware((req) => CacheUtils.getQRCodeKey(req.userId), 7200), // 2 hours cache
+  cacheMiddleware((req) => CacheUtils.getQRCodeKey(req.userId), 7200),
   async (req, res) => {
     console.log("QR Code route hit! User ID:", req.userId);
 
@@ -510,17 +498,12 @@ router.get(
   }
 );
 
-// Add these routes to your existing usersRoute.js file
+const otpStore = new Map();
 
-// Generate OTP and store temporarily (in-memory or database)
-const otpStore = new Map(); // In production, use Redis or database
-
-// Generate random 6-digit OTP
 const generateOTP = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Email template for OTP
 const getOTPEmailTemplate = (userName, otp) => {
   return {
     subject: "Reset Transaction PIN - OTP Verification",
@@ -570,7 +553,7 @@ const getOTPEmailTemplate = (userName, otp) => {
   };
 };
 
-// Send OTP for PIN reset
+//send OTP for PIN reset
 router.post("/send-pin-reset-otp", async (req, res) => {
   try {
     const { email } = req.body;
@@ -582,7 +565,6 @@ router.post("/send-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).send({
@@ -591,7 +573,6 @@ router.post("/send-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).send({
@@ -600,7 +581,6 @@ router.post("/send-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user is verified
     if (!user.isVerified) {
       return res.status(403).send({
         success: false,
@@ -608,12 +588,10 @@ router.post("/send-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Generate OTP
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
     console.log(otp);
 
-    // Store OTP with expiry (in production, use Redis or database)
     otpStore.set(email, {
       otp,
       expiry: otpExpiry,
@@ -621,7 +599,6 @@ router.post("/send-pin-reset-otp", async (req, res) => {
       attempts: 0,
     });
 
-    // Send OTP email
     const emailTemplate = getOTPEmailTemplate(
       user.firstName || user.name || "User",
       otp
@@ -654,7 +631,7 @@ router.post("/send-pin-reset-otp", async (req, res) => {
   }
 });
 
-// Verify OTP for PIN reset
+//verify OTP for PIN reset
 router.post("/verify-pin-reset-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -666,7 +643,6 @@ router.post("/verify-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Get stored OTP data
     const otpData = otpStore.get(email);
 
     if (!otpData) {
@@ -676,7 +652,6 @@ router.post("/verify-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if OTP is expired
     if (new Date() > otpData.expiry) {
       otpStore.delete(email);
       return res.status(400).send({
@@ -685,7 +660,6 @@ router.post("/verify-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Check attempts (prevent brute force)
     if (otpData.attempts >= 5) {
       otpStore.delete(email);
       return res.status(429).send({
@@ -694,7 +668,6 @@ router.post("/verify-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Verify OTP
     if (otpData.otp !== otp) {
       otpData.attempts += 1;
       otpStore.set(email, otpData);
@@ -704,8 +677,6 @@ router.post("/verify-pin-reset-otp", async (req, res) => {
         message: `Invalid OTP. ${5 - otpData.attempts} attempts remaining.`,
       });
     }
-
-    // OTP verified successfully - mark as verified but don't delete yet
     otpData.verified = true;
     otpStore.set(email, otpData);
 
@@ -726,7 +697,7 @@ router.post("/verify-pin-reset-otp", async (req, res) => {
   }
 });
 
-// Reset Transaction PIN (after OTP verification)
+//reset Transaction PIN (after OTP veridication)
 router.post("/reset-transaction-pin", async (req, res) => {
   try {
     const { email, otp, newPin } = req.body;
@@ -738,7 +709,6 @@ router.post("/reset-transaction-pin", async (req, res) => {
       });
     }
 
-    // Validate PIN
     if (newPin.length < 4 || newPin.length > 6) {
       return res.status(400).send({
         success: false,
@@ -753,7 +723,6 @@ router.post("/reset-transaction-pin", async (req, res) => {
       });
     }
 
-    // Get stored OTP data
     const otpData = otpStore.get(email);
 
     if (!otpData || !otpData.verified) {
@@ -763,7 +732,6 @@ router.post("/reset-transaction-pin", async (req, res) => {
       });
     }
 
-    // Double-check OTP and expiry
     if (otpData.otp !== otp || new Date() > otpData.expiry) {
       otpStore.delete(email);
       return res.status(400).send({
@@ -772,7 +740,6 @@ router.post("/reset-transaction-pin", async (req, res) => {
       });
     }
 
-    // Find user
     const user = await User.findById(otpData.userId);
     if (!user) {
       otpStore.delete(email);
@@ -782,22 +749,18 @@ router.post("/reset-transaction-pin", async (req, res) => {
       });
     }
 
-    // Hash the new PIN
     const salt = await bcrypt.genSalt(12);
     const hashedNewPin = await bcrypt.hash(newPin, salt);
 
-    // Update user's transaction PIN
     await User.findByIdAndUpdate(otpData.userId, {
       transactionPin: hashedNewPin,
     });
 
-    // Invalidate user cache
     await CacheUtils.invalidateUserCache(otpData.userId);
 
-    // Clean up OTP data
     otpStore.delete(email);
 
-    // Send confirmation email (optional)
+    //send confirmation email
     try {
       const confirmationEmailTemplate = {
         subject: "Transaction PIN Reset Successfully",
@@ -847,7 +810,6 @@ router.post("/reset-transaction-pin", async (req, res) => {
       await transporter.sendMail(mailOptions);
     } catch (emailError) {
       console.error("Error sending confirmation email:", emailError);
-      // Don't fail the main operation if email fails
     }
 
     res.send({
@@ -867,7 +829,7 @@ router.post("/reset-transaction-pin", async (req, res) => {
   }
 });
 
-// Resend OTP for PIN reset
+//eesend OTP for PIN reset
 router.post("/resend-pin-reset-otp", async (req, res) => {
   try {
     const { email } = req.body;
@@ -879,7 +841,6 @@ router.post("/resend-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).send({
@@ -888,11 +849,9 @@ router.post("/resend-pin-reset-otp", async (req, res) => {
       });
     }
 
-    // Generate new OTP
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-    // Store new OTP
     otpStore.set(email, {
       otp,
       expiry: otpExpiry,
@@ -900,7 +859,6 @@ router.post("/resend-pin-reset-otp", async (req, res) => {
       attempts: 0,
     });
 
-    // Send OTP email
     const emailTemplate = getOTPEmailTemplate(
       user.firstName || user.name || "User",
       otp
@@ -932,10 +890,10 @@ router.post("/resend-pin-reset-otp", async (req, res) => {
   }
 });
 
-// Store for password reset OTPs (use Redis in production)
+//store for password reset OTPs
 const passwordResetOtpStore = new Map();
 
-// Email template for password reset OTP
+//mail template for password reset OTP
 const getPasswordResetOTPEmailTemplate = (userName, otp) => {
   return {
     subject: "Reset Password - OTP Verification",
@@ -987,7 +945,7 @@ const getPasswordResetOTPEmailTemplate = (userName, otp) => {
   };
 };
 
-// Send OTP for password reset
+//send OTP for password reset
 router.post("/send-password-reset-otp", async (req, res) => {
   try {
     const { email } = req.body;
@@ -999,7 +957,6 @@ router.post("/send-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).send({
@@ -1008,7 +965,6 @@ router.post("/send-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).send({
@@ -1017,7 +973,6 @@ router.post("/send-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user is verified
     if (!user.isVerified) {
       return res.status(403).send({
         success: false,
@@ -1025,7 +980,6 @@ router.post("/send-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user is OAuth user
     if (user.authProvider === "google") {
       return res.status(400).send({
         success: false,
@@ -1034,11 +988,9 @@ router.post("/send-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Generate OTP
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000);
 
-    // Store OTP with expiry
     passwordResetOtpStore.set(email, {
       otp,
       expiry: otpExpiry,
@@ -1046,7 +998,6 @@ router.post("/send-password-reset-otp", async (req, res) => {
       attempts: 0,
     });
 
-    // Send OTP email
     const emailTemplate = getPasswordResetOTPEmailTemplate(
       user.firstName || user.name || "User",
       otp
@@ -1078,7 +1029,7 @@ router.post("/send-password-reset-otp", async (req, res) => {
   }
 });
 
-// Verify OTP for password reset
+//verify OTP for password reset
 router.post("/verify-password-reset-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -1090,7 +1041,6 @@ router.post("/verify-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Get stored OTP data
     const otpData = passwordResetOtpStore.get(email);
 
     if (!otpData) {
@@ -1100,7 +1050,6 @@ router.post("/verify-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if OTP is expired
     if (new Date() > otpData.expiry) {
       passwordResetOtpStore.delete(email);
       return res.status(400).send({
@@ -1109,7 +1058,6 @@ router.post("/verify-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Check attempts (prevent brute force)
     if (otpData.attempts >= 5) {
       passwordResetOtpStore.delete(email);
       return res.status(429).send({
@@ -1118,7 +1066,6 @@ router.post("/verify-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Verify OTP
     if (otpData.otp !== otp) {
       otpData.attempts += 1;
       passwordResetOtpStore.set(email, otpData);
@@ -1129,7 +1076,6 @@ router.post("/verify-password-reset-otp", async (req, res) => {
       });
     }
 
-    // OTP verified successfully - mark as verified but don't delete yet
     otpData.verified = true;
     passwordResetOtpStore.set(email, otpData);
 
@@ -1150,7 +1096,7 @@ router.post("/verify-password-reset-otp", async (req, res) => {
   }
 });
 
-// Reset password (after OTP verification)
+//rset password (after OTP verification)
 router.post("/reset-password", async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
@@ -1162,7 +1108,6 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // Validate password
     if (newPassword.length < 6) {
       return res.status(400).send({
         success: false,
@@ -1170,7 +1115,6 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // Get stored OTP data
     const otpData = passwordResetOtpStore.get(email);
 
     if (!otpData || !otpData.verified) {
@@ -1180,7 +1124,6 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // Double-check OTP and expiry
     if (otpData.otp !== otp || new Date() > otpData.expiry) {
       passwordResetOtpStore.delete(email);
       return res.status(400).send({
@@ -1189,7 +1132,6 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // Find user
     const user = await User.findById(otpData.userId);
     if (!user) {
       passwordResetOtpStore.delete(email);
@@ -1199,22 +1141,17 @@ router.post("/reset-password", async (req, res) => {
       });
     }
 
-    // Hash the new password
     const salt = await bcrypt.genSalt(10);
     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
-    // Update user's password
     await User.findByIdAndUpdate(otpData.userId, {
       password: hashedNewPassword,
     });
 
-    // Invalidate user cache
     await CacheUtils.invalidateUserCache(otpData.userId);
 
-    // Clean up OTP data
     passwordResetOtpStore.delete(email);
 
-    // Send confirmation email
     try {
       const confirmationEmailTemplate = {
         subject: "Password Reset Successfully",
@@ -1277,7 +1214,6 @@ router.post("/reset-password", async (req, res) => {
       await transporter.sendMail(mailOptions);
     } catch (emailError) {
       console.error("Error sending confirmation email:", emailError);
-      // Don't fail the main operation if email fails
     }
 
     res.send({
@@ -1297,7 +1233,7 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
-// Resend OTP for password reset
+//resend OTP for password reset
 router.post("/resend-password-reset-otp", async (req, res) => {
   try {
     const { email } = req.body;
@@ -1309,7 +1245,6 @@ router.post("/resend-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).send({
@@ -1318,7 +1253,6 @@ router.post("/resend-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Check if user is OAuth user
     if (user.authProvider === "google") {
       return res.status(400).send({
         success: false,
@@ -1327,11 +1261,9 @@ router.post("/resend-password-reset-otp", async (req, res) => {
       });
     }
 
-    // Generate new OTP
     const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000);
 
-    // Store new OTP
     passwordResetOtpStore.set(email, {
       otp,
       expiry: otpExpiry,
@@ -1339,7 +1271,6 @@ router.post("/resend-password-reset-otp", async (req, res) => {
       attempts: 0,
     });
 
-    // Send OTP email
     const emailTemplate = getPasswordResetOTPEmailTemplate(
       user.firstName || user.name || "User",
       otp

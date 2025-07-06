@@ -38,16 +38,12 @@ function NewRequestModal({
       ...prev,
       [field]: value,
     }));
-
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
         [field]: "",
       }));
     }
-
-    // Reset verification when receiver changes
     if (field === "receiver") {
       setIsVerified(false);
       setVerifiedAccount(null);
@@ -62,8 +58,6 @@ function NewRequestModal({
       }));
       return;
     }
-
-    // Check if user is trying to send request to themselves
     if (formData.receiver === user._id) {
       setErrors((prev) => ({
         ...prev,
@@ -142,8 +136,6 @@ function NewRequestModal({
 
     const newErrors = validateForm();
     setErrors(newErrors);
-
-    // If errors exist, abort early
     if (Object.keys(newErrors).length > 0) {
       const firstErrorField = Object.keys(newErrors)[0];
       toast.warning(`Please fix the error: ${newErrors[firstErrorField]}`, {
@@ -187,7 +179,6 @@ function NewRequestModal({
         console.log("Request sent successfully");
         handleClose();
 
-        // Add a small delay before reload to show the success message
         setTimeout(() => {
           window.location.reload();
         }, 1500);
@@ -245,7 +236,6 @@ function NewRequestModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto no-scrollbar">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/60">
           <div>
             <h2 className="text-xl font-bold text-gray-100 flex items-center">
@@ -265,9 +255,7 @@ function NewRequestModal({
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Account Number Section */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <User className="w-4 h-4 mr-2 text-amber-500" />
@@ -330,7 +318,6 @@ function NewRequestModal({
               </button>
             </div>
 
-            {/* Verification Success */}
             {isVerified && verifiedAccount && (
               <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
                 <div className="flex items-center text-green-400 mb-2">
@@ -357,7 +344,6 @@ function NewRequestModal({
             )}
           </div>
 
-          {/* Amount */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <IndianRupee className="w-4 h-4 mr-2 text-amber-500" />
@@ -385,7 +371,6 @@ function NewRequestModal({
             )}
           </div>
 
-          {/* Reference */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <FileText className="w-4 h-4 mr-2 text-amber-500" />
@@ -418,7 +403,6 @@ function NewRequestModal({
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"

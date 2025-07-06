@@ -27,7 +27,7 @@ function ForgotTransactionPinModal({
   setShowForgotPinModal,
 }) {
   const { user } = useSelector((state) => state.users);
-  const [currentStep, setCurrentStep] = useState(1); // 1: Email verification, 2: OTP verification, 3: Set new PIN
+  const [currentStep, setCurrentStep] = useState(1);
   const [showNewPin, setShowNewPin] = useState(false);
   const [showConfirmPin, setShowConfirmPin] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,7 +46,6 @@ function ForgotTransactionPinModal({
       [field]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -57,7 +56,6 @@ function ForgotTransactionPinModal({
 
   const dispatch = useDispatch();
 
-  // Start resend timer
   const startResendTimer = () => {
     setResendTimer(60);
     const timer = setInterval(() => {
@@ -186,7 +184,6 @@ function ForgotTransactionPinModal({
   const validatePinForm = () => {
     const newErrors = {};
 
-    // New PIN validation
     if (!formData.newPin.trim()) {
       newErrors.newPin = "New PIN is required";
     } else if (formData.newPin.length < 4) {
@@ -197,7 +194,6 @@ function ForgotTransactionPinModal({
       newErrors.newPin = "PIN must contain only numbers";
     }
 
-    // Confirm PIN validation
     if (!formData.confirmPin.trim()) {
       newErrors.confirmPin = "Please confirm your PIN";
     } else if (formData.newPin !== formData.confirmPin) {
@@ -344,7 +340,6 @@ function ForgotTransactionPinModal({
       case 1:
         return (
           <div className="space-y-6">
-            {/* Email Input */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Mail className="w-4 h-4 mr-2 text-amber-400" />
@@ -372,7 +367,6 @@ function ForgotTransactionPinModal({
               </p>
             </div>
 
-            {/* Info Box */}
             <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
               <div className="flex items-center text-amber-400 mb-2">
                 <Shield className="w-5 h-5 mr-2" />
@@ -386,7 +380,6 @@ function ForgotTransactionPinModal({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
@@ -410,7 +403,6 @@ function ForgotTransactionPinModal({
       case 2:
         return (
           <div className="space-y-6">
-            {/* OTP Verification Success */}
             <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
               <div className="flex items-center text-green-400 mb-2">
                 <CheckCircle className="w-5 h-5 mr-2" />
@@ -421,7 +413,6 @@ function ForgotTransactionPinModal({
               </div>
             </div>
 
-            {/* OTP Input */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Key className="w-4 h-4 mr-2 text-amber-400" />
@@ -448,7 +439,6 @@ function ForgotTransactionPinModal({
                 </p>
               )}
 
-              {/* Resend OTP */}
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-400">Didn't receive the code?</span>
                 <button
@@ -466,7 +456,6 @@ function ForgotTransactionPinModal({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
@@ -490,7 +479,6 @@ function ForgotTransactionPinModal({
       case 3:
         return (
           <div className="space-y-6">
-            {/* Success Message */}
             <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
               <div className="flex items-center text-green-400 mb-2">
                 <CheckCircle className="w-5 h-5 mr-2" />
@@ -501,7 +489,6 @@ function ForgotTransactionPinModal({
               </div>
             </div>
 
-            {/* New PIN */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Lock className="w-4 h-4 mr-2 text-amber-400" />
@@ -545,7 +532,6 @@ function ForgotTransactionPinModal({
               )}
             </div>
 
-            {/* Confirm PIN */}
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
                 <Lock className="w-4 h-4 mr-2 text-amber-400" />
@@ -589,7 +575,6 @@ function ForgotTransactionPinModal({
               )}
             </div>
 
-            {/* Info Box */}
             <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
               <div className="flex items-center text-amber-400 mb-2">
                 <Shield className="w-5 h-5 mr-2" />
@@ -603,7 +588,6 @@ function ForgotTransactionPinModal({
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
@@ -645,7 +629,6 @@ function ForgotTransactionPinModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[100vh] overflow-y-auto no-scrollbar">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/60">
           <div>
             <h2 className="text-xl font-bold text-gray-100 flex items-center">
@@ -665,7 +648,6 @@ function ForgotTransactionPinModal({
           </button>
         </div>
 
-        {/* Progress Bar */}
         <div className="px-6 pt-4">
           <div className="flex items-center space-x-2">
             {[1, 2, 3].map((step) => (
@@ -695,7 +677,6 @@ function ForgotTransactionPinModal({
           </div>
         </div>
 
-        {/* Form Content */}
         <div className="p-6">{renderStepContent()}</div>
       </div>
     </div>

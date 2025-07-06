@@ -1,7 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-// Professional page transition component
 export default function HomeTransition({ children, className = "" }) {
   return (
     <div className={`relative ${className}`}>

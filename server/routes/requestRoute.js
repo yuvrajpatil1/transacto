@@ -6,14 +6,11 @@ const Request = require("../models/requestModel");
 const User = require("../models/userModel");
 const Transaction = require("../models/transactionModel");
 
-// Get all requests by user (With caching)
+//get allrequests by user
 router.get(
   "/get-all-requests-by-user",
   authMiddleware,
-  cacheMiddleware(
-    (req) => CacheUtils.getUserRequestsKey(req.userId),
-    900 // 15 minutes cache
-  ),
+  cacheMiddleware((req) => CacheUtils.getUserRequestsKey(req.userId), 900),
   async (req, res) => {
     try {
       const userId = req.userId;
@@ -41,12 +38,11 @@ router.get(
   }
 );
 
-// Send request to another user (With cache invalidation)
+//send request to another user
 router.post("/send-request", authMiddleware, async (req, res) => {
   try {
     const { receiver, amount, reference } = req.body;
 
-    // Validate required fields
     if (!receiver || !amount || !reference) {
       return res.status(400).json({
         message: "Receiver, amount, and reference are required",
@@ -54,7 +50,6 @@ router.post("/send-request", authMiddleware, async (req, res) => {
       });
     }
 
-    // Validate amount
     if (isNaN(amount) || parseFloat(amount) <= 0) {
       return res.status(400).json({
         message: "Please enter a valid amount",
@@ -62,14 +57,13 @@ router.post("/send-request", authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if receiver exists (with caching for user verification)
     const cacheKey = `user:${receiver}`;
     let receiverUser = await CacheUtils.getFromCache(cacheKey);
 
     if (!receiverUser) {
       receiverUser = await User.findById(receiver);
       if (receiverUser) {
-        await CacheUtils.setCache(cacheKey, receiverUser, 1800); // 30 minutes
+        await CacheUtils.setCache(cacheKey, receiverUser, 1800);
       }
     }
 
@@ -80,7 +74,6 @@ router.post("/send-request", authMiddleware, async (req, res) => {
       });
     }
 
-    // Check if user is not sending request to themselves
     if (req.userId === receiver) {
       return res.status(400).json({
         message: "Cannot send request to yourself",
@@ -98,7 +91,6 @@ router.post("/send-request", authMiddleware, async (req, res) => {
 
     await request.save();
 
-    // Invalidate request caches for both sender and receiver
     await CacheUtils.invalidateRequestCache(req.userId);
     await CacheUtils.invalidateRequestCache(receiver);
 
@@ -117,12 +109,11 @@ router.post("/send-request", authMiddleware, async (req, res) => {
   }
 });
 
-// Update request status (accept/reject) (With cache invalidation)
+//update request statu
 router.post("/update-request-status", authMiddleware, async (req, res) => {
   try {
     const { requestId, status } = req.body;
 
-    // Validate input
     if (!requestId || !status) {
       return res.status(400).json({
         message: "Request ID and status are required",
@@ -137,7 +128,6 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
       });
     }
 
-    // Check cache first for request
     const requestCacheKey = `request:${requestId}`;
     let request = await CacheUtils.getFromCache(requestCacheKey);
 
@@ -147,7 +137,6 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
         await CacheUtils.setCache(requestCacheKey, request, 600); // 10 minutes
       }
     } else {
-      // If from cache, populate the references
       request = await Request.findById(requestId).populate("sender receiver");
     }
 
@@ -195,7 +184,6 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
         });
       }
 
-      // Update balances
       await User.findByIdAndUpdate(request.receiver._id, {
         $inc: { balance: -amount },
       });
@@ -203,23 +191,19 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
         $inc: { balance: amount },
       });
 
-      // Create transaction
       const transaction = new Transaction({
-        sender: request.receiver._id, // receiver is sending money
-        receiver: request.sender._id, // sender is receiving it
+        sender: request.receiver._id,
+        receiver: request.sender._id,
         amount: request.amount,
         reference: request.reference,
         status: "success",
-        type: "request", // Required field
+        type: "request",
       });
 
       await transaction.save();
-
-      // Invalidate user caches for balance updates
       await CacheUtils.invalidateUserCache(request.receiver._id.toString());
       await CacheUtils.invalidateUserCache(request.sender._id.toString());
 
-      // Invalidate transaction caches
       await CacheUtils.invalidateTransactionCache(
         request.receiver._id.toString()
       );
@@ -228,15 +212,12 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
       );
     }
 
-    // Update status
     request.status = status;
     await request.save();
 
-    // Invalidate request caches for both users
     await CacheUtils.invalidateRequestCache(request.sender._id.toString());
     await CacheUtils.invalidateRequestCache(request.receiver._id.toString());
 
-    // Remove specific request from cache
     await CacheUtils.deleteFromCache(requestCacheKey);
 
     res.send({
@@ -254,14 +235,11 @@ router.post("/update-request-status", authMiddleware, async (req, res) => {
   }
 });
 
-// Get pending requests for user (With caching)
+//get pendibg requests for user
 router.get(
   "/get-pending-requests",
   authMiddleware,
-  cacheMiddleware(
-    (req) => `pending-requests:${req.userId}`,
-    300 // 5 minutes cache (shorter for pending requests)
-  ),
+  cacheMiddleware((req) => `pending-requests:${req.userId}`, 300),
   async (req, res) => {
     try {
       const userId = req.userId;
@@ -290,14 +268,11 @@ router.get(
   }
 );
 
-// Get sent requests by user (With caching)
+//get sent requests by user
 router.get(
   "/get-sent-requests",
   authMiddleware,
-  cacheMiddleware(
-    (req) => `sent-requests:${req.userId}`,
-    600 // 10 minutes cache
-  ),
+  cacheMiddleware((req) => `sent-requests:${req.userId}`, 600),
   async (req, res) => {
     try {
       const userId = req.userId;

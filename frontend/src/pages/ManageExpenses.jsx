@@ -40,7 +40,6 @@ const ManageExpenses = () => {
   const [budget, setBudget] = useState(5000);
   const [showBudgetModal, setShowBudgetModal] = useState(false);
 
-  // Sample data - replace with your API calls
   const [income, setIncome] = useState([
     {
       id: 1,
@@ -175,8 +174,6 @@ const ManageExpenses = () => {
     const file = event.target.files[0];
     if (file) {
       setSelectedFile(file);
-      // Here you would integrate with Gemini API to scan the invoice
-      // For demo purposes, we'll simulate adding an expense
       const simulatedExpense = {
         id: Date.now(),
         reference: "Scanned Invoice - Restaurant",
@@ -191,7 +188,6 @@ const ManageExpenses = () => {
   };
 
   const exportToExcel = (data, filename) => {
-    // Simulate Excel export - in real implementation, use libraries like xlsx
     const csvContent =
       "data:text/csv;charset=utf-8," +
       Object.keys(data[0]).join(",") +
@@ -359,7 +355,6 @@ const ManageExpenses = () => {
     <div>
       <SummaryCards />
 
-      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
         <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl p-4 lg:p-6">
           <h3 className="text-lg font-semibold mb-4 flex items-center text-gray-100">
@@ -422,7 +417,6 @@ const ManageExpenses = () => {
         </div>
       </div>
 
-      {/* Recent Transactions */}
       <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl p-4 lg:p-6">
         <h3 className="text-lg font-semibold mb-4 text-gray-100">
           Recent Transactions
@@ -485,7 +479,6 @@ const ManageExpenses = () => {
         </button>
       </div>
 
-      {/* Add Income Form */}
       <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl p-4 lg:p-6 mb-6">
         <h3 className="text-lg font-semibold mb-4 text-gray-100">
           Add New Income
@@ -532,7 +525,6 @@ const ManageExpenses = () => {
         </div>
       </div>
 
-      {/* Income List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {income.map((item) => (
           <div
@@ -588,7 +580,6 @@ const ManageExpenses = () => {
         </div>
       </div>
 
-      {/* Budget Progress */}
       <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl p-4 lg:p-6 mb-6">
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-semibold text-gray-100">
@@ -619,7 +610,6 @@ const ManageExpenses = () => {
         </p>
       </div>
 
-      {/* Add Expense Form */}
       <div className="bg-gray-800/40 backdrop-blur-3xl border border-gray-700/60 rounded-xl lg:rounded-2xl p-4 lg:p-6 mb-6">
         <h3 className="text-lg font-semibold mb-4 text-gray-100">
           Add New Expense
@@ -676,7 +666,6 @@ const ManageExpenses = () => {
         </div>
       </div>
 
-      {/* Expense List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {expenses.map((item) => (
           <div
@@ -704,7 +693,6 @@ const ManageExpenses = () => {
         ))}
       </div>
 
-      {/* Budget Modal */}
       {showBudgetModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 border border-gray-700 rounded-xl shadow-lg max-w-md w-full p-6">
@@ -740,7 +728,6 @@ const ManageExpenses = () => {
 
   return (
     <div className="min-h-dvh bg-gradient-to-tr from-black via-[#1e0b06] to-black text-white flex">
-      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -750,9 +737,7 @@ const ManageExpenses = () => {
 
       <Sidebar />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-dvh">
-        {/* Header */}
         <header className="lg:hidden bg-gray-900/40 backdrop-blur-xl border-b border-gray-700/60">
           <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4">
             <div className="flex items-center">
@@ -782,10 +767,8 @@ const ManageExpenses = () => {
           </div>
         </header>
 
-        {/* Content */}
         <main className="flex-1 p-4 lg:p-6">
           <div className="max-w-7xl mx-auto">
-            {/* Desktop Header */}
             <div className="hidden lg:flex items-center justify-between mb-6">
               <h1 className="text-3xl font-bold text-gray-100">
                 {activeView === "dashboard" && "Dashboard"}
@@ -807,7 +790,6 @@ const ManageExpenses = () => {
               </div>
             </div>
 
-            {/* View Content */}
             <div className="bg-gray-800/40 backdrop-blur-xl rounded-xl border border-gray-700/60 p-4 lg:p-6">
               {activeView === "dashboard" && <Dashboard />}
               {activeView === "income" && <IncomeView />}
@@ -817,7 +799,6 @@ const ManageExpenses = () => {
         </main>
       </div>
 
-      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"

@@ -47,7 +47,6 @@ function ScanToPayModal({
   const streamRef = useRef(null);
   const scanIntervalRef = useRef(null);
 
-  // Replace with your actual message system
   const message = {
     success: (msg) => console.log("Success:", msg),
     error: (msg) => console.log("Error:", msg),
@@ -56,8 +55,6 @@ function ScanToPayModal({
   const [verifiedAccount, setVerifiedAccount] = useState(null);
   const dispatch = useDispatch();
 
-  // Modified QR code detection for URLs containing account numbers
-  // Even more flexible version that handles query parameters or trailing slashes
   const detectQRCodeFromImage = (canvas) => {
     const context = canvas.getContext("2d");
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -66,7 +63,6 @@ function ScanToPayModal({
     if (code && code.data) {
       console.log("QR Code detected:", code.data);
 
-      // Matches /user/ followed by account number, ignoring trailing slashes or query params
       const userPattern = /\/user\/([a-zA-Z0-9_-]+)(?:\/|\?|$)/;
       const match = code.data.match(userPattern);
 
@@ -82,7 +78,6 @@ function ScanToPayModal({
     return null;
   };
 
-  // Cleanup camera stream on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
@@ -100,7 +95,6 @@ function ScanToPayModal({
       [field]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -120,7 +114,6 @@ function ScanToPayModal({
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
 
-        // Start continuous scanning once video is loaded
         videoRef.current.onloadedmetadata = () => {
           scanIntervalRef.current = setInterval(() => {
             if (!qrCodeData && !isProcessing) {
@@ -166,7 +159,7 @@ function ScanToPayModal({
   };
 
   const handleQRCodeDetected = async (accountNumber) => {
-    if (qrCodeData || isProcessing) return; // Prevent multiple scans
+    if (qrCodeData || isProcessing) return;
 
     try {
       stopCamera();
@@ -174,7 +167,6 @@ function ScanToPayModal({
 
       console.log("Verifying account:", accountNumber);
 
-      // Verify the account
       dispatch(showLoading());
       const response = await VerifyAccount({ receiver: accountNumber });
       dispatch(hideLoading());
@@ -220,7 +212,6 @@ function ScanToPayModal({
           }
         );
 
-        // Restart camera if account verification fails
         setTimeout(() => {
           if (scanMethod === "camera") {
             startCamera();
@@ -243,8 +234,6 @@ function ScanToPayModal({
           icon: "🚨",
         }
       );
-
-      // Restart camera on error
       setTimeout(() => {
         if (scanMethod === "camera") {
           startCamera();
@@ -324,20 +313,16 @@ function ScanToPayModal({
       setIsProcessing(false);
     }
 
-    // Clear the file input
     event.target.value = "";
   };
 
-  // Improved form validation matching TransferFundsModal
   const validateForm = () => {
     const newErrors = {};
 
-    // Account number validation
     if (!formData.receiver.trim()) {
       newErrors.receiver = "Account number is required";
     }
 
-    // Amount validation
     if (!formData.amount.trim()) {
       newErrors.amount = "Amount is required";
     } else if (isNaN(formData.amount) || parseFloat(formData.amount) <= 0) {
@@ -348,14 +333,12 @@ function ScanToPayModal({
       newErrors.amount = "Minimum transfer amount is ₹1";
     }
 
-    // Reference validation
     if (!formData.reference.trim()) {
       newErrors.reference = "Reference is required";
     } else if (formData.reference.trim().length < 3) {
       newErrors.reference = "Reference must be at least 3 characters";
     }
 
-    // Transaction PIN validation
     if (!formData.transactionPin.trim()) {
       newErrors.transactionPin = "Transaction PIN is required";
     } else if (formData.transactionPin.length < 4) {
@@ -364,7 +347,6 @@ function ScanToPayModal({
       newErrors.transactionPin = "PIN must not exceed 6 digits";
     }
 
-    // Account verification check
     if (!isVerified) {
       newErrors.receiver = "Please verify the account first";
     }
@@ -378,7 +360,6 @@ function ScanToPayModal({
     const newErrors = validateForm();
     setErrors(newErrors);
 
-    // If errors exist, abort early
     if (Object.keys(newErrors).length > 0) {
       toast.warning("Please fix the errors before proceeding", {
         position: "top-right",
@@ -425,12 +406,10 @@ function ScanToPayModal({
         setShowScanToPayModal(false);
         dispatch(ReloadUser(true));
 
-        // Add a small delay before reload to show the success message
         setTimeout(() => {
           window.location.reload();
         }, 1500);
       } else {
-        // Handle specific PIN-related errors
         if (response.code === "PIN_NOT_SET") {
           toast.error("Please set your transaction PIN first in settings.", {
             position: "top-right",
@@ -501,7 +480,6 @@ function ScanToPayModal({
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 ">
       <div className="no-scrollbar bg-gray-800/95 backdrop-blur-xl border border-gray-700/60 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-700/60">
           <div>
             <h2 className="text-xl font-bold text-gray-100 flex items-center">
@@ -522,7 +500,6 @@ function ScanToPayModal({
           </button>
         </div>
 
-        {/* Processing Overlay */}
         {isProcessing && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 rounded-2xl">
             <div className="bg-gray-800 p-4 rounded-lg flex items-center space-x-3">
@@ -532,9 +509,7 @@ function ScanToPayModal({
           </div>
         )}
 
-        {/* Form */}
         <div className="p-6 space-y-6">
-          {/* QR Code Scanner Section */}
           {!qrCodeData && (
             <div className="space-y-4">
               <label className="block text-sm font-medium text-gray-300 flex items-center">
@@ -542,7 +517,6 @@ function ScanToPayModal({
                 Scan QR Code
               </label>
 
-              {/* Scan Method Toggle */}
               <div className="flex bg-gray-700/50 rounded-lg p-1">
                 <button
                   type="button"
@@ -582,7 +556,6 @@ function ScanToPayModal({
                 </button>
               </div>
 
-              {/* Camera Scanner */}
               {scanMethod === "camera" && (
                 <div className="space-y-3">
                   {!isScanning ? (
@@ -629,7 +602,6 @@ function ScanToPayModal({
                 </div>
               )}
 
-              {/* File Upload */}
               {scanMethod === "upload" && (
                 <div>
                   <input
@@ -661,7 +633,6 @@ function ScanToPayModal({
             </div>
           )}
 
-          {/* Scanned QR Code Info */}
           {qrCodeData && (
             <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
               <div className="flex items-center text-green-400 mb-3">
@@ -706,7 +677,6 @@ function ScanToPayModal({
             </div>
           )}
 
-          {/* Amount */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <IndianRupee className="w-4 h-4 mr-2 text-amber-400" />
@@ -737,7 +707,6 @@ function ScanToPayModal({
             </p>
           </div>
 
-          {/* Reference */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300 flex items-center">
               <FileText className="w-4 h-4 mr-2 text-amber-400" />
@@ -813,7 +782,6 @@ function ScanToPayModal({
             </p>
           </div>
 
-          {/* Info Box */}
           <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4">
             <div className="flex items-center text-amber-400 mb-2">
               <AlertCircle className="w-5 h-5 mr-2" />
@@ -827,7 +795,6 @@ function ScanToPayModal({
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"

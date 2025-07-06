@@ -19,21 +19,17 @@ export default function Sidebar({
 
   return (
     <>
-      {/* Overlay for mobile */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={onClose}
         />
       )}
-
-      {/* Sidebar */}
       <div
         className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-transparent backdrop-blur-3xl border-r-2 border-gray-800 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:translate-x-0 transition-transform duration-300 ease-in-out`}
       >
-        {/* Mobile Close */}
         <button
           onClick={onClose}
           className="absolute top-4 right-2 text-white lg:hidden hover:bg-slate-600 p-2 rounded-lg cursor-pointer"
@@ -42,7 +38,6 @@ export default function Sidebar({
         </button>
 
         <div className="flex flex-col h-full">
-          {/* Brand */}
           <div className="bg-black p-4 border-b border-slate-600">
             <div className="bg-black flex items-center">
               <h1
@@ -53,8 +48,6 @@ export default function Sidebar({
               </h1>
             </div>
           </div>
-
-          {/* Menu */}
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
               {menuItems.map((item) => {

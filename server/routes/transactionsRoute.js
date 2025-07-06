@@ -1,4 +1,3 @@
-//txnsRoutes.js (Updated with caching)
 const router = require("express").Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 const cacheMiddleware = require("../middlewares/cacheMiddleware");
@@ -10,7 +9,7 @@ const bcrypt = require("bcryptjs");
 const stripe = require("stripe")(process.env.STRIPE_KEY);
 const { v4: uuid } = require("uuid");
 
-// Helper function to verify transaction PIN
+//helper function to verify transaction PIN
 const verifyTransactionPin = async (userId, transactionPin) => {
   try {
     const user = await User.findById(userId);
@@ -46,7 +45,7 @@ const verifyTransactionPin = async (userId, transactionPin) => {
   }
 };
 
-// Add route to verify PIN separately (No caching for security)
+//add route to verify PIN separatel
 router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   try {
     const { transactionPin } = req.body;
@@ -72,7 +71,7 @@ router.post("/verify-transaction-pin", authMiddleware, async (req, res) => {
   }
 });
 
-// Transfer funds with PIN verification (With cache invalidation)
+//Transfer funds with PIN verification
 router.post("/transfer-funds", authMiddleware, async (req, res) => {
   try {
     const { transactionPin, ...transactionData } = req.body;
@@ -122,7 +121,6 @@ router.post("/transfer-funds", authMiddleware, async (req, res) => {
       $inc: { balance: transactionData.amount },
     });
 
-    // Invalidate relevant caches
     await CacheUtils.invalidateUserCache(transactionData.sender);
     await CacheUtils.invalidateUserCache(transactionData.receiver);
     await CacheUtils.invalidateTransactionCache(transactionData.sender);
@@ -142,11 +140,11 @@ router.post("/transfer-funds", authMiddleware, async (req, res) => {
   }
 });
 
-// Verify account (With caching)
+//verify accountt
 router.post(
   "/verify-account",
   authMiddleware,
-  cacheMiddleware((req) => `verify-account:${req.body.receiver}`, 1800), // 30 minutes cache
+  cacheMiddleware((req) => `verify-account:${req.body.receiver}`, 1800),
   async (req, res) => {
     try {
       const user = await User.findById(req.body.receiver).select("-password");
@@ -177,14 +175,14 @@ router.post(
   }
 );
 
-// Get all transactions for a user (With caching)
+//get all transactions for a user
 router.post(
   "/get-all-transactions-by-user",
   authMiddleware,
   cacheMiddleware(
     (req) => CacheUtils.getUserTransactionsKey(req.body.userId),
     900
-  ), // 15 minutes cache
+  ),
   async (req, res) => {
     try {
       const transactions = await Transaction.find({
@@ -206,7 +204,7 @@ router.post(
   }
 );
 
-// Deposit funds with proper PIN verification (With cache invalidation)
+//deposit funds with proper PIN verification
 router.post("/deposit-funds", authMiddleware, async (req, res) => {
   try {
     const {
@@ -315,7 +313,6 @@ router.post("/deposit-funds", authMiddleware, async (req, res) => {
         $inc: { balance: parseFloat(amount) },
       });
 
-      // Invalidate relevant caches
       await CacheUtils.invalidateUserCache(userId);
       await CacheUtils.invalidateTransactionCache(userId);
     }

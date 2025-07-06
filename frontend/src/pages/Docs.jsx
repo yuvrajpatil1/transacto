@@ -244,7 +244,6 @@ const SystemArchitecture = () => {
   };
 
   useEffect(() => {
-    // Initialize with login node selected
     setSelectedNode("login");
   }, []);
 
@@ -279,8 +278,6 @@ const SystemArchitecture = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white">
-      {/* Header */}
-
       <nav className="fixed  max-w-dvw lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-6 py-4 lg:px-12 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span className="text-3xl font-bold text-white">Transacto</span>
@@ -296,7 +293,6 @@ const SystemArchitecture = () => {
         </div>
       </nav>
       <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
-        {/* Tech Stack */}
         <div className="mb-12">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-blue-400 mb-6">
@@ -316,7 +312,6 @@ const SystemArchitecture = () => {
             </div>
           </div>
 
-          {/* Legend */}
           <div className="flex flex-wrap justify-center gap-6 mb-8">
             <div className="flex items-center space-x-2 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
               <div className="w-3 h-3 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50 rounded"></div>
@@ -341,9 +336,7 @@ const SystemArchitecture = () => {
           </div>
         </div>
 
-        {/* Architecture Diagram */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Frontend Layer */}
           <div className="space-y-4">
             <div className="text-center font-semibold text-blue-400 uppercase tracking-wide text-sm p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
               Frontend Layer
@@ -394,7 +387,6 @@ const SystemArchitecture = () => {
             </div>
           </div>
 
-          {/* Backend Services */}
           <div className="space-y-4">
             <div className="text-center font-semibold text-green-400 uppercase tracking-wide text-sm p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
               Backend Services
@@ -445,7 +437,6 @@ const SystemArchitecture = () => {
             </div>
           </div>
 
-          {/* Cache & Storage */}
           <div className="space-y-4">
             <div className="text-center font-semibold text-purple-400 uppercase tracking-wide text-sm p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
               Cache & Storage
@@ -484,7 +475,6 @@ const SystemArchitecture = () => {
             </div>
           </div>
 
-          {/* External Services */}
           <div className="space-y-4">
             <div className="text-center font-semibold text-orange-400 uppercase tracking-wide text-sm p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
               External Services
@@ -518,7 +508,6 @@ const SystemArchitecture = () => {
           </div>
         </div>
 
-        {/* Details Panel */}
         {selectedNode && nodeDetails[selectedNode] && (
           <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 mb-12">
             <h3 className="text-2xl font-bold text-blue-400 mb-6">
@@ -533,7 +522,6 @@ const SystemArchitecture = () => {
           </div>
         )}
 
-        {/* Feature Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50">
             <h3 className="text-xl font-bold text-blue-400 mb-6 flex items-center gap-2">
@@ -668,7 +656,6 @@ const SystemArchitecture = () => {
           </div>
         </div>
 
-        {/* Security Features */}
         <div className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50">
           <h2 className="text-3xl font-bold text-center mb-8 text-yellow-400">
             Security Features Implemented
@@ -752,7 +739,6 @@ const SystemArchitecture = () => {
             ))}
           </div>
         </div>
-        {/* Bottom Footer */}
         <div className="border-t border-gray-800 pt-8 mt-6">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400 mb-4 md:mb-0">

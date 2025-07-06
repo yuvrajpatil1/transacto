@@ -36,13 +36,11 @@ function Home() {
     offset: ["start 80%", "end 20%"],
   });
 
-  // Progressive scroll-based transform
-  const y = useTransform(scrollYProgress, [0, 1], [50, 0]); // Slide up
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]); // Fade in
+  const y = useTransform(scrollYProgress, [0, 1], [50, 0]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
   return (
     <div className="min-h-dvh max-w-dvw bg-gradient-to-br from-black via-slate-900 to-black text-white">
-      {/* Navigation */}
       <nav className="fixed max-w-full lg:static top-0 left-0 w-full z-50 backdrop-blur-xl lg:border-none lg:backdrop-blur-none lg:bg-transparent bg-gray-900/60 border-b border-gray-700/50 px-8 py-6 lg:px-12 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <span className="text-4xl font-bold text-white">Transacto</span>
@@ -64,7 +62,6 @@ function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <div className="px-6 lg:px-12 py-30 lg:py-20 lg:pb-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-18">
@@ -103,7 +100,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Dashboard Mockup */}
           <SlideInOnScrollMockUp>
             <div className="hidden lg:block relative mx-auto max-w-4xl mb-24">
               <Mockup />
@@ -113,7 +109,6 @@ function Home() {
             <Mockup />
           </div>
 
-          {/* Trust Badges */}
           <div className="text-center mt-8">
             <p className="text-sm text-gray-400 mt-4">
               Trusted by financial institutions worldwide
@@ -133,7 +128,6 @@ function Home() {
         </div>
       </div>
 
-      {/* Features Section */}
       <div id="features" className="px-6 lg:px-12 pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -151,7 +145,6 @@ function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
             <SlideInOnScroll>
               <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6">
@@ -170,7 +163,6 @@ function Home() {
               </div>
             </SlideInOnScroll>
             <SlideInOnScroll>
-              {/* Feature 2 */}
               <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 hover:border-green-500/50 transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6">
                   <CreditCard className="w-8 h-8 text-white" />
@@ -188,7 +180,6 @@ function Home() {
               </div>
             </SlideInOnScroll>
             <SlideInOnScroll>
-              {/* Feature 3 */}
               <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6">
                   <HandCoins className="w-8 h-8 text-white" />
@@ -206,7 +197,6 @@ function Home() {
               </div>
             </SlideInOnScroll>
             <SlideInOnScroll>
-              {/* Feature 4 */}
               <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 hover:border-orange-500/50 transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mb-6">
                   <UserCheck className="w-8 h-8 text-white" />
@@ -226,7 +216,6 @@ function Home() {
               </div>
             </SlideInOnScroll>
             <SlideInOnScroll>
-              {/* Feature 5 */}
               <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 hover:border-cyan-500/50 transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6">
                   <Users className="w-8 h-8 text-white" />
@@ -244,7 +233,6 @@ function Home() {
               </div>
             </SlideInOnScroll>
             <SlideInOnScroll>
-              {/* Feature 6 */}
               <div className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-gray-700/50 hover:border-yellow-500/50 transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6">
                   <Clock className="w-8 h-8 text-white" />
@@ -265,7 +253,6 @@ function Home() {
         </div>
       </div>
 
-      {/* Stats Section */}
       <AnimatedCounter>
         <div className="px-6 lg:px-12 py-16 bg-gray-900/30">
           <div className="max-w-6xl mx-auto">
@@ -299,7 +286,6 @@ function Home() {
         </div>
       </AnimatedCounter>
 
-      {/* CTA Section */}
       <SlideInOnScroll>
         <div className="px-6 lg:px-12 py-16">
           <div className="max-w-4xl mx-auto text-center">
@@ -327,11 +313,9 @@ function Home() {
         </div>
       </SlideInOnScroll>
 
-      {/* Footer */}
       <footer className="px-6 lg:px-12 py-12 border-t border-gray-800 bg-gray-900/50">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            {/* Company Info */}
             <div className="col-span-1 md:col-span-1">
               <div className="flex items-center space-x-2 mb-4">
                 <span className="text-2xl font-bold">Transacto</span>
@@ -348,7 +332,6 @@ function Home() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 w-full gap-12">
-              {/* Product */}
               <div>
                 <h4 className="text-white fontmd:-semibold font-semibold mb-4">
                   Product
@@ -387,7 +370,6 @@ function Home() {
                 </div>
               </div>
 
-              {/* Company */}
               <div>
                 <h4 className="text-white fontmd:-semibold font-semibold mb-4">
                   Company
@@ -426,7 +408,6 @@ function Home() {
                 </div>
               </div>
 
-              {/* Support */}
               <div>
                 <h4 className="text-white fontmd:-semibold font-semibold mb-4">
                   Support
@@ -471,7 +452,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Bottom Footer */}
           <div className="border-t border-gray-800 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6 text-sm text-gray-400 mb-4 md:mb-0">
