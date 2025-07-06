@@ -2,9 +2,9 @@
 
 A comprehensive digital wallet and payment platform built using the MERN stack, demonstrating modern web development practices with a focus on security and user experience in financial applications.
 
-🔗 **[Live Link](https://transacto.onrender.com/)**
+**[Live Link](https://transacto.onrender.com/)**
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
