@@ -1,7 +1,5 @@
 # Transacto - Digital Wallet & Payment Platform
 
-![Transacto Logo](./frontend/src/assets/Favicon.png)
-
 A comprehensive digital wallet and payment platform built using the MERN stack, demonstrating modern web development practices with a focus on security and user experience in financial applications.
 
 🔗 **[Live Link](https://transacto.onrender.com/)**
